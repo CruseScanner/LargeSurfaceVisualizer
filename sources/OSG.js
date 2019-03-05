@@ -1,4 +1,5 @@
 import 'osg/polyfill';
+import cruse from 'cruse/cruse';
 import osgNameSpace from 'osgNameSpace';
 import osg from 'osg/osg';
 import osgAnimation from 'osgAnimation/osgAnimation';
@@ -15,6 +16,7 @@ import osgPlugins from 'osgPlugins/osgPlugins';
 
 var OSG = osgNameSpace;
 
+OSG.cruse = cruse;
 OSG.osg = osg;
 OSG.osgAnimation = osgAnimation;
 OSG.osgDB = osgDB;
@@ -31,6 +33,7 @@ OSG.InputGroups = osgViewer.InputGroups;
 
 // for backward compatibility
 OSG.globalify = function() {
+    window.cruse = OSG.cruse;
     window.osg = OSG.osg;
     window.osgAnimation = OSG.osgAnimation;
     window.osgDB = OSG.osgDB;
@@ -47,6 +50,7 @@ OSG.globalify = function() {
 };
 
 export {
+    cruse,
     osg,
     osgAnimation,
     osgDB,
