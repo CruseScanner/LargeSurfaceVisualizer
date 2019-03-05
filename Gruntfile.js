@@ -269,6 +269,12 @@ var gruntTasks = {};
                 hostname: 'localhost'
             }
         },
+        proxies: [{
+            context: '/iipsrv', // the context of the data service
+            https: true,
+            host: 'samples.crusescanner.com', // wherever the data service is running
+            port: 443 // the port that the data service is running on
+          }],
         dist: {
             options: {
                 port: 9000,
@@ -277,6 +283,8 @@ var gruntTasks = {};
                 open: true,
                 middleware: function(connect, options, middlewares) {
                     // inject a custom middleware into the array of default middlewares
+                    middlewares.push(require('grunt-connect-proxy2/lib/utils').proxyRequest);
+                    
                     middlewares.unshift(function(req, res, next) {
                         var ext = path.extname(req.url);
                         if (ext === '.gz') {
@@ -403,6 +411,8 @@ module.exports = function(grunt) {
         )
     );
 
+    grunt.loadNpmTasks('grunt-connect-proxy2');
+
     grunt.loadNpmTasks('grunt-documentation');
 
     grunt.loadNpmTasks('grunt-plato');
@@ -440,5 +450,5 @@ module.exports = function(grunt) {
 
     grunt.registerTask('docs', ['plato', 'documentation:default']);
     grunt.registerTask('default', ['check', 'build']);
-    grunt.registerTask('serve', ['sync', 'build', 'connect:dist:keepalive']);
+    grunt.registerTask('serve', ['sync', 'build', 'configureProxies:server', 'connect:dist:keepalive']);
 };
