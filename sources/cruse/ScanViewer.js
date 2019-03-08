@@ -1,4 +1,5 @@
 import osg from 'osg/osg';
+import osgShader from 'osgShader/osgShader';
 import osgDB from 'osgDB/osgDB';
 import osgViewer from 'osgViewer/osgViewer';
 import defined from 'cruse/defined';
@@ -11,7 +12,14 @@ function initializeRootNode(scanViewer) {
         0,
         0
     ).then(function(rootTile) {
-        scanViewer.viewer.setSceneData(rootTile);
+        var rootNode = new osg.Node();
+        rootNode.addChild(rootTile);
+        scanViewer.viewer.setSceneData(rootNode);
+        var stateSet = rootNode.getOrCreateStateSet();
+        
+        scanViewer.setupShader(stateSet);
+        scanViewer.setupLight(rootNode);
+        
         var boundingSphere = rootTile.getBound();
         scanViewer.viewer.setupManipulator();
         scanViewer.viewer.getManipulator().setMinSpeed(256*10);
@@ -33,27 +41,44 @@ var ScanViewer = function(canvasElement, textureMapTileSource, normalMapTileSour
     this._input = new osgDB.Input();
     this.projectedTilePixels = Math.PI/4.0*256*256;
     
+    this._shaderProcessor = new osgShader.ShaderProcessor;
+    
     this.viewer = new osgViewer.Viewer(canvasElement, {
         enableFrustumCulling: true
     });
     this.viewer.init();
     
-    var tileServicePromises = [];    
+    var promises = [];    
     var that = this;
     if (defined(textureMapTileSource)) {
         this._textureMapTileSource = textureMapTileSource;
-        tileServicePromises.push(textureMapTileSource.initializationPromise.then(function() {
+        promises.push(textureMapTileSource.initializationPromise.then(function() {
             that._renderTextureMaps = true;
         }));
     }
     if (defined(normalMapTileSource)) {
         this._normalMapTileSource = normalMapTileSource;
-        tileServicePromises.push(normalMapTileSource.initializationPromise.then(function(){
+        promises.push(normalMapTileSource.initializationPromise.then(function(){
             that._renderNormalMaps = true;
         }));
     }
+
+    var shaderPromises = [];
+    var shaderNames = ['scanviewer.frag.glsl','scanviewer.vert.glsl']; 
+    shaderNames.forEach(function(shader) {
+        shaderPromises.push(P.resolve($.get(shader)));
+    });
    
-    this._initializationPromise = Promise.all(tileServicePromises).then(function() {
+    var shaderProcessor = this._shaderProcessor;
+    promises.push(P.all(shaderPromises).then(function(args) {
+        var shaderNameContent = {};
+        shaderNames.forEach(function(name, idx) {
+            shaderNameContent[name] = args[idx];
+        });
+        shaderProcessor.addShaders(shaderNameContent);
+    }));
+    
+    this._initializationPromise = Promise.all(promises).then(function() {
         initializeRootNode(that);
     });
       
@@ -90,11 +115,62 @@ ScanViewer.prototype = {
         return Promise.all(promises);
     },
         
+    
+    setupLight : function(node) {
+        var stateSet = node.getOrCreateStateSet();
+        
+        var light = new osg.Light(0);
+        this._directionalLight = light;
+
+        light.setDiffuse([1.0, 1.0, 1.0, 1.0]);
+        light.setSpecular([1.0, 1.0, 1.0, 1.0]);
+        light.setAmbient([0.2, 0.2, 0.2, 1.0]);
+
+        // Setup directional light; n.b. direction only used for positional lights
+        light.setPosition([0.0, 0.0, 1.0, 0.0]);
+
+        var lightSource = new osg.LightSource();
+        lightSource.setLight(light);
+       
+        node.addChild(lightSource);
+
+    },
+    
+    setupShader : function(stateSet) {       
+        var material = new osg.Material();
+        material.setDiffuse ([1.0, 1.0, 1.0, 1.0]);           
+        material.setAmbient ([0.3, 0.3, 0.3, 1.0]);
+        material.setEmission([0.0, 0.0, 0.0, 1.0]);
+        material.setSpecular([1.0, 0.0, 0.0, 1.0]);
+        material.setShininess(1.0);
+        stateSet.setAttributeAndModes(material);
+
+        
+        if (this._program === undefined)
+        {
+            var defines = [];
+            if (this._renderNormalMaps) defines.push('#define WITH_NORMAL_MAP');
+    
+            var vertexshader = this._shaderProcessor.getShader('scanviewer.vert.glsl', defines);
+            var fragmentshader = this._shaderProcessor.getShader('scanviewer.frag.glsl', defines);
+    
+            this._program = new osg.Program(
+                new osg.Shader('VERTEX_SHADER', vertexshader),
+                new osg.Shader('FRAGMENT_SHADER', fragmentshader)
+            );
+            
+            this._program.setTrackAttributes({ attributeKeys : ['Material', 'Light0'] });
+        }
+       
+        stateSet.setAttributeAndModes(this._program);
+    },
+
     /**
      * Fetches normal and texture maps for the given tile, and returns a promise
      * to an osg geometry rendering the tile with textures and normals.
      * 
-     * @param {Number} x,y,level Quadtree tile address
+     * @param {Number}
+     *            x,y,level Quadtree tile address
      * 
      */
     createTileForGeometry: function(x, y, level) {
@@ -135,15 +211,8 @@ ScanViewer.prototype = {
         };
         
         var tileGeometry = osg.createTexturedQuadGeometry(x0, y0, 0, width, 0, 0, 0, height, 0, 0, 1, 1, 0);
-        var material = new osg.Material();
-        material.setDiffuse ([1.0, 1.0, 1.0, 1.0]);           
-        material.setAmbient ([0.3, 0.3, 0.3, 1.0]);
-        material.setEmission([0.0, 0.0, 0.0, 1.0]);
-        material.setSpecular([0.0, 0.0, 0.0, 1.0]);
-        material.setShininess(1.0);
+
         var stateSet = tileGeometry.getOrCreateStateSet(); 
-        stateSet.setAttributeAndModes(material);
-     
         return this.fetchAndApplyAllTileImagery(x, y, level, stateSet).then(function() {
             var tile;          
             if (that._textureMapTileSource.hasChildren(x, y, level)) {
@@ -169,8 +238,10 @@ ScanViewer.prototype = {
     /**
      * Utility function which returns quadtree address for the given child.
      * 
-     * @param {Number} childIndex 
-     * @param {Number} x,y,level Quadtree address of parent
+     * @param {Number}
+     *            childIndex
+     * @param {Number}
+     *            x,y,level Quadtree address of parent
      */
     childAddress: function(childIndex, x, y, level) {
         var dx = childIndex%2;
