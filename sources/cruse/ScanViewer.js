@@ -98,12 +98,13 @@ ScanViewer.prototype = {
      * 
      */
     createTileForGeometry: function(x, y, level) {
-        // TODO: implement getTileExtent which dispatches between tmap/normal map as required
-        var tileGeometry = this._textureMapTileSource.getTileExtent(x, y, level);
-        var x0 = tileGeometry.x0;
-        var y0 = tileGeometry.y0;
-        var width = (tileGeometry.x1-tileGeometry.x0)+1;
-        var height = (tileGeometry.y1-tileGeometry.y0)+1;
+        // TODO: implement getTileExtent which dispatches between tmap/normal
+        // map as required
+        var tileExtent = this._textureMapTileSource.getTileExtent(x, y, level);
+        var x0 = tileExtent.x0;
+        var y0 = tileExtent.y0;
+        var width = (tileExtent.x1-tileExtent.x0)+1;
+        var height = (tileExtent.y1-tileExtent.y0)+1;
         
         var that = this;
         var createPagedLODGroup = function(parent) {
