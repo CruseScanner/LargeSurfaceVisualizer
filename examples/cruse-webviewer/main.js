@@ -45,32 +45,29 @@
         
         run: function() {
             // Get 3D canvas.
-            var canvas = document.getElementById('View');            
-            var scanViewer = new cruse.ScanViewer(canvas);
-        
-                   
-            // HACK: external initialization; move this into ScanViewer constructor/setup
-            scanViewer.viewer.getDatabasePager().setProgressCallback(function(a, b) {
-                window.setProgress(a + b);
-            });
 
             var url = '/iipsrv/iipsrv.fcgi';
             var imageName = '/var/www/samples/data/SlateTile/SlateTile_L-LA_135mm_600_00_dpi.jpx';
            
-            var iipTileSource = new cruse.IIPImageTileSource(url, imageName);            
+            var diffuseTextureTileSource = new cruse.IIPImageTileSource(url, imageName);            
+            var normalMapTextureTileSource = undefined; //new cruse.IIPImageTileSource(url, imageName);            
             
-            scanViewer._tileSource = iipTileSource;
+            var canvas = document.getElementById('View');            
+            var scanViewer = new cruse.ScanViewer(canvas, diffuseTextureTileSource, normalMapTextureTileSource);
+            
+            scanViewer.viewer.getDatabasePager().setProgressCallback(function(a, b) {
+                window.setProgress(a + b);
+            });
 
             var that = this;
-            scanViewer._tileSource._jsonPromise.then(function() {
-                scanViewer.setupRootNode().then(function() {
-                    that.initGui();
-                    //  Cheat dat gui to show at least two decimals and start at 1.0
-                    that._config.lodScale = 1.0;
-                    for (var i in that.gui.__controllers) that.gui.__controllers[i].updateDisplay();
-                    scanViewer.run();
-                });
-            });
+            this._config.lodScale = 0.1;
+            this.initGui();
+            //  Cheat dat gui to show at least two decimals and start at 1.0
+            this._config.lodScale = 1.0;
+            
+            for (var i in that.gui.__controllers) that.gui.__controllers[i].updateDisplay();
+           
+            scanViewer.run();
         }
     };
 

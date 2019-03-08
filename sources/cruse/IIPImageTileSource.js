@@ -2,6 +2,29 @@ import fileHelper from 'osgDB/fileHelper';
 import notify from 'osg/notify';
 import defined from 'cruse/defined';
 
+
+function initialize(tileSource, jsonData) {
+    tileSource._imageWidth = jsonData.width;
+    tileSource._imageHeight = jsonData.height;
+    
+    var maxExtent = Math.max(tileSource._imageWidth, tileSource._imageHeight);
+    var tilesX =  Math.ceil(tileSource._imageWidth/tileSource._tileSize);
+    var tilesY =  Math.ceil(tileSource._imageHeight/tileSource._tileSize);
+    
+    // TODO: log2 not supported prior to ECMAscript6, add polyfill or use standard log
+    tileSource._levels = Math.ceil(Math.log2(Math.max(tilesX, tilesY)));       
+    tileSource._tilesX = tilesX;
+    tileSource._tilesY = tilesY;
+      
+    tileSource._initialized = true;
+    
+    return;
+};
+
+function requestFile(url, options) {
+    return fileHelper.requestURI(url, options);
+};
+
 var IIPImageTileSource = function(url, filename) {
     this._tileSize = 256;
     this._url = url;
@@ -10,7 +33,7 @@ var IIPImageTileSource = function(url, filename) {
 
     var that = this;
     // Download and parse JSON    
-    this._jsonPromise = this.requestFile(url + '?IIIF=' + filename + '/info.json').
+    this._initializationPromise = requestFile(url + '?IIIF=' + filename + '/info.json').
         then(function(str) {
             var data;
             try {
@@ -19,7 +42,7 @@ var IIPImageTileSource = function(url, filename) {
             catch (error) {
                 notify.error('Can not parse url ' + url);
             }
-            that.initialize(data);
+            initialize(that, data);
         }).catch(function(status) {
             var err = 'Error loading file ' + url +'. Status: ' + status;
             notify.error(err);
@@ -27,29 +50,7 @@ var IIPImageTileSource = function(url, filename) {
 };
 
 IIPImageTileSource.prototype = {
-    requestFile: function(url, options) {
-        return fileHelper.requestURI(url, options);
-    },
-      
-    initialize: function(jsonData)
-    {
-        this._imageWidth = jsonData.width;
-        this._imageHeight = jsonData.height;
-        
-        var maxExtent = Math.max(this._imageWidth, this._imageHeight);
-        var tilesX =  Math.ceil(this._imageWidth/this._tileSize);
-        var tilesY =  Math.ceil(this._imageHeight/this._tileSize);
-        
-        // TODO: log2 not supported prior to ECMAscript6, add polyfill or use standard log
-        this._levels = Math.ceil(Math.log2(Math.max(tilesX, tilesY)));       
-        this._tilesX = tilesX;
-        this._tilesY = tilesY;
-          
-        this._initialized = true;
-        
-        return;
-    },
-    
+   
     getTileSize: function(level) {
         return this._tileSize*(1<<(this._levels - level))
     },
@@ -124,5 +125,15 @@ IIPImageTileSource.prototype = {
         return this._url + '?IIIF=' + this._filename + '/' + roi + '/' + size + '/0/default.jpg'; 
     }
 };
+
+
+Object.defineProperties(IIPImageTileSource.prototype, {
+    initializationPromise : {
+        get: function() {
+            return this._initializationPromise;
+        }
+    }
+});
+
 
 export default IIPImageTileSource;
