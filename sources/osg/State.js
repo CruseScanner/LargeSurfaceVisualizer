@@ -1135,9 +1135,20 @@ utils.createPrototypeObject(
             var attributeKeys = program.getTrackAttributes().attributeKeys;
 
             if (attributeKeys.length > 0) {
+                var typeMember = {};
+                for (var i = 0, l = _attributeArrayStack.length; i < l; i++) {
+                	var a = _attributeArrayStack[i]; 
+                	if (a === undefined || a === null) {
+                		continue;
+                	}
+                	typeMember[a._globalDefault.getTypeMember()] = i;
+                }
                 for (var i = 0, l = attributeKeys.length; i < l; i++) {
                     var key = attributeKeys[i];
-                    var index = this.typeMember[key];
+                    var index = typeMember[key];
+                    if (index === undefined)  {
+                    	continue;
+                    }
                     var attributeStack = _attributeArrayStack[index];
                     if (!attributeStack) {
                         continue;
@@ -1243,7 +1254,7 @@ utils.createPrototypeObject(
                     var hasStateSetUniformPair = stateset && stateset.uniforms[uniformName];
 
                     if (!uniformStack && !hasStateSetUniformPair) {
-                        if (programTrackUniformMap === undefined) {
+                        if (programTrackUniformMap === undefined || programTrackUniformMap[uniformName] === undefined) {
                             this._checkErrorUniform(uniformName);
                             continue;
                         }
