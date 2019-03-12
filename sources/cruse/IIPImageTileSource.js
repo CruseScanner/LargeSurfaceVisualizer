@@ -116,8 +116,8 @@ IIPImageTileSource.prototype = {
             throw new DeveloperError('');
         }*/
         var e = this.getRasterExtent(x, y, level);
-        var sx = e.x1-e.x0+1;
-        var sy = e.y1-e.y0+1;
+        var sx = e.x1-e.x0;
+        var sy = e.y1-e.y0;
         
         var roi = e.x0 + ',' + e.y0 + ',' + sx + ',' + sy;
         var size = e.w + ',' + e.h; 

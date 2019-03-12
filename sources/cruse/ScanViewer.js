@@ -12,7 +12,13 @@ function initializeRootNode(scanViewer) {
         0,
         0
     ).then(function(rootTile) {
-        var rootNode = new osg.Node();
+        var rootNode = new osg.MatrixTransform();
+
+        var tileExtent = scanViewer._textureMapTileSource.getTileExtent(0, 0, 0);
+        var w = tileExtent.x1 - tileExtent.x0;
+        var h = tileExtent.y1 - tileExtent.y0;
+
+        rootNode.setMatrix(osg.mat4.fromTranslation(osg.mat4.create(), osg.vec3.fromValues(-w/2, -h/2, 0)));            
         rootNode.addChild(rootTile);
         scanViewer.viewer.setSceneData(rootNode);
         var stateSet = rootNode.getOrCreateStateSet();
@@ -22,8 +28,10 @@ function initializeRootNode(scanViewer) {
         
         var boundingSphere = rootTile.getBound();
         scanViewer.viewer.setupManipulator();
-        scanViewer.viewer.getManipulator().setMinSpeed(256*10);
-        scanViewer.viewer.getManipulator().setDistance(boundingSphere.radius() * 1.5);
+        var manipulator = scanViewer.viewer.getManipulator();
+        manipulator.setMinSpeed(256*10);
+        manipulator.setDistance(boundingSphere.radius() * 1.5);
+        manipulator.setLimitPitchDown(5.0*Math.PI/180.0);
     });
 };
 
