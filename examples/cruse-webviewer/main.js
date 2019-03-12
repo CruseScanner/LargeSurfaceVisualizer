@@ -29,7 +29,7 @@
                 self.viewer.getDatabasePager().setAcceptNewDatabaseRequests(value);
             });
             this._config['lostContext'] = function() {
-                var gl = this.viewer.getGraphicContext();
+                var gl = scanviewer.viewer.getGraphicContext();
                 var ext = gl.getExtension('WEBGL_lose_context');
                 if (!ext) {
                     osg.log('missing WEBGL_lose_context extension');
@@ -60,6 +60,7 @@
             });
 
             var that = this;
+            this._scanviewer = scanViewer;
             this._config.lodScale = 0.1;
             this.initGui();
             //  Cheat dat gui to show at least two decimals and start at 1.0
