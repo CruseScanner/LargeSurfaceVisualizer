@@ -102,12 +102,20 @@ IIPImageTileSource.prototype = {
             // destination tile size
             w : destWidth,
             h : destHeight
-        }
+        };
     },
     
     getTileExtent: function(x, y, level) {
-        // TODO: scale pixel to mm, flip y
-        return this.getRasterExtent(x, y, level);
+        // TODO: scale pixel to mm
+        var re = this.getRasterExtent(x, y, level);
+        return {
+            x0:  re.x0,
+            y0: -re.y1,
+            x1:  re.x1,
+            y1: -re.y0,
+            w :  re.w,
+            h :  re.h
+        };
     },
         
     getTileURL: function(x, y, level) {

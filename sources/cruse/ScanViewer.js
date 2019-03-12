@@ -187,8 +187,8 @@ ScanViewer.prototype = {
         var tileExtent = this._textureMapTileSource.getTileExtent(x, y, level);
         var x0 = tileExtent.x0;
         var y0 = tileExtent.y0;
-        var width = (tileExtent.x1-tileExtent.x0)+1;
-        var height = (tileExtent.y1-tileExtent.y0)+1;
+        var width =  (tileExtent.x1-tileExtent.x0);
+        var height = (tileExtent.y1-tileExtent.y0);
         
         var that = this;
         var createPagedLODGroup = function(parent) {
@@ -218,7 +218,7 @@ ScanViewer.prototype = {
             });                
         };
         
-        var tileGeometry = osg.createTexturedQuadGeometry(x0, y0, 0, width, 0, 0, 0, height, 0, 0, 1, 1, 0);
+        var tileGeometry = osg.createTexturedQuadGeometry(x0, y0, 0, width, 0, 0, 0, height, 0, 0, 0, 1, 1);
 
         var stateSet = tileGeometry.getOrCreateStateSet(); 
         return this.fetchAndApplyAllTileImagery(x, y, level, stateSet).then(function() {
