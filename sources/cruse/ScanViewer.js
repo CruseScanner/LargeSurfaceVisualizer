@@ -1,4 +1,5 @@
 import osg from 'osg/osg';
+import PlanarOrbitManipulator from 'cruse/PlanarOrbitManipulator';
 import osgShader from 'osgShader/osgShader';
 import osgDB from 'osgDB/osgDB';
 import osgViewer from 'osgViewer/osgViewer';
@@ -27,8 +28,10 @@ function initializeRootNode(scanViewer) {
         scanViewer.setupLight(rootNode);
         
         var boundingSphere = rootTile.getBound();
-        scanViewer.viewer.setupManipulator();
-        var manipulator = scanViewer.viewer.getManipulator();
+        var manipulator = new PlanarOrbitManipulator({ inputManager: scanViewer.viewer.getInputManager() })
+        scanViewer.viewer.setupManipulator(manipulator);
+        manipulator.setAutoPushTarget(false);
+        manipulator.setLimitZoomIn(100);
         manipulator.setMinSpeed(256*10);
         manipulator.setDistance(boundingSphere.radius() * 1.5);
         manipulator.setLimitPitchDown(5.0*Math.PI/180.0);
