@@ -1,11 +1,13 @@
 import utils from 'osg/utils';
 import { vec3 } from 'osg/glMatrix';
+import { mat4 } from 'osg/glMatrix';
 import OrbitManipulator from 'osgGA/OrbitManipulator';
 import OrbitManipulatorDeviceOrientationController from 'osgGA/OrbitManipulatorDeviceOrientationController';
 import OrbitManipulatorGamePadController from 'osgGA/OrbitManipulatorGamePadController';
 import OrbitManipulatorHammerController from 'osgGA/OrbitManipulatorHammerController';
 import OrbitManipulatorStandardMouseKeyboardController from 'osgGA/OrbitManipulatorStandardMouseKeyboardController';
 import OrbitManipulatorWebVRController from 'osgGA/OrbitManipulatorWebVRController';
+import BoundingBox from 'osg/BoundingBox';
 
 /**
  *  PlanarOrbitManipulator
@@ -13,6 +15,7 @@ import OrbitManipulatorWebVRController from 'osgGA/OrbitManipulatorWebVRControll
  */
 var PlanarOrbitManipulator = function(options) {
     OrbitManipulator.call(this, options);
+    this._cage = new BoundingBox();
 };
 
 PlanarOrbitManipulator.AvailableControllerList = [
@@ -35,6 +38,9 @@ PlanarOrbitManipulator.ControllerList = [
 utils.createPrototypeObject(
     PlanarOrbitManipulator,
     utils.objectInherit(OrbitManipulator.prototype, {
+        setCage: function(cage) {
+            this._cage = cage;
+        },
         computePan: (function() {
             var inv = mat4.create();
             var x = vec3.create();
@@ -65,6 +71,12 @@ utils.createPrototypeObject(
                 vec3.scale(y, y, dy);
                 vec3.add(this._target, this._target, x);
                 vec3.add(this._target, this._target, y);
+                
+                if (this._cage.valid()) {
+                    vec3.min(this._target, this._target, this._cage.getMax()); 
+                    vec3.max(this._target, this._target, this._cage.getMin()); 
+                }
+                    
             };
         })(),
     }),

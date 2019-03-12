@@ -19,7 +19,7 @@ function initializeRootNode(scanViewer) {
         var w = tileExtent.x1 - tileExtent.x0;
         var h = tileExtent.y1 - tileExtent.y0;
 
-        rootNode.setMatrix(osg.mat4.fromTranslation(osg.mat4.create(), osg.vec3.fromValues(-w/2, -h/2, 0)));            
+        rootNode.setMatrix(osg.mat4.fromTranslation(osg.mat4.create(), osg.vec3.fromValues(-w/2, h/2, 0)));            
         rootNode.addChild(rootTile);
         scanViewer.viewer.setSceneData(rootNode);
         var stateSet = rootNode.getOrCreateStateSet();
@@ -30,8 +30,15 @@ function initializeRootNode(scanViewer) {
         var boundingSphere = rootTile.getBound();
         var manipulator = new PlanarOrbitManipulator({ inputManager: scanViewer.viewer.getInputManager() })
         scanViewer.viewer.setupManipulator(manipulator);
+        
+        var cage = new osg.BoundingBox();
+        cage.setMin(osg.vec3.fromValues(-w/2, -h/2, 0.0));
+        cage.setMax(osg.vec3.fromValues( w/2,  h/2, 0.0));
+        manipulator.setCage(cage);
+        
         manipulator.setAutoPushTarget(false);
         manipulator.setLimitZoomIn(100);
+        manipulator.setLimitZoomOut(boundingSphere.radius() * 3.0);
         manipulator.setMinSpeed(256*10);
         manipulator.setDistance(boundingSphere.radius() * 1.5);
         manipulator.setLimitPitchDown(5.0*Math.PI/180.0);
@@ -137,7 +144,7 @@ ScanViewer.prototype = {
         light.setSpecular([1.0, 1.0, 1.0, 1.0]);
         light.setAmbient([0.2, 0.2, 0.2, 1.0]);
 
-        // Setup directional light; n.b. direction only used for positional lights
+        // Setup directional light; note that direction property is only used for positional lights
         light.setPosition([0.0, 0.0, 1.0, 0.0]);
 
         var lightSource = new osg.LightSource();
