@@ -58,6 +58,8 @@ var ScanViewer = function(canvasElement, textureMapTileSource, normalMapTileSour
 
     this._input = new osgDB.Input();
     this.projectedTilePixels = Math.PI/4.0*256*256;
+    // force slightly lower detail
+    this.projectedTilePixels*= 2;
     
     this._shaderProcessor = new osgShader.ShaderProcessor;
     
