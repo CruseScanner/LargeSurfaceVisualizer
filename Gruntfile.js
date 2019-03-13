@@ -272,7 +272,9 @@ var gruntTasks = {};
         proxies: [{
             context: '/iipsrv', // the context of the data service
             https: true,
-            host: 'samples.crusescanner.com', // wherever the data service is running
+            secure: false,
+            host: 'cim.crusescanner.de',
+            //host: 'samples.crusescanner.com', // wherever the data service is running
             port: 443 // the port that the data service is running on
           }],
         dist: {
