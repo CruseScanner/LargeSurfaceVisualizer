@@ -82,10 +82,18 @@
             // Get 3D canvas.
 
             var url = '/iipsrv/iipsrv.fcgi';
-            var imageName = '/var/www/samples/data/SlateTile/SlateTile_L-LA_135mm_600_00_dpi.jpx';
-           
-            var diffuseTextureTileSource = new cruse.IIPImageTileSource(url, imageName);            
-            var normalMapTextureTileSource = undefined; //new cruse.IIPImageTileSource(url, imageName);            
+            
+            // https://samples.crusescanner.com/iipsrv/iipsrv.fcgi:
+            // var imageName = '/var/www/samples/data/SlateTile/SlateTile_L-LA_135mm_600_00_dpi.jpx';
+            
+            // https://cim.crusescanner.de/iipsrv/iipsrv.fcgi:
+            var imageName = '/var/www/crusescanner.de/cim/images/converted/converted_5c890d1f15c0bgoldheartdiffusergb8srgbintentperceptualjpeg.jpx';
+            var normalMapName = '/var/www/crusescanner.de/cim/images/converted/converted_5c890cf7c2df5goldheartnormalmaprgb8jpeg.jpx';
+                            
+            var diffuseTextureTileSource = new cruse.IIPImageTileSource(url, imageName);
+            
+            // HACK: just use standard textures as normal maps as well
+            var normalMapTextureTileSource = new cruse.IIPImageTileSource(url, normalMapName);            
             
             var canvas = document.getElementById('View');
             var scanViewer = new cruse.ScanViewer(canvas, diffuseTextureTileSource, normalMapTextureTileSource);
