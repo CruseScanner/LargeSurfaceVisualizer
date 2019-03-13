@@ -49,8 +49,8 @@ vec3 specularPhong(const in float NdotL, const in vec3 N, const in vec3 L, const
         vec3 H = reflect(-L, N);
         float HdotV = max(dot(H, V), 0.0);
 
-        float shine = 100.0; //clamp(materialShininess, 1.0, 128.0);
-        return materialSpecular * pow(HdotV, shine);
+        float shine = clamp(materialShininess, 1.0, 128.0);
+        return lightSpecular*materialSpecular * pow(HdotV, shine);
     }
     return vec3(0.0);
 }
@@ -88,10 +88,10 @@ void main()
     vec3 specularContribution = specularPhong(NdotL, N, L, V, uMaterialShininess, uMaterialSpecular.rgb, uLight0_specular.rgb);
 
     vec3 diffuseContribution = NdotL*uMaterialDiffuse.rgb*uLight0_diffuse.rgb;
+    diffuseContribution+= uMaterialAmbient.rgb*uLight0_ambient.rgb;
    
     vec3 totalContribution = diffuseContribution*diffuseTexture;
     totalContribution+= specularContribution;
-    totalContribution+= uMaterialAmbient.rgb*uLight0_ambient.rgb;
     totalContribution+= uMaterialEmission.rgb;
     
     gl_FragColor = vec4(totalContribution, 1.0);

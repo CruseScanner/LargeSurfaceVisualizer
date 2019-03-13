@@ -83,6 +83,26 @@ var ScanViewer = function(canvasElement, textureMapTileSource, normalMapTileSour
         }));
     }
 
+    
+    var material = new osg.Material();
+    material.setDiffuse ([1.0, 1.0, 1.0, 1.0]);           
+    material.setAmbient ([1.0, 1.0, 1.0, 1.0]);
+    material.setEmission([0.0, 0.0, 0.0, 1.0]);
+    material.setSpecular([1.0, 1.0, 1.0, 1.0]);
+    material.setShininess(40.0);
+    this._material = material;
+    
+    var light = new osg.Light();
+    light.setDiffuse([1.0, 1.0, 1.0, 1.0]);
+    light.setSpecular([1.0, 1.0, 1.0, 1.0]);
+    light.setAmbient([0.2, 0.2, 0.2, 1.0]);
+
+    // Setup directional light; note that direction property is only used for positional lights
+    light.setPosition([0.0, 0.0, 1.0, 0.0]);
+    this._light = light;
+    
+    
+    // HACK: uses jquery, but does not include the module
     var shaderPromises = [];
     var shaderNames = ['scanviewer.frag.glsl','scanviewer.vert.glsl']; 
     shaderNames.forEach(function(shader) {
@@ -134,37 +154,74 @@ ScanViewer.prototype = {
         }
         return Promise.all(promises);
     },
-        
     
-    setupLight : function(node) {
-        var stateSet = node.getOrCreateStateSet();
-        
-        var light = new osg.Light(0);
-        this._directionalLight = light;
-
-        light.setDiffuse([1.0, 1.0, 1.0, 1.0]);
-        light.setSpecular([1.0, 1.0, 1.0, 1.0]);
-        light.setAmbient([0.2, 0.2, 0.2, 1.0]);
-
-        // Setup directional light; note that direction property is only used for positional lights
-        light.setPosition([0.0, 0.0, 1.0, 0.0]);
-
-        var lightSource = new osg.LightSource();
-        lightSource.setLight(light);
-       
-        node.addChild(lightSource);
-
+    /**
+     * Sets the light source type to point light with the given position
+     * \param elevation Number Elevation angle in radians
+     * \param azimuth Number Azimuth angle in radians
+     * \param distance Number Distance from origin
+     */
+    setPointLight: function(elevation, azimuth, distance) {
+        var d = this.transformSphericalToWorld(elevation, azimuth, distance);        
+        // The shader assumes implicit direction atm
+        this._light.setPosition([d[0], d[1], d[2], 1.0]);
+        //this._light.setDirection(...);
     },
     
-    setupShader : function(stateSet) {       
-        var material = new osg.Material();
-        material.setDiffuse ([1.0, 1.0, 1.0, 1.0]);           
-        material.setAmbient ([0.3, 0.3, 0.3, 1.0]);
-        material.setEmission([0.0, 0.0, 0.0, 1.0]);
-        material.setSpecular([1.0, 0.0, 0.0, 1.0]);
-        material.setShininess(1.0);
-        stateSet.setAttributeAndModes(material);
+    /**
+     * Sets the light source type to point light with the given position
+     * \param elevation Elevation angle in radians
+     * \param azimuth Azimuth angle in radians
+     */
+    setDirectionalLight: function(elevation, azimuth) {
+        var d = this.transformSphericalToWorld(elevation, azimuth, 1.0);
+        this._light.setPosition([d[0], d[1], d[2], 0.0]);       
+    },
 
+
+    /**
+     * Sets lighting parameters.
+     * \param ambient Number[3] Ambient RGB contribution
+     * \param diffuse Number[3] Diffuse light color
+     * \param specular Number[3] Specular light color
+     * \param phongExponent Number   
+     */
+    setLightParameters: function(ambient, diffuse, specular, phongExponent) {
+            this._light.setDiffuse(diffuse);
+            this._light.setSpecular(specular);
+            this._light.setAmbient(ambient);
+            this._material.setShininess(phongExponent);
+    },
+    
+    /**
+     * Sets lighting parameters.
+     * \param ambient Number[3] Ambient RGB contribution
+     * \param diffuse Number[3] Diffuse light color
+     * \param specular Number[3] Specular light color
+     * \param phongExponent Number   
+     */
+    getLightParameters: function(ambient, diffuse, specular, phongExponent) {
+        return {
+            diffuse  : this._light.getDiffuse(),
+            specular : this._light.getSpecular(),
+            ambient  : this._light.getAmbient(),
+            phongExponent : this._material.getShininess()
+        };
+    },
+    
+     
+    setupLight : function(node) {
+        var stateSet = node.getOrCreateStateSet();
+      
+        var lightSource = new osg.LightSource();
+        lightSource.setLight(this._light);
+       
+        node.addChild(lightSource);
+    },
+    
+    setupShader : function(stateSet) {
+        var material = this._material;
+        stateSet.setAttributeAndModes(material);
         
         if (this._program === undefined)
         {
@@ -272,6 +329,14 @@ ScanViewer.prototype = {
             level: level + 1
         };
     },
+    
+    transformSphericalToWorld: function(elevation, azimuth, distance)
+    {
+        var direction = osg.vec3.fromValues(Math.cos(azimuth)*Math.cos(elevation), -Math.sin(azimuth)*Math.cos(elevation), Math.sin(elevation));
+        osg.vec3.scale(direction, direction, distance);
+        return direction;        
+    },
+
    
    
     run: function() {
