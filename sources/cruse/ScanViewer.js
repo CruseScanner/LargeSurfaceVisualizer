@@ -236,7 +236,8 @@ ScanViewer.prototype = {
                 new osg.Shader('FRAGMENT_SHADER', fragmentshader)
             );
             
-            this._program.setTrackAttributes({ attributeKeys : ['Material', 'Light0'] });
+            this._program.setTrackAttributes({ attributeKeys : ['Material', 'Light0'],  textureAttributeKeys : [ [ 'Texture' ], [ 'Texture' ] ]});
+            
         }
        
         stateSet.setAttributeAndModes(this._program);
