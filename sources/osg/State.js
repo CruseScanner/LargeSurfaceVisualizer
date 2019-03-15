@@ -1133,22 +1133,9 @@ utils.createPrototypeObject(
             var _attributeArrayStack = this._attributeArray;
 
             var attributeKeys = program.getTrackAttributes().attributeKeys;
-
             if (attributeKeys.length > 0) {
-                var typeMember = {};
-                for (var i = 0, l = _attributeArrayStack.length; i < l; i++) {
-                	var a = _attributeArrayStack[i]; 
-                	if (a === undefined || a === null) {
-                		continue;
-                	}
-                	typeMember[a._globalDefault.getTypeMember()] = i;
-                }
                 for (var i = 0, l = attributeKeys.length; i < l; i++) {
-                    var key = attributeKeys[i];
-                    var index = typeMember[key];
-                    if (index === undefined)  {
-                    	continue;
-                    }
+                    var index = utils.getIdFromTypeMember(attributeKeys[i]);
                     var attributeStack = _attributeArrayStack[index];
                     if (!attributeStack) {
                         continue;
@@ -1180,9 +1167,9 @@ utils.createPrototypeObject(
                 if (!unitTextureAttributeList) continue;
 
                 for (var i = 0, l = textureAttributeKeys.length; i < l; i++) {
-                    var key = textureAttributeKeys[i];
+                    var index = utils.getTextureIdFromTypeMember(textureAttributeKeys[i]);
 
-                    var attributeStack = unitTextureAttributeList[key];
+                    var attributeStack = unitTextureAttributeList[index];
                     if (!attributeStack) {
                         continue;
                     }
@@ -1191,7 +1178,7 @@ utils.createPrototypeObject(
                     if (!attribute.getOrCreateUniforms) {
                         continue;
                     }
-                    var uniformMap = attribute.getOrCreateUniforms();
+                    var uniformMap = attribute.getOrCreateUniforms(unit);
                     for (var keyUniform in uniformMap) {
                         activeUniformsList.push(uniformMap[keyUniform]);
                     }
