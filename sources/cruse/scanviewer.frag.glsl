@@ -80,7 +80,7 @@ void main()
     // L: vertex to light
     vec3 L = normalize(uLight0_viewPosition.xyz - uLight0_viewPosition.w*vViewVertex.xyz);         
     // V: vertex to eye 
-    vec3 V = normalize(-vViewVertex.rgb);
+    vec3 V = normalize(-vViewVertex.xyz);
 
     float NdotL = max(dot(N, L), 0.0);
     
