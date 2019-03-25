@@ -273,8 +273,8 @@ var gruntTasks = {};
             context: '/iipsrv', // the context of the data service
             https: true,
             secure: false,
-            host: 'cim.crusescanner.de',
-            //host: 'samples.crusescanner.com', // wherever the data service is running
+            //host: 'cim.crusescanner.de',
+            host: 'samples.crusescanner.com', // wherever the data service is running
             port: 443 // the port that the data service is running on
           }],
         dist: {
