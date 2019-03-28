@@ -7,6 +7,13 @@
     var osg = OSG.osg;
     var osgViewer = OSG.osgViewer;
 
+    var urlParam = function(name, w){
+        w = w || window;
+        var rx = new RegExp('[\&|\?]'+name+'=([^\&\#]+)'),
+            val = w.location.search.match(rx);
+        return !val ? '':val[1];
+    }
+
     var ScanViewerExample = function() {
         this.gui = undefined;       
         this._config = {
@@ -79,22 +86,30 @@
             }.bind(this);
             this.gui.add(this._config, 'lostContext');
         },
-        
-        run: function() {
-            // Get 3D canvas.
+    
 
+        run: function() {
+            var shadingProjectUrl = urlParam('ShadingProject');
+            $.getJSON(shadingProjectUrl,
+                function (shadingProject) 
+                { 
+                    this.runViewer(shadingProject);
+                });
+        },
+
+        runViewer: function(shadingProject) {
+            // Get 3D canvas.
             var url = '/iipsrv/iipsrv.fcgi';
-            
+                        
             // https://samples.crusescanner.com/iipsrv/iipsrv.fcgi:
             // var imageName = '/var/www/samples/data/SlateTile/SlateTile_L-LA_135mm_600_00_dpi.jpx';
-            
-            
+                        
             // https://cim.crusescanner.de/iipsrv/iipsrv.fcgi:
             /*var imageName = '/var/www/crusescanner.de/cim/images/converted/converted_5c890d1f15c0bgoldheartdiffusergb8srgbintentperceptualjpeg.jpx';
             var normalMapName = '/var/www/crusescanner.de/cim/images/converted/converted_5c890cf7c2df5goldheartnormalmaprgb8jpeg.jpx';*/
             var imageName = '/var/www/samples/webviewer_data/Goldheart_diffuse_RGB8_2.jpx';
             var normalMapName = '/var/www/samples/webviewer_data/Goldheart_normalmap_RGB8_2.jpx';
-                       
+            
             var diffuseTextureTileSource = new cruse.IIPImageTileSource(url, imageName);           
             var normalMapTextureTileSource = new cruse.IIPImageTileSource(url, normalMapName);            
             
