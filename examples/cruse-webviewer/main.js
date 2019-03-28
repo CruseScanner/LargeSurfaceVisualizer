@@ -90,10 +90,11 @@
 
         run: function() {
             var shadingProjectUrl = urlParam('ShadingProject');
+            var that = this;
             $.getJSON(shadingProjectUrl,
                 function (shadingProject) 
                 { 
-                    this.runViewer(shadingProject);
+                    that.runViewer(shadingProject);
                 });
         },
 
@@ -107,11 +108,12 @@
             // https://cim.crusescanner.de/iipsrv/iipsrv.fcgi:
             /*var imageName = '/var/www/crusescanner.de/cim/images/converted/converted_5c890d1f15c0bgoldheartdiffusergb8srgbintentperceptualjpeg.jpx';
             var normalMapName = '/var/www/crusescanner.de/cim/images/converted/converted_5c890cf7c2df5goldheartnormalmaprgb8jpeg.jpx';*/
-            var imageName = '/var/www/samples/webviewer_data/Goldheart_diffuse_RGB8_2.jpx';
-            var normalMapName = '/var/www/samples/webviewer_data/Goldheart_normalmap_RGB8_2.jpx';
             
-            var diffuseTextureTileSource = new cruse.IIPImageTileSource(url, imageName);           
-            var normalMapTextureTileSource = new cruse.IIPImageTileSource(url, normalMapName);            
+            //var imageName = '/var/www/samples/webviewer_data/Goldheart_diffuse_RGB8_2.jpx';
+            //var normalMapName = '/var/www/samples/webviewer_data/Goldheart_normalmap_RGB8_2.jpx';
+            
+            var diffuseTextureTileSource = new cruse.IIPImageTileSource(url, shadingProject.DiffuseColor);           
+            var normalMapTextureTileSource = new cruse.IIPImageTileSource(url, shadingProject.NormalMap);            
             
             var canvas = document.getElementById('View');
             var scanViewer = new cruse.ScanViewer(canvas, diffuseTextureTileSource, normalMapTextureTileSource);
@@ -121,10 +123,10 @@
             });
 
             var lp = scanViewer.getLightParameters();
-            this._config.ambient = lp.ambient[0];
-            this._config.diffuse = lp.diffuse[0];
-            this._config.specular = lp.specular[0];
-            this._config.phongExponent = lp.phongExponent;
+            this._config.ambient = shadingProject.ambient || lp.ambient[0];
+            this._config.diffuse = shadingProject.diffuse || lp.diffuse[0];
+            this._config.specular = shadingProject.specular || lp.specular[0];
+            this._config.phongExponent = shadingProject.phongExponent || lp.phongExponent;
             
             var that = this;
             this._scanviewer = scanViewer;
