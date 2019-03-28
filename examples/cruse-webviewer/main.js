@@ -14,7 +14,9 @@
             acceptNewRequests: true,
             elevation : Math.PI/4.0,
             azimuth : Math.PI,
-            phongExponent  : 40.0
+            phongExponent  : 40.0,
+            specular : 0.2,
+            ambient : 0.1
         };
     };
  

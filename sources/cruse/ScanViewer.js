@@ -29,6 +29,7 @@ function initializeRootNode(scanViewer) {
         
         var boundingSphere = rootTile.getBound();
         var manipulator = new PlanarOrbitManipulator({ inputManager: scanViewer.viewer.getInputManager() })
+       
         scanViewer.viewer.setupManipulator(manipulator);
         
         var cage = new osg.BoundingBox();
@@ -37,11 +38,11 @@ function initializeRootNode(scanViewer) {
         manipulator.setCage(cage);
         
         manipulator.setAutoPushTarget(false);
-        manipulator.setLimitZoomIn(100);
+        manipulator.setLimitZoomIn(boundingSphere.radius() * 0.3);
         manipulator.setLimitZoomOut(boundingSphere.radius() * 3.0);
         manipulator.setMinSpeed(256*10);
         manipulator.setDistance(boundingSphere.radius() * 1.5);
-        manipulator.setLimitPitchDown(5.0*Math.PI/180.0);
+        manipulator.setLimitPitchDown(15.0*Math.PI/180.0);
     });
 };
 
@@ -294,6 +295,8 @@ ScanViewer.prototype = {
         return this.fetchAndApplyAllTileImagery(x, y, level, stateSet).then(function() {
             var tile;          
             if (that._textureMapTileSource.hasChildren(x, y, level)) {
+                var levelUniform = osg.Uniform.createFloat1(level, 'uLODLevel');
+                stateSet.addUniform(levelUniform)
                 // LOD node
                 tile = new osg.PagedLOD();
                 tile.setRangeMode(osg.PagedLOD.PIXEL_SIZE_ON_SCREEN);
