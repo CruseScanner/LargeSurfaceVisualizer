@@ -5,6 +5,7 @@
 #endif
 
 #define SHADER_NAME ScanViewerFragment
+#define DEBUG_LOD 
 
 //uniform vec3 uLight0_viewDirection;
 uniform vec4 uLight0_viewPosition;
@@ -17,6 +18,8 @@ uniform vec4 uMaterialDiffuse;
 uniform vec4 uMaterialEmission;
 uniform vec4 uMaterialSpecular;
 uniform float uMaterialShininess;
+
+uniform float uLODLevel;
 
 uniform sampler2D Texture0;
 
@@ -62,6 +65,14 @@ uniform sampler2D Texture1;
 varying vec3 vViewNormal;
 #endif
 
+// All components are in the range [0…1], including hue.
+vec3 hsv2rgb(vec3 c)
+{
+    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
+
 void main() 
 {
     vec3 diffuseTexture = texture2D(Texture0, vTexCoord0).rgb;
@@ -94,5 +105,9 @@ void main()
     totalContribution+= specularContribution;
     totalContribution+= uMaterialEmission.rgb;
     
-    gl_FragColor = vec4(totalContribution, 1.0);
+#ifdef DEBUG_LOD 
+    gl_FragColor = vec4(hsv2rgb(vec3(uLODLevel / 5.0, 0.5, 0.2)) * (totalContribution.r + totalContribution.g + totalContribution.b), 1.0);  
+#else
+    gl_FragColor = vec4(totalContribution, 1.0);     
+#endif
 }
