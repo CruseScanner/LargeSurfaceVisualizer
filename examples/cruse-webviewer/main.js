@@ -23,7 +23,8 @@
             azimuth : Math.PI,
             phongExponent  : 40.0,
             specular : 0.2,
-            ambient : 0.1
+            ambient : 0.1,
+            LODVisualization : false
         };
     };
  
@@ -72,6 +73,12 @@
             acceptRequestscontroller.onChange(function(value) {
                 self.viewer.getDatabasePager().setAcceptNewDatabaseRequests(value);
             });
+
+            var enableLODDebugController = this.gui.add(this._config, 'LODVisualization');
+            enableLODDebugController.onChange(function(value) {
+                scanviewer.setEnableLODVisualization(value);
+            });
+
             this._config['lostContext'] = function() {
                 var gl = scanviewer.viewer.getGraphicContext();
                 var ext = gl.getExtension('WEBGL_lose_context');
@@ -137,6 +144,15 @@
             
             for (var i in that.gui.__controllers) that.gui.__controllers[i].updateDisplay();
            
+            scanViewer.setLightParameters(
+                [this._config.ambient, this._config.ambient, this._config.ambient, 1.0], 
+                [this._config.diffuse, this._config.diffuse, this._config.diffuse, 1.0],
+                [this._config.specular, this._config.specular, this._config.specular, 1.0],
+                this._config.phongExponent
+            );
+
+            scanViewer.setDirectionalLight(this._config.elevation, this._config.azimuth);
+
             scanViewer.run();
         }
     };
