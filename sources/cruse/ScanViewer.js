@@ -26,6 +26,8 @@ function initializeRootNode(scanViewer) {
         
         scanViewer.setupShader(stateSet);
         scanViewer.setupLight(rootNode);
+
+        scanViewer._rootNode = rootNode;
         
         var boundingSphere = rootTile.getBound();
         var manipulator = new PlanarOrbitManipulator({ inputManager: scanViewer.viewer.getInputManager() })
@@ -55,6 +57,7 @@ function initializeRootNode(scanViewer) {
 var ScanViewer = function(canvasElement, textureMapTileSource, normalMapTileSource) {
     this._renderTextureMaps = false;
     this._renderNormalMaps = false;
+    this._enableLODDebugging = false;
     
 
     this._input = new osgDB.Input();
@@ -210,6 +213,12 @@ ScanViewer.prototype = {
         };
     },
     
+    setEnableLODVisualization: function(value)
+    {
+        this._enableLODDebugging = value;
+        var stateSet = this._rootNode.getOrCreateStateSet();        
+        this.setupShader(stateSet);
+    },
      
     setupLight : function(node) {
         var stateSet = node.getOrCreateStateSet();
@@ -224,24 +233,22 @@ ScanViewer.prototype = {
         var material = this._material;
         stateSet.setAttributeAndModes(material);
         
-        if (this._program === undefined)
-        {
-            var defines = [];
-            if (this._renderNormalMaps) defines.push('#define WITH_NORMAL_MAP');
-    
-            var vertexshader = this._shaderProcessor.getShader('scanviewer.vert.glsl', defines);
-            var fragmentshader = this._shaderProcessor.getShader('scanviewer.frag.glsl', defines);
-    
-            this._program = new osg.Program(
-                new osg.Shader('VERTEX_SHADER', vertexshader),
-                new osg.Shader('FRAGMENT_SHADER', fragmentshader)
-            );
-            
-            this._program.setTrackAttributes({ attributeKeys : ['Material', 'Light0'],  textureAttributeKeys : [ [ 'Texture' ], [ 'Texture' ] ]});
-            
-        }
-       
-        stateSet.setAttributeAndModes(this._program);
+        var defines = [];
+        if (this._renderNormalMaps) defines.push('#define WITH_NORMAL_MAP');
+        if (this._enableLODDebugging) defines.push('#define DEBUG_LOD');
+
+        var vertexshader = this._shaderProcessor.getShader('scanviewer.vert.glsl', defines);
+        var fragmentshader = this._shaderProcessor.getShader('scanviewer.frag.glsl', defines);
+
+        this._program = new osg.Program(
+            new osg.Shader('VERTEX_SHADER', vertexshader),
+            new osg.Shader('FRAGMENT_SHADER', fragmentshader)
+        );
+        
+        this._program.setTrackAttributes({ attributeKeys : ['Material', 'Light0'],  textureAttributeKeys : [ [ 'Texture' ], [ 'Texture' ] ]});
+        
+        
+        stateSet.setAttributeAndModes(this._program);        
     },
 
     /**
@@ -339,9 +346,7 @@ ScanViewer.prototype = {
         var direction = osg.vec3.fromValues(Math.cos(azimuth)*Math.cos(elevation), -Math.sin(azimuth)*Math.cos(elevation), Math.sin(elevation));
         osg.vec3.scale(direction, direction, distance);
         return direction;        
-    },
-
-   
+    },   
    
     run: function() {
         var that = this;

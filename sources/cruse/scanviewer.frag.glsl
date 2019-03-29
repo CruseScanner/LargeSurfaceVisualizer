@@ -5,7 +5,6 @@
 #endif
 
 #define SHADER_NAME ScanViewerFragment
-#define DEBUG_LOD 
 
 //uniform vec3 uLight0_viewDirection;
 uniform vec4 uLight0_viewPosition;
