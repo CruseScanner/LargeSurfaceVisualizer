@@ -107,6 +107,7 @@ ScanViewerWidget.prototype = {
             canvas.style.height = '100%';
             canvas.style.width = '100%';
             canvas.oncontextmenu = () => false;
+            viewDivElement.appendChild(canvas);
         }
 
         var scanViewer = new ScanViewer(canvas, diffuseTextureTileSource, normalMapTextureTileSource);

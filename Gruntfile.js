@@ -274,7 +274,7 @@ var gruntTasks = {};
             https: true,
             secure: false,
             //host: 'cim.crusescanner.de',
-            host: 'samples.crusescanner.com', // wherever the data service is running
+            host: '3dviewer-dev.crusescanner.de', // wherever the data service is running
             port: 443 // the port that the data service is running on
           }],
         dist: {
