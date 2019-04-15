@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>PagedLod</title>
+    <title>Cruse WebViewer</title>
     <link rel="stylesheet" type="text/css" href="../templates/css/base.css">
 
     <!-- Javascript -->
@@ -10,9 +10,7 @@
     <script type="text/javascript" src="../../node_modules/dat.gui/build/dat.gui.min.js"></script>
     <script type="text/javascript" src="../../node_modules/bluebird/js/browser/bluebird.min.js"></script>
     <script type="text/javascript" src="../../node_modules/hammerjs/hammer.min.js"></script>
-    <script type="text/javascript" src="../../builds/dist/OSG.js"></script>
-    <script type="text/javascript" src="main.js"></script>
-
+    <script type="text/javascript" src="../../builds/dist/OSG.js"></script>   
   </head>
 
 
@@ -20,9 +18,31 @@
   <body class="osgjs-theme-dark">
 
     <div id="ViewContainer" class="osgjs-fullpage">
-      <!-- very important change the size of the parent element instead-->
-      <canvas id="View" style="height:100%;width:100%;" oncontextmenu="return false;"></canvas>
     </div>
+    <script type="text/javascript">
+      var urlParam = function(name, w){
+          w = w || window;
+          var rx = new RegExp('[\&|\?]'+name+'=([^\&\#]+)'),
+              val = w.location.search.match(rx);
+          return !val ? '':val[1];
+      }
+
+     window.addEventListener(
+        'load',
+        function() {
+            var shadingProjectUrl = urlParam('ShadingProject');
+            var that = this;
+            $.getJSON(shadingProjectUrl,
+                function (shadingProject) 
+                { 
+                    var scanViewerWidget = new OSG.cruse.ScanViewerWidget("ViewContainer", shadingProject);
+                    scanViewerWidget.run();
+                });
+        },
+        true
+    );
+    </script>
+
 
     <div class="osgjs-info osgjs-info-dark">
 
