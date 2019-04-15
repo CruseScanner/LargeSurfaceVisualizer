@@ -4,6 +4,7 @@ import osgShader from 'osgShader/osgShader';
 import osgDB from 'osgDB/osgDB';
 import osgViewer from 'osgViewer/osgViewer';
 import defined from 'cruse/defined';
+import shaderLib from 'cruse/shaderLib';
 
 'use strict';
 
@@ -104,23 +105,9 @@ var ScanViewer = function(canvasElement, textureMapTileSource, normalMapTileSour
     // Setup directional light; note that direction property is only used for positional lights
     light.setPosition([0.0, 0.0, 1.0, 0.0]);
     this._light = light;
-    
-    
-    // HACK: uses jquery, but does not include the module
-    var shaderPromises = [];
-    var shaderNames = ['scanviewer.frag.glsl','scanviewer.vert.glsl']; 
-    shaderNames.forEach(function(shader) {
-        shaderPromises.push(P.resolve($.get(shader)));
-    });
-   
+       
     var shaderProcessor = this._shaderProcessor;
-    promises.push(P.all(shaderPromises).then(function(args) {
-        var shaderNameContent = {};
-        shaderNames.forEach(function(name, idx) {
-            shaderNameContent[name] = args[idx];
-        });
-        shaderProcessor.addShaders(shaderNameContent);
-    }));
+    shaderProcessor.addShaders(shaderLib);
     
     this._initializationPromise = Promise.all(promises).then(function() {
         initializeRootNode(that);
