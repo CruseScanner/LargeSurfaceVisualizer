@@ -109,7 +109,7 @@ var gruntTasks = {};
 
         // additional plugins for this specific mode
         plugins: webpackSources.plugins.concat(
-            new webpack.optimize.UglifyJsPlugin({ sourceMap: false })
+            new webpack.optimize.UglifyJsPlugin({ sourceMap: true })
         )
     };
 

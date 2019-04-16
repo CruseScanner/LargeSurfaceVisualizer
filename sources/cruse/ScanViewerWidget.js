@@ -106,7 +106,7 @@ ScanViewerWidget.prototype = {
             canvas = document.createElement('canvas');
             canvas.style.height = '100%';
             canvas.style.width = '100%';
-            canvas.oncontextmenu = () => false;
+            canvas.oncontextmenu = function() { return false; };
             viewDivElement.appendChild(canvas);
         }
 
