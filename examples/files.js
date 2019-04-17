@@ -3,6 +3,7 @@
 var files = {
     Examples: [
         'cruse-webviewer',
+        'cruse-gallery',
         'animation',
         'camera',
         'cubemotion',

@@ -1,0 +1,347 @@
+[
+{
+    "Name" : "Brown Leather",
+    "NormalMap" : "/var/www/3dviewer_dev_sample/data_new/jpx/BrownLeather_1400dpi_normals_flatness4_0.05_-0.10.jpx",
+    "DiffuseColor" : "/var/www/3dviewer_dev_sample/data_new/jpx/BrownLeather_1400dpi_diffuse_color_flatness4.jpx",
+    "ambient" : 0.2,
+    "diffuse" : 0.8,
+    "specular" : 0.2,
+    "phongExponent" : 10,
+    "server": "/iipsrv/iipsrv.fcgi"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/BrownLeather_1400dpi_depth_flatness4_0.05_-0.10.jpx",
+"caption": "Resolution 1400ppi <br> 8bit/Channel <br>14789 x 11496 Pixel <br> 26.83cm x 20.86cm<br>86M BrownLeather_1400dpi_depth_flatness4_0.05_-0.10.tif<br>",
+"title": "BrownLeather_1400dpi_depth_flatness4_0.05_-0.10",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "55.11811023622047244094"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/BrownLeather_1400dpi_depth_flatness5_0.02_-0.03.jpx",
+"caption": "Resolution 1400ppi <br> 8bit/Channel <br>14789 x 11496 Pixel <br> 26.83cm x 20.86cm<br>113M BrownLeather_1400dpi_depth_flatness5_0.02_-0.03.tif<br>",
+"title": "BrownLeather_1400dpi_depth_flatness5_0.02_-0.03",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "55.11811023622047244094"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/BrownLeather_1400dpi_diffuse_color_flatness4.jpx",
+"caption": "Resolution 1400ppi <br> 8bit/Channel <br>14789 x 11496 Pixel <br> 26.83cm x 20.86cm<br>303M BrownLeather_1400dpi_diffuse_color_flatness4.tif<br>",
+"title": "BrownLeather_1400dpi_diffuse_color_flatness4",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "55.11811023622047244094"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/BrownLeather_1400dpi_normals_flatness4_0.05_-0.10.jpx",
+"caption": "Resolution 1400ppi <br> 8bit/Channel <br>14789 x 11496 Pixel <br> 26.83cm x 20.86cm<br>219M BrownLeather_1400dpi_normals_flatness4_0.05_-0.10.tif<br>",
+"title": "BrownLeather_1400dpi_normals_flatness4_0.05_-0.10",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "55.11811023622047244094"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/BrownLeather_1400dpi_normals_flatness5_0.02_-0.03.jpx",
+"caption": "Resolution 1400ppi <br> 8bit/Channel <br>14789 x 11496 Pixel <br> 26.83cm x 20.86cm<br>176M BrownLeather_1400dpi_normals_flatness5_0.02_-0.03.tif<br>",
+"title": "BrownLeather_1400dpi_normals_flatness5_0.02_-0.03",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "55.11811023622047244094"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/Coffee_Factory_depth_flatness4_0.48_-0.42.jpx",
+"caption": "Resolution 1000ppi <br> 8bit/Channel <br>12307 x 8210 Pixel <br> 31.26cm x 20.85cm<br>29M Coffee_Factory_depth_flatness4_0.48_-0.42.tif<br>",
+"title": "Coffee_Factory_depth_flatness4_0.48_-0.42",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "39.37007874015748031496"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/Coffee_Factory_diffuse_color_flatness4.jpx",
+"caption": "Resolution 1000ppi <br> 8bit/Channel <br>12307 x 8210 Pixel <br> 31.26cm x 20.85cm<br>158M Coffee_Factory_diffuse_color_flatness4.tif<br>",
+"title": "Coffee_Factory_diffuse_color_flatness4",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "39.37007874015748031496"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/Coffee_Factory_normals_flatness4_0.48_-0.42.jpx",
+"caption": "Resolution 1000ppi <br> 8bit/Channel <br>12307 x 8210 Pixel <br> 31.26cm x 20.85cm<br>97M Coffee_Factory_normals_flatness4_0.48_-0.42.tif<br>",
+"title": "Coffee_Factory_normals_flatness4_0.48_-0.42",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "39.37007874015748031496"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/GoldenShinyFunier_depth_flatness3_0.3_-0.5.jpx",
+"caption": "Resolution 1000ppi <br> 8bit/Channel <br>12432 x 10510 Pixel <br> 31.58cm x 26.70cm<br>39M GoldenShinyFunier_depth_flatness3_0.3_-0.5.tif<br>",
+"title": "GoldenShinyFunier_depth_flatness3_0.3_-0.5",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "39.37007874015748031496"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/GoldenShinyFunier_depth_flatness4_0.15_-0.15.jpx",
+"caption": "Resolution 1000ppi <br> 8bit/Channel <br>12432 x 10510 Pixel <br> 31.58cm x 26.70cm<br>43M GoldenShinyFunier_depth_flatness4_0.15_-0.15.tif<br>",
+"title": "GoldenShinyFunier_depth_flatness4_0.15_-0.15",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "39.37007874015748031496"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/GoldenShinyFunier_diffuse_color_flatness3.jpx",
+"caption": "Resolution 1000ppi <br> 8bit/Channel <br>12432 x 10510 Pixel <br> 31.58cm x 26.70cm<br>215M GoldenShinyFunier_diffuse_color_flatness3.tif<br>",
+"title": "GoldenShinyFunier_diffuse_color_flatness3",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "39.37007874015748031496"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/GoldenShinyFunier_gloss_flatness3.jpx",
+"caption": "Resolution 1000ppi <br> 8bit/Channel <br>12432 x 10510 Pixel <br> 31.58cm x 26.70cm<br>105M GoldenShinyFunier_gloss_flatness3.tif<br>",
+"title": "GoldenShinyFunier_gloss_flatness3",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "39.37007874015748031496"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/GoldenShinyFunier_normals_flatness3_0.3_-0.5.jpx",
+"caption": "Resolution 1000ppi <br> 8bit/Channel <br>12432 x 10510 Pixel <br> 31.58cm x 26.70cm<br>109M GoldenShinyFunier_normals_flatness3_0.3_-0.5.tif<br>",
+"title": "GoldenShinyFunier_normals_flatness3_0.3_-0.5",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "39.37007874015748031496"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/GoldenShinyFunier_normals_flatness4_0.15_-0.15.jpx",
+"caption": "Resolution 1000ppi <br> 8bit/Channel <br>12432 x 10510 Pixel <br> 31.58cm x 26.70cm<br>109M GoldenShinyFunier_normals_flatness4_0.15_-0.15.tif<br>",
+"title": "GoldenShinyFunier_normals_flatness4_0.15_-0.15",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "39.37007874015748031496"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/GoldenTextileWallpaper_depth_flatness4_0.1_-0.1.jpx",
+"caption": "Resolution 1000ppi <br> 8bit/Channel <br>10785 x 6986 Pixel <br> 27.39cm x 17.74cm<br>36M GoldenTextileWallpaper_depth_flatness4_0.1_-0.1.tif<br>",
+"title": "GoldenTextileWallpaper_depth_flatness4_0.1_-0.1",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "39.37007874015748031496"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/GoldenTextileWallpaper_depth_flatness5_0.035_-0.05.jpx",
+"caption": "Resolution 1000ppi <br> 8bit/Channel <br>10785 x 6986 Pixel <br> 27.39cm x 17.74cm<br>47M GoldenTextileWallpaper_depth_flatness5_0.035_-0.05.tif<br>",
+"title": "GoldenTextileWallpaper_depth_flatness5_0.035_-0.05",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "39.37007874015748031496"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/GoldenTextileWallpaper_diffuse_color_flatness5.jpx",
+"caption": "Resolution 1000ppi <br> 8bit/Channel <br>10785 x 6986 Pixel <br> 27.39cm x 17.74cm<br>160M GoldenTextileWallpaper_diffuse_color_flatness5.tif<br>",
+"title": "GoldenTextileWallpaper_diffuse_color_flatness5",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "39.37007874015748031496"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/GoldenTextileWallpaper_gloss_flatness5.jpx",
+"caption": "Resolution 1000ppi <br> 8bit/Channel <br>10785 x 6986 Pixel <br> 27.39cm x 17.74cm<br>70M GoldenTextileWallpaper_gloss_flatness5.tif<br>",
+"title": "GoldenTextileWallpaper_gloss_flatness5",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "39.37007874015748031496"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/GoldenTextileWallpaper_normals_flatness4_0.1_-0.1.jpx",
+"caption": "Resolution 1000ppi <br> 8bit/Channel <br>10785 x 6986 Pixel <br> 27.39cm x 17.74cm<br>80M GoldenTextileWallpaper_normals_flatness4_0.1_-0.1.tif<br>",
+"title": "GoldenTextileWallpaper_normals_flatness4_0.1_-0.1",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "39.37007874015748031496"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/GoldenTextileWallpaper_normals_flatness5_0.035_-0.05.jpx",
+"caption": "Resolution 1000ppi <br> 8bit/Channel <br>10785 x 6986 Pixel <br> 27.39cm x 17.74cm<br>74M GoldenTextileWallpaper_normals_flatness5_0.035_-0.05.tif<br>",
+"title": "GoldenTextileWallpaper_normals_flatness5_0.035_-0.05",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "39.37007874015748031496"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/GoldHeart_depth_flatness3_1.2.jpx",
+"caption": "Resolution 600ppi <br> 8bit/Channel <br>14028 x 13771 Pixel <br> 59.39cm x 58.30cm<br>54M GoldHeart_depth_flatness3_1.2.tif<br>",
+"title": "GoldHeart_depth_flatness3_1.2",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "23.62204724409448818897"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/GoldHeart_depth_flatness4_0.2_-0.3.jpx",
+"caption": "Resolution 600ppi <br> 8bit/Channel <br>14028 x 13771 Pixel <br> 59.39cm x 58.30cm<br>71M GoldHeart_depth_flatness4_0.2_-0.3.tif<br>",
+"title": "GoldHeart_depth_flatness4_0.2_-0.3",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "23.62204724409448818897"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/GoldHeart_diffuse_color_flatness3.jpx",
+"caption": "Resolution 600ppi <br> 8bit/Channel <br>14028 x 13771 Pixel <br> 59.39cm x 58.30cm<br>340M GoldHeart_diffuse_color_flatness3.tif<br>",
+"title": "GoldHeart_diffuse_color_flatness3",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "23.62204724409448818897"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/GoldHeart_gloss_flatness3.jpx",
+"caption": "Resolution 600ppi <br> 8bit/Channel <br>14028 x 13771 Pixel <br> 59.39cm x 58.30cm<br>153M GoldHeart_gloss_flatness3.tif<br>",
+"title": "GoldHeart_gloss_flatness3",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "23.62204724409448818897"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/GoldHeart_normals_flatness3_1.2.jpx",
+"caption": "Resolution 600ppi <br> 8bit/Channel <br>14028 x 13771 Pixel <br> 59.39cm x 58.30cm<br>169M GoldHeart_normals_flatness3_1.2.tif<br>",
+"title": "GoldHeart_normals_flatness3_1.2",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "23.62204724409448818897"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/GoldHeart_normals_flatness4_0.2_-0.3.jpx",
+"caption": "Resolution 600ppi <br> 8bit/Channel <br>14028 x 13771 Pixel <br> 59.39cm x 58.30cm<br>169M GoldHeart_normals_flatness4_0.2_-0.3.tif<br>",
+"title": "GoldHeart_normals_flatness4_0.2_-0.3",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "23.62204724409448818897"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/Hong_Kong_NightMarket_Painting_depth_flatness4_0.45_-1.36.jpx",
+"caption": "Resolution 300ppi <br> 8bit/Channel <br>9463 x 14009 Pixel <br> 80.12cm x 118.61cm<br>46M Hong_Kong_NightMarket_Painting_depth_flatness4_0.45_-1.36.tif<br>",
+"title": "Hong_Kong_NightMarket_Painting_depth_flatness4_0.45_-1.36",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "11.81102362204724409448"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/Hong_Kong_NightMarket_Painting_depth_flatness5_0.30_-0.48.jpx",
+"caption": "Resolution 300ppi <br> 8bit/Channel <br>9463 x 14009 Pixel <br> 80.12cm x 118.61cm<br>60M Hong_Kong_NightMarket_Painting_depth_flatness5_0.30_-0.48.tif<br>",
+"title": "Hong_Kong_NightMarket_Painting_depth_flatness5_0.30_-0.48",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "11.81102362204724409448"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/Hong_Kong_NightMarket_Painting_diffuse_color_flatness4.jpx",
+"caption": "Resolution 300ppi <br> 8bit/Channel <br>9463 x 14009 Pixel <br> 80.12cm x 118.61cm<br>272M Hong_Kong_NightMarket_Painting_diffuse_color_flatness4.tif<br>",
+"title": "Hong_Kong_NightMarket_Painting_diffuse_color_flatness4",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "11.81102362204724409448"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/Hong_Kong_NightMarket_Painting_gloss_flatness4.jpx",
+"caption": "Resolution 300ppi <br> 8bit/Channel <br>9463 x 14009 Pixel <br> 80.12cm x 118.61cm<br>67M Hong_Kong_NightMarket_Painting_gloss_flatness4.tif<br>",
+"title": "Hong_Kong_NightMarket_Painting_gloss_flatness4",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "11.81102362204724409448"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/RoughOakPlanks_250dpi_depth_flatness4_0.42_-0.98.jpx",
+"caption": "Resolution 250ppi <br> 8bit/Channel <br>22736 x 15022 Pixel <br> 231.00cm x 152.62cm<br>92M RoughOakPlanks_250dpi_depth_flatness4_0.42_-0.98.tif<br>",
+"title": "RoughOakPlanks_250dpi_depth_flatness4_0.42_-0.98",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "9.84251968503937007874"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/RoughOakPlanks_250dpi_depth_flatness5_0.35_-0.65.jpx",
+"caption": "Resolution 250ppi <br> 8bit/Channel <br>22736 x 15022 Pixel <br> 231.00cm x 152.62cm<br>104M RoughOakPlanks_250dpi_depth_flatness5_0.35_-0.65.tif<br>",
+"title": "RoughOakPlanks_250dpi_depth_flatness5_0.35_-0.65",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "9.84251968503937007874"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/RoughOakPlanks_250dpi_depth_flatness6_0.20_-0.30.jpx",
+"caption": "Resolution 250ppi <br> 8bit/Channel <br>22736 x 15022 Pixel <br> 231.00cm x 152.62cm<br>133M RoughOakPlanks_250dpi_depth_flatness6_0.20_-0.30.tif<br>",
+"title": "RoughOakPlanks_250dpi_depth_flatness6_0.20_-0.30",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "9.84251968503937007874"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/RoughOakPlanks_250dpi_diffuse_color.jpx",
+"caption": "Resolution 250ppi <br> 8bit/Channel <br>22736 x 15022 Pixel <br> 231.00cm x 152.62cm<br>503M RoughOakPlanks_250dpi_diffuse_color.tif<br>",
+"title": "RoughOakPlanks_250dpi_diffuse_color",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "9.84251968503937007874"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/RoughOakPlanks_250dpi_gloss.jpx",
+"caption": "Resolution 250ppi <br> 8bit/Channel <br>22736 x 15022 Pixel <br> 231.00cm x 152.62cm<br>224M RoughOakPlanks_250dpi_gloss.tif<br>",
+"title": "RoughOakPlanks_250dpi_gloss",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "9.84251968503937007874"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/RoughOakPlanks_250dpi_normalmap_flatness4_0.42_-0.98.jpx",
+"caption": "Resolution 250ppi <br> 8bit/Channel <br>22736 x 15022 Pixel <br> 231.00cm x 152.62cm<br>245M RoughOakPlanks_250dpi_normalmap_flatness4_0.42_-0.98.tif<br>",
+"title": "RoughOakPlanks_250dpi_normalmap_flatness4_0.42_-0.98",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "9.84251968503937007874"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/RoughOakPlanks_250dpi_normalmap_flatness5_0.35_-0.65.jpx",
+"caption": "Resolution 250ppi <br> 8bit/Channel <br>22736 x 15022 Pixel <br> 231.00cm x 152.62cm<br>246M RoughOakPlanks_250dpi_normalmap_flatness5_0.35_-0.65.tif<br>",
+"title": "RoughOakPlanks_250dpi_normalmap_flatness5_0.35_-0.65",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "9.84251968503937007874"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/RoughOakPlanks_250dpi_normalmap_flatness6_0.20_-0.30.jpx",
+"caption": "Resolution 250ppi <br> 8bit/Channel <br>22736 x 15022 Pixel <br> 231.00cm x 152.62cm<br>241M RoughOakPlanks_250dpi_normalmap_flatness6_0.20_-0.30.tif<br>",
+"title": "RoughOakPlanks_250dpi_normalmap_flatness6_0.20_-0.30",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "9.84251968503937007874"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/RoughOakPlanks_400dpi_depth_flatness4_0.36_-0.63.jpx",
+"caption": "Resolution 400ppi <br> 8bit/Channel <br>32806 x 15047 Pixel <br> 208.32cm x 95.55cm<br>135M RoughOakPlanks_400dpi_depth_flatness4_0.36_-0.63.tif<br>",
+"title": "RoughOakPlanks_400dpi_depth_flatness4_0.36_-0.63",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "15.74803149606299212598"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/RoughOakPlanks_400dpi_depth_flatness5_0.24_-0.36.jpx",
+"caption": "Resolution 400ppi <br> 8bit/Channel <br>32806 x 15047 Pixel <br> 208.32cm x 95.55cm<br>161M RoughOakPlanks_400dpi_depth_flatness5_0.24_-0.36.tif<br>",
+"title": "RoughOakPlanks_400dpi_depth_flatness5_0.24_-0.36",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "15.74803149606299212598"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/RoughOakPlanks_400dpi_diffuse_color.jpx",
+"caption": "Resolution 400ppi <br> 8bit/Channel <br>32806 x 15047 Pixel <br> 208.32cm x 95.55cm<br>737M RoughOakPlanks_400dpi_diffuse_color.tif<br>",
+"title": "RoughOakPlanks_400dpi_diffuse_color",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "15.74803149606299212598"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/RoughOakPlanks_400dpi_gloss.jpx",
+"caption": "Resolution 400ppi <br> 8bit/Channel <br>32806 x 15047 Pixel <br> 208.32cm x 95.55cm<br>327M RoughOakPlanks_400dpi_gloss.tif<br>",
+"title": "RoughOakPlanks_400dpi_gloss",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "15.74803149606299212598"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/RoughOakPlanks_400dpi_normalmap_flatness4_0.36_-0.63.jpx",
+"caption": "Resolution 400ppi <br> 8bit/Channel <br>32806 x 15047 Pixel <br> 208.32cm x 95.55cm<br>399M RoughOakPlanks_400dpi_normalmap_flatness4_0.36_-0.63.tif<br>",
+"title": "RoughOakPlanks_400dpi_normalmap_flatness4_0.36_-0.63",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "15.74803149606299212598"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/RoughOakPlanks_400dpi_normalmap_flatness5_0.24_-0.36.jpx",
+"caption": "Resolution 400ppi <br> 8bit/Channel <br>32806 x 15047 Pixel <br> 208.32cm x 95.55cm<br>356M RoughOakPlanks_400dpi_normalmap_flatness5_0.24_-0.36.tif<br>",
+"title": "RoughOakPlanks_400dpi_normalmap_flatness5_0.24_-0.36",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "15.74803149606299212598"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/RoughOakPlanks_600dpi_depth_flatness5_0.10_-0.20.jpx",
+"caption": "Resolution 600ppi <br> 8bit/Channel <br>53573 x 35793 Pixel <br> 226.79cm x 151.52cm<br>934M RoughOakPlanks_600dpi_depth_flatness5_0.10_-0.20.tif<br>",
+"title": "RoughOakPlanks_600dpi_depth_flatness5_0.10_-0.20",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "23.62204724409448818897"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/RoughOakPlanks_600dpi_diffuse_color.jpx",
+"caption": "Resolution 600ppi <br> 8bit/Channel <br>53573 x 35793 Pixel <br> 226.79cm x 151.52cm<br>2.9G RoughOakPlanks_600dpi_diffuse_color.tif<br>",
+"title": "RoughOakPlanks_600dpi_diffuse_color",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "23.62204724409448818897"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/RoughOakPlanks_600dpi_gloss.jpx",
+"caption": "Resolution 600ppi <br> 8bit/Channel <br>53573 x 35793 Pixel <br> 226.79cm x 151.52cm<br>1.3G RoughOakPlanks_600dpi_gloss.tif<br>",
+"title": "RoughOakPlanks_600dpi_gloss",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "23.62204724409448818897"
+},
+{
+"image": "/var/www/3dviewer_dev_sample/data_new/jpx/RoughOakPlanks_600dpi_normals_flatness5_0.10_-0.20.jpx",
+"caption": "Resolution 600ppi <br> 8bit/Channel <br>53573 x 35793 Pixel <br> 226.79cm x 151.52cm<br>2.2G RoughOakPlanks_600dpi_normals_flatness5_0.10_-0.20.tif<br>",
+"title": "RoughOakPlanks_600dpi_normals_flatness5_0.10_-0.20",
+"server": "/iipsrv/iipsrv.fcgi",
+"scale": "23.62204724409448818897"
+}]

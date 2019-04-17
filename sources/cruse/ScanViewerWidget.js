@@ -9,7 +9,7 @@ import ScanViewer from 'cruse/ScanViewer';
 * @constructor
 * 
 */
-var ScanViewerWidget = function(id, shadingProject) {
+var ScanViewerWidget = function(elementOrElementId, shadingProject) {
     this.gui = undefined;       
     this._config = {
         lodScale: 0.01,
@@ -21,7 +21,16 @@ var ScanViewerWidget = function(id, shadingProject) {
         ambient : 0.1,
         LODVisualization : false
     };
-    this._elementId = id;
+
+    if (typeof elementOrElementId === 'string' || elementOrElementId instanceof String)
+    {
+        this._viewDivElement = document.getElementById(elementOrElementId);
+    }   
+    else
+    {
+        this._viewDivElement = elementOrElementId;
+    }
+        
     this._shadingProject = shadingProject;
 };
 
@@ -91,15 +100,8 @@ ScanViewerWidget.prototype = {
         this.gui.add(this._config, 'lostContext');
     },
 
-    run: function() {
-        // Get 3D canvas.
-        var url = '/iipsrv/iipsrv.fcgi';
-                
-        var diffuseTextureTileSource = new IIPImageTileSource(url, this._shadingProject.DiffuseColor);           
-        var normalMapTextureTileSource = new IIPImageTileSource(url, this._shadingProject.NormalMap);            
-        
-        var viewDivElement = document.getElementById(this._elementId);
-        var canvas = viewDivElement.getElementsByTagName('canvas')[0];
+    createCanvas: function() {
+        var canvas = this._viewDivElement.getElementsByTagName('canvas')[0];
 
         if(canvas == null)
         {
@@ -107,13 +109,65 @@ ScanViewerWidget.prototype = {
             canvas.style.height = '100%';
             canvas.style.width = '100%';
             canvas.oncontextmenu = function() { return false; };
-            viewDivElement.appendChild(canvas);
+            this._viewDivElement.appendChild(canvas);
         }
+
+        return canvas;
+    },
+
+    createInfoElement: function() {
+        var infoElement = document.getElementById('info');
+
+        if(infoElement == null)
+        {
+            infoElement = document.createElement('div');
+            infoElement.className = "cruse-scanviewer-info";
+            
+            var descriptionElement = document.createElement('div');
+            descriptionElement.className = "cruse-scanviewer-description";
+            descriptionElement.innerText = "Requests";
+            infoElement.appendChild(descriptionElement);
+
+            var progressFrame = document.createElement('div');
+            progressFrame.style.border = "1px solid #a4b6bd";
+            progressFrame.style.width = "220px";
+            progressFrame.style.height = "5px";
+            progressFrame.style.clear = "both";
+            infoElement.appendChild(progressFrame);
+
+            this._progressElement = document.createElement('div');
+            this._progressElement.id = "progress";
+            this._progressElement.style.backgroundColor= "rgb(0, 174, 239)";
+            this._progressElement.style.width = "0px";
+            this._progressElement.style.height = "5px";          
+            progressFrame.appendChild(this._progressElement);        
+
+            this._viewDivElement.appendChild(infoElement);
+        } 
+        
+        return infoElement;
+    },
+
+    setProgress: function(percent) {
+        this._progressElement.style.width = percent + "px";
+    },
+
+    run: function() {
+        // Get 3D canvas.
+        var url = '/iipsrv/iipsrv.fcgi';
+                
+        var diffuseTextureTileSource = new IIPImageTileSource(url, this._shadingProject.DiffuseColor);           
+        var normalMapTextureTileSource = new IIPImageTileSource(url, this._shadingProject.NormalMap);            
+        
+        var canvas = this.createCanvas();
+        this.createInfoElement();
 
         var scanViewer = new ScanViewer(canvas, diffuseTextureTileSource, normalMapTextureTileSource);
         
+        var that = this;
+       
         scanViewer.viewer.getDatabasePager().setProgressCallback(function(a, b) {
-            window.setProgress(a + b);
+            that.setProgress(a + b);
         });
 
         var lp = scanViewer.getLightParameters();
@@ -122,14 +176,14 @@ ScanViewerWidget.prototype = {
         this._config.specular = this._shadingProject.specular || lp.specular[0];
         this._config.phongExponent = this._shadingProject.phongExponent || lp.phongExponent;
         
-        var that = this;
+       
         this._scanviewer = scanViewer;
         this._config.lodScale = 0.1;
         this.initGui();
         //  Cheat dat gui to show at least two decimals and start at 1.0
         this._config.lodScale = 1.0;
         
-        for (var i in that.gui.__controllers) that.gui.__controllers[i].updateDisplay();
+        that.gui.__controllers.forEach(function(c) { c.updateDisplay(); });
         
         scanViewer.setLightParameters(
             [this._config.ambient, this._config.ambient, this._config.ambient, 1.0], 
@@ -141,7 +195,17 @@ ScanViewerWidget.prototype = {
         scanViewer.setDirectionalLight(this._config.elevation, this._config.azimuth);
 
         scanViewer.run();
+    },
+
+    destroy: function()
+    {
+        this._scanviewer.destroy();
+        this.gui.destroy();
+        while (this._viewDivElement.firstChild) {
+            this._viewDivElement.removeChild(this._viewDivElement.firstChild);
+        }
     }
+
 };
 
 export default ScanViewerWidget;
