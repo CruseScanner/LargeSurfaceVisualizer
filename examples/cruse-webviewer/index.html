@@ -13,7 +13,28 @@
     <script type="text/javascript" src="../../builds/dist/OSG.js"></script>   
   </head>
 
+  <style type="text/css">
 
+    .cruse-scanviewer-info {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      box-sizing: border-box;
+      padding: 20px 160px 20px 20px;
+      
+      font-family: "Roboto", sans-serif;
+      font-weight: 300;
+      line-height: 1.5;
+      color: #FFF;
+    }
+
+    .cruse-scanviewer-description 
+    {
+      font-size: 14px;      
+    }
+
+  </style>
 
   <body class="osgjs-theme-dark">
 
@@ -41,25 +62,7 @@
         },
         true
     );
-    </script>
-
-
-    <div class="osgjs-info osgjs-info-dark">
-
-      <div class="osgjs-description">
-        Cruse WebViewer
-      </div>
-      <div style="border: 1px solid #a4b6bd; width:220px; height:5px; clear:both;">
-        <div id="progress" style="height:5px; width:0px; background-color:#00aeef;"/>
-      </div>
-      <script type="text/javascript">
-        var prg_width = 250;
-        var node = document.getElementById('progress');
-        function setProgress(percent) {
-            node.style.width = percent + 'px';
-        }
-      </script>    
-    </div>
+    </script>    
 
   </body>
 

@@ -340,7 +340,12 @@ ScanViewer.prototype = {
         this._initializationPromise.then(function() {
             that.viewer.run();
         });
+    },
+
+    destroy: function() {
+        this.viewer.dispose();
     }
+
 };
 
 export default ScanViewer;
