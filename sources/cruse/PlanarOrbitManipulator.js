@@ -79,6 +79,27 @@ utils.createPrototypeObject(
                     
             };
         })(),
+
+        getCurrentPose: function(){
+            var pose = {
+                'rotation' : this._rotation,
+                'rotate' : this._rotate._current,
+                'pan' : this._pan._current,
+                'zoom' : this._zoom._current,
+                'target' : this._target,
+                'distance' : this._distance
+            };
+            return pose;
+        },
+
+        setPose : function(pose){
+            this._rotation = pose.rotation;
+            this._rotate.setTarget(pose.rotate[0], pose.rotate[1]);
+            this._pan.setTarget(pose.pan[0], pose.pan[1]);
+            this._zoom.setTarget(pose.zoom[0]);
+            this._target = pose.target;
+            this._distance = pose.distance;                        
+        }
     }),
     'cruse',
     'PlanarOrbitManipulator'

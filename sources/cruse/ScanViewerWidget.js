@@ -9,7 +9,7 @@ import ScanViewer from 'cruse/ScanViewer';
 * @constructor
 * 
 */
-var ScanViewerWidget = function(elementOrElementId, shadingProject) {
+var ScanViewerWidget = function(elementOrElementId) {
     this.gui = undefined;       
     this._config = {
         lodScale: 0.01,
@@ -30,12 +30,11 @@ var ScanViewerWidget = function(elementOrElementId, shadingProject) {
     {
         this._viewDivElement = elementOrElementId;
     }
-        
-    this._shadingProject = shadingProject;
 };
 
 ScanViewerWidget.prototype = {
     initGui: function() {
+     
         this.gui = new window.dat.GUI();
         var scanviewer = this._scanviewer;
         // config to let dat.gui change the scale
@@ -116,13 +115,14 @@ ScanViewerWidget.prototype = {
     },
 
     createInfoElement: function() {
-        var infoElement = document.getElementById('info');
+        var infoElement = document.getElementById('cruse-scanviewerwidget-info-id');
 
         if(infoElement == null)
         {
             infoElement = document.createElement('div');
             infoElement.className = "cruse-scanviewer-info";
-            
+            infoElement.id = "cruse-scanviewerwidget-info-id";
+
             var descriptionElement = document.createElement('div');
             descriptionElement.className = "cruse-scanviewer-description";
             descriptionElement.innerText = "Requests";
@@ -152,15 +152,22 @@ ScanViewerWidget.prototype = {
         this._progressElement.style.width = percent + "px";
     },
 
-    run: function() {
+    run: function(shadingProject) {
         // Get 3D canvas.
         var url = '/iipsrv/iipsrv.fcgi';
-                
+
+        this._shadingProject = shadingProject;
+
         var diffuseTextureTileSource = new IIPImageTileSource(url, this._shadingProject.DiffuseColor);           
         var normalMapTextureTileSource = new IIPImageTileSource(url, this._shadingProject.NormalMap);            
         
         var canvas = this.createCanvas();
         this.createInfoElement();
+
+        if(this._scanViewer != undefined)
+        {
+            this.stop();
+        }
 
         var scanViewer = new ScanViewer(canvas, diffuseTextureTileSource, normalMapTextureTileSource);
         
@@ -194,18 +201,36 @@ ScanViewerWidget.prototype = {
 
         scanViewer.setDirectionalLight(this._config.elevation, this._config.azimuth);
 
-        scanViewer.run();
+        return scanViewer.run();
+    },
+
+    stop: function()
+    {
+        if(this._scanviewer == undefined)
+        {
+            return;
+        }
+
+        this._scanviewer.destroy();
+        this._scanviewer = undefined;
+        this.gui.destroy();        
     },
 
     destroy: function()
     {
-        this._scanviewer.destroy();
-        this.gui.destroy();
+        this.stop();
         while (this._viewDivElement.firstChild) {
             this._viewDivElement.removeChild(this._viewDivElement.firstChild);
         }
-    }
+    },
 
+    getCurrentViewPose: function(){        
+        return this._scanviewer.getCurrentViewPose();
+    },
+
+    setViewPose : function(pose){
+        this._scanviewer.setViewPose(pose);
+    }
 };
 
 export default ScanViewerWidget;

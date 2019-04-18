@@ -110,9 +110,7 @@ var ScanViewer = function(canvasElement, textureMapTileSource, normalMapTileSour
     shaderProcessor.addShaders(shaderLib);
     
     this._initializationPromise = Promise.all(promises).then(function() {
-        initializeRootNode(that);
-    });
-      
+        return initializeRootNode(that);});
 };  
 
 ScanViewer.prototype = {        
@@ -337,12 +335,21 @@ ScanViewer.prototype = {
    
     run: function() {
         var that = this;
-        this._initializationPromise.then(function() {
+        return this._initializationPromise.then(function() {
             that.viewer.run();
         });
     },
+    
+    getCurrentViewPose: function(){        
+        return this.viewer.getManipulator().getCurrentPose();
+    },
+
+    setViewPose : function(pose){   
+        this.viewer.getManipulator().setPose(pose);
+    },
 
     destroy: function() {
+        this.viewer.setDone(true);
         this.viewer.dispose();
     }
 
