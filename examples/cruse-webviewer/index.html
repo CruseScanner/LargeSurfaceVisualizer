@@ -56,8 +56,8 @@
             $.getJSON(shadingProjectUrl,
                 function (shadingProject) 
                 { 
-                    var scanViewerWidget = new OSG.cruse.ScanViewerWidget("ViewContainer", shadingProject);
-                    scanViewerWidget.run();
+                    var scanViewerWidget = new OSG.cruse.ScanViewerWidget("ViewContainer");
+                    scanViewerWidget.run(shadingProject);
                 });
         },
         true

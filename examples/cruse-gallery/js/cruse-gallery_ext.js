@@ -72,10 +72,13 @@ var Gallery = new Class({
     var _this = this;
 
     // Create the iipmooviewer container
-    this.viewer = new Element( 'div',{
+     this.viewer2dElement = new Element( 'div',{
+       'class': 'viewer'
+     }).inject(this.container);
+
+    this.viewer3dElement = new Element( 'div',{
       'class': 'viewer'
     }).inject(this.container);
-
 
     // Create the main thumbnail container
     var thumbnail_container = new Element('div', {
@@ -117,7 +120,7 @@ var Gallery = new Class({
 	    // Record the current location
       if(_this.is3DImage(currentImage))
       {
-        
+          currentImage.view = _this.scanViewerWidget.getCurrentViewPose();
       }
       else
       {
@@ -130,7 +133,7 @@ var Gallery = new Class({
 
 	    // Save the current index and update our viewer
 	    _this.current_image = index;
-	    _this.createViewer( _this.images[index] );
+	    _this.updateViewer( _this.images[index] );
 	    clicked.addClass('selected');
 	  }
 	}
@@ -139,7 +142,7 @@ var Gallery = new Class({
 
 
     // Create our thumbnails and viewer object
-    this.createViewer(this.images[0]);
+    this.updateViewer(this.images[0]);
     this.createThumbnails();
 
   },
@@ -182,54 +185,70 @@ var Gallery = new Class({
 
   },
 
-  deleteViewer: function(){
-    this.iipmooviewer = undefined;
-    
-    if(this.scanViewerWidget != undefined)
-    {
-       this.scanViewerWidget.destroy();      
-       this.scanViewerWidget = undefined;    
-    }
-    
-    while (this.viewer.firstChild) {
-      this.viewer.removeChild(this.viewer.firstChild);
-    }
-  },
-
   is3DImage: function(image){
     return 'NormalMap' in image;
   },
 
   /* Create our viewer object and load an image
    */
-  createViewer: function(image){
-    this.deleteViewer();
-
+  updateViewer: function(image){
+    
     if(this.is3DImage(image))
     {
-      this.create3DViewer(image)
+      this.update3DViewer(image)
     }
     else
     {
-      this.create2DViewer(image)
+      this.update2DViewer(image)
     }
   },
 
-  create2DViewer: function(image){
-    this.iipmooviewer = new IIPMooViewer( this.viewer, {
-      server: image.server || null,
-      prefix: 'images/',
-      render: 'spiral',
-      image: image.image,
-      credit: image.caption,
-      scale: image.scale || null,
-      viewport: image.view || null,
-      navigation: {buttons: ['zoomIn','zoomOut','reset','rotateLeft','rotateRight']}
-    });
+  update2DViewer: function(image){
+
+    this.viewer3dElement.style.display = "none";
+    this.viewer2dElement.style.display = "block";
+    
+    if(this.scanViewerWidget != undefined)
+    {
+       this.scanViewerWidget.stop();
+    }
+
+    if(this.iipmooviewer == undefined)
+    {
+      this.iipmooviewer = new IIPMooViewer( this.viewer2dElement, {
+        server: image.server || null,
+        prefix: 'images/',
+        render: 'spiral',
+        image: image.image,
+        credit: image.caption,
+        scale: image.scale || null,
+        viewport: image.view || null,
+        navigation: {buttons: ['zoomIn','zoomOut','reset','rotateLeft','rotateRight']}
+      });
+    }
+    else{
+      this.iipmooviewer.server = image.server || null;
+      this.iipmooviewer.setCredit( '<a href="' + image.caption + '" type="application/octet-stream" style="color:#fff"><img src="../cruseviewer/images/download.png" /></a>');
+      this.iipmooviewer.viewport = image.view || null;
+      this.iipmooviewer.changeImage( image.image );  
+    }
   },
 
-  create3DViewer: function(image){
-    this.scanViewerWidget = new OSG.cruse.ScanViewerWidget( this.viewer, image);
-    this.scanViewerWidget.run();
+  update3DViewer: function(image){
+    this.viewer2dElement.style.display = "none";
+    this.viewer3dElement.style.display = "block";
+
+    if(this.scanViewerWidget == undefined)
+    {
+      this.scanViewerWidget = new OSG.cruse.ScanViewerWidget( this.viewer3dElement);
+    }
+
+    var that = this;
+    this.scanViewerWidget.run(image).then(function(){
+      if(image.view != undefined)
+      {
+        that.scanViewerWidget.setViewPose(image.view);
+      }  
+    });
   },
 });
