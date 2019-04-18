@@ -155,7 +155,7 @@ ScanViewerWidget.prototype = {
 
     run: function(shadingProject) {
         // Get 3D canvas.
-        var url = '/iipsrv/iipsrv.fcgi';
+        var url = shadingProject.server || '/iipsrv/iipsrv.fcgi';
 
         this._shadingProject = shadingProject;
 
