@@ -10,6 +10,16 @@
     "server": "/iipsrv/iipsrv.fcgi"
 },
 {
+    "Name" : "Coffee",
+    "NormalMap" : "/var/www/3dviewer_dev_sample/data_new/jpx/Coffee_Factory_normals_flatness4_0.48_-0.42.jpx",
+    "DiffuseColor" : "/var/www/3dviewer_dev_sample/data_new/jpx/Coffee_Factory_diffuse_color_flatness4.jpx",
+    "ambient" : 0.2,
+    "diffuse" : 0.8,
+    "specular" : 0.2,
+    "phongExponent" : 10,
+    "server": "/iipsrv/iipsrv.fcgi"
+},
+{
 "image": "/var/www/3dviewer_dev_sample/data_new/jpx/BrownLeather_1400dpi_depth_flatness4_0.05_-0.10.jpx",
 "caption": "Resolution 1400ppi <br> 8bit/Channel <br>14789 x 11496 Pixel <br> 26.83cm x 20.86cm<br>86M BrownLeather_1400dpi_depth_flatness4_0.05_-0.10.tif<br>",
 "title": "BrownLeather_1400dpi_depth_flatness4_0.05_-0.10",
