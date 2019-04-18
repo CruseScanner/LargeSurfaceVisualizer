@@ -36,6 +36,7 @@ ScanViewerWidget.prototype = {
     initGui: function() {
      
         this.gui = new window.dat.GUI();
+        this.gui.closed = true;
         var scanviewer = this._scanviewer;
         // config to let dat.gui change the scale
         var lodScaleController = this.gui.add(this._config, 'lodScale', 0.01, 3.0);
