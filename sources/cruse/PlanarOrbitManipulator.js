@@ -1,13 +1,17 @@
-import utils from 'osg/utils';
-import { vec3 } from 'osg/glMatrix';
-import { mat4 } from 'osg/glMatrix';
-import OrbitManipulator from 'osgGA/OrbitManipulator';
-import OrbitManipulatorDeviceOrientationController from 'osgGA/OrbitManipulatorDeviceOrientationController';
-import OrbitManipulatorGamePadController from 'osgGA/OrbitManipulatorGamePadController';
-import OrbitManipulatorHammerController from 'osgGA/OrbitManipulatorHammerController';
-import OrbitManipulatorStandardMouseKeyboardController from 'osgGA/OrbitManipulatorStandardMouseKeyboardController';
-import OrbitManipulatorWebVRController from 'osgGA/OrbitManipulatorWebVRController';
-import BoundingBox from 'osg/BoundingBox';
+import OSG from 'cruse/osg';
+
+var utils = OSG.utils;
+var vec3 = OSG.osg.glMatrix.vec3;
+var mat4 = OSG.osg.glMatrix.mat4;
+
+var vec3 = OSG.osg.glMatrix.vec3;
+var OrbitManipulator = OSG.osgGA.OrbitManipulator;
+var OrbitManipulatorDeviceOrientationController = OSG.osgGA.OrbitManipulatorDeviceOrientationController;
+var OrbitManipulatorGamePadController = OSG.osgGA.OrbitManipulatorGamePadController;
+var OrbitManipulatorHammerController = OSG.osgGA.OrbitManipulatorHammerController;
+var OrbitManipulatorStandardMouseKeyboardController = OSG.osgGA.OrbitManipulatorStandardMouseKeyboardController;
+var OrbitManipulatorWebVRController = OSG.osgGA.OrbitManipulatorWebVRController;
+var BoundingBox = OSG.osg.BoundingBox;
 
 /**
  *  PlanarOrbitManipulator

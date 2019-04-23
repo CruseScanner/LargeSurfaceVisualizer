@@ -1,6 +1,9 @@
-import osg from 'osg/osg';
+
+import OSG from 'cruse/osg';
 import IIPImageTileSource from 'cruse/IIPImageTileSource';
 import ScanViewer from 'cruse/ScanViewer';
+
+var osg = OSG.osg;
 
 'use strict';
 
