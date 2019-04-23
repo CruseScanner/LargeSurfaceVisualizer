@@ -1,10 +1,9 @@
 import OSG from 'cruse/osg';
+import utils from 'tools/utils';
 
-var utils = OSG.utils;
-var vec3 = OSG.osg.glMatrix.vec3;
-var mat4 = OSG.osg.glMatrix.mat4;
+var vec3 = OSG.osg.vec3;
+var mat4 = OSG.osg.mat4;
 
-var vec3 = OSG.osg.glMatrix.vec3;
 var OrbitManipulator = OSG.osgGA.OrbitManipulator;
 var OrbitManipulatorDeviceOrientationController = OSG.osgGA.OrbitManipulatorDeviceOrientationController;
 var OrbitManipulatorGamePadController = OSG.osgGA.OrbitManipulatorGamePadController;

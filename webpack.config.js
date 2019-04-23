@@ -23,15 +23,7 @@ var externals = [
             commonjs: 'zlib',
             amd: 'zlib'
         }
-    },
-    {
-        bluebird: {
-            root: 'P',
-            commonjs2: 'bluebird',
-            commonjs: 'bluebird',
-            amd: 'bluebird'
-        }
-    },
+    },    
     {
         hammer: {
             root: 'Hammer',
@@ -62,7 +54,9 @@ var mainlibConfig = {
     entry: './sources/cruse.js',
     output: {
         path: BUILD_PATH,
-        filename: '[name].js',
+        filename: 'cruse.js',
+        libraryTarget: 'umd',
+        library: 'cruse'
     },
     externals: externals,
     resolve: resolve,
