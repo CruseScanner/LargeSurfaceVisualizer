@@ -2,10 +2,7 @@
 // eslint-disable-next-line
 var files = {
     Examples: [
-        'cruse-webviewer',
+        'ScanViewerWidget',
         'cruse-gallery'        
-    ],
-
-    Tutorials: [        
-    ]
+    ],   
 };
