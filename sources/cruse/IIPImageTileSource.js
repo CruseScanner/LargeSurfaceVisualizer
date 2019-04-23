@@ -1,7 +1,7 @@
 import OSG from 'cruse/osg';
+import notify from 'tools/notify';
 
-var fileHelper = OSG.fileHelper;
-var notify = OSG.notify;
+var fileHelper = OSG.osgDB.fileHelper;
 
 function initialize(tileSource, jsonData) {
     tileSource._imageWidth = jsonData.width;

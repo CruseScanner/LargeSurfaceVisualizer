@@ -2,9 +2,9 @@ import OSG from 'cruse/osg';
 
 var osg = OSG.osg;
 import PlanarOrbitManipulator from 'cruse/PlanarOrbitManipulator';
-var osgShader = OSG.osgShader.osgShader;
-var osgDB = OSG.osgDB.osgDB;
-var osgViewer = OSG.osgViewer.osgViewer;
+var osgShader = OSG.osgShader;
+var osgDB = OSG.osgDB;
+var osgViewer = OSG.osgViewer;
 import defined from 'cruse/defined';
 import shaderLib from 'cruse/shaderLib';
 
