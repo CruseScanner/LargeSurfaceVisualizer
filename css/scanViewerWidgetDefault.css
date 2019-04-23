@@ -1,0 +1,21 @@
+  
+  @import "https://fonts.googleapis.com/css?family=Exo+2:700|Roboto:100,300,400,500,700,900";
+  
+  .cruse-scanviewer-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    box-sizing: border-box;
+    padding: 20px 160px 20px 20px;
+    
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
+    line-height: 1.5;
+    color: #FFF;
+  }
+
+  .cruse-scanviewer-description 
+  {
+    font-size: 14px;      
+  }

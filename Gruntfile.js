@@ -397,7 +397,16 @@ var gruntTasks = {};
                     }
                 }
             ]
-        }
+        },
+        css: {    
+            files: [
+                {
+                    expand: true,
+                    src: ['css/**'],
+                    dest: DIST_PATH
+                }
+            ]            
+        }    
     };
 })();
 
@@ -447,8 +456,8 @@ module.exports = function(grunt) {
     grunt.registerTask('test', ['execute:test']);
     grunt.registerTask('benchmarks', ['execute:bench']);
 
-    grunt.registerTask('build', ['webpack:sources', 'webpack:tests']);
-    grunt.registerTask('build-release', ['webpack:release', 'copy:bundles']);
+    grunt.registerTask('build', ['webpack:sources', 'webpack:tests', 'copy:css']);
+    grunt.registerTask('build-release', ['webpack:release', 'copy:bundles', 'copy:css']);
 
     grunt.registerTask('docs', ['plato', 'documentation:default']);
     grunt.registerTask('default', ['check', 'build']);
