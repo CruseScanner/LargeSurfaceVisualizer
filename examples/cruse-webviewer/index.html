@@ -30,6 +30,12 @@
         'load',
         function() {
             var shadingProjectUrl = urlParam('ShadingProject');
+
+            if(shadingProjectUrl == "")
+            {
+              shadingProjectUrl = "GoldHeart.json";
+            }
+
             var that = this;
             $.getJSON(shadingProjectUrl,
                 function (shadingProject) 
