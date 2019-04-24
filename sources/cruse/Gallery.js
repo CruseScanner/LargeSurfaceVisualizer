@@ -1,5 +1,6 @@
-/* Gallery Widget for IIPMooViewer
+/* Cruse Gallery Widget 
 
+   Based on Gallery Widget for IIPMooViewer 
    Copyright (c) 2016 Ruven Pillay <ruven@users.sourceforge.net>
    IIPImage: http://iipimage.sourceforge.net
 
@@ -16,16 +17,15 @@
    --------------------------------------------------------------------
 */
 
+import ScanViewerWidget from 'cruse/ScanViewerWidget';
 
 'use strict';
 
 
-var Gallery = new Class({
-
-
   /* Constructor
    */
-  initialize: function( id, options ){
+
+var Gallery = function( id, options ){
 
     this.container = id || alert('No element ID given to Gallery constructor');
     this.current_image = 0;
@@ -60,9 +60,9 @@ var Gallery = new Class({
     }
     else alert( "No recognizable list of images or URL provided" );
 
-  },
+  };
 
-
+Gallery.prototype = {
   /* Create our gallery widget
    */
   create: function( container ){
@@ -240,7 +240,7 @@ var Gallery = new Class({
 
     if(this.scanViewerWidget == undefined)
     {
-      this.scanViewerWidget = new OSG.cruse.ScanViewerWidget( this.viewer3dElement);
+      this.scanViewerWidget = new ScanViewerWidget( this.viewer3dElement);
     }
 
     var that = this;
@@ -251,4 +251,6 @@ var Gallery = new Class({
       }  
     });
   },
-});
+};
+
+export default Gallery;

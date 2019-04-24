@@ -14,6 +14,7 @@
 
   <link rel="stylesheet" type="text/css" media="all" href="css/cruse-viewer.css" />
   <link rel="stylesheet" type="text/css" media="all" href="css/cruse-gallery.css" />
+  <link rel="stylesheet" type="text/css" media="all" href="../../builds/dist/css/scanViewerWidgetDefault.css" />
   
 
 <!--[if lt IE 10]>
@@ -27,17 +28,15 @@
   
    
 
- <title>Cruse Image Manage Viewer</title>
+ <title>Cruse Image Manage Viewer Gallery</title>
 
   <script type="text/javascript" src="js/mootools-core-1.6.0-compressed.js"></script>
   <script type="text/javascript" src="js/cruse-viewer-min.js"></script>  
-  <script type="text/javascript" src="js/cruse-gallery_ext.js"></script>
   <script type="text/javascript" src="js/jquery.min.js"></script>    
   <script type="text/javascript" src="js/dat.gui.min.js"></script>
   <script type="text/javascript" src="js/bluebird.min.js"></script> 
   <script type="text/javascript" src="js/hammer.min.js"></script>
-  <script type="text/javascript" src="../../builds/dist/OSG.js"></script>
-  <!-- <script type="text/javascript" src="js/OSG.min.js"></script>    -->
+  <script type="text/javascript" src="../../builds/dist/cruse.js"></script>
 
 <!--[if lt IE 7]>
   <script src="http://ie7-js.googlecode.com/svn/version/2.1(beta4)/IE7.js">IE7_PNG_SUFFIX = ".png";</script>
@@ -46,7 +45,7 @@
 
   <script type="text/javascript">
 
-        var gallery = new Gallery( "gallery", {
+        var gallery = new cruse.Gallery( "gallery", {
 	images: "./files.json"
     });
 
@@ -59,26 +58,7 @@
       height: 100%;
       padding: 0;
       margin: 0;
-    }
-
-    .cruse-scanviewer-info {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      box-sizing: border-box;
-      padding: 20px 160px 20px 20px;
-      
-      font-family: "Roboto", sans-serif;
-      font-weight: 300;
-      line-height: 1.5;
-      color: #FFF;
-    }
-
-    .cruse-scanviewer-description 
-    {
-      font-size: 14px;      
-    }
+    }   
 
   </style>
 
