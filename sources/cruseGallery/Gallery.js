@@ -17,7 +17,8 @@
    --------------------------------------------------------------------
 */
 
-import ScanViewerWidget from 'cruse/ScanViewerWidget';
+import ScanViewerWidget from 'cruse3DViewer/ScanViewerWidget';
+import IIPMooViewer from 'cruse2DViewer/cruse-viewer.js';
 
 'use strict';
 

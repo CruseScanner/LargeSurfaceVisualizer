@@ -26,6 +26,7 @@
     "grunt": ">=0.4.0"
   },
   "dependencies": {
+    "@trigrou/zip-js": "1.0.0",
     "bluebird": "^3.0.5",
     "d3": "^4.9.1",
     "dagre": "^0.7.4",
@@ -49,12 +50,11 @@
     "webpack": "^3.7.1",
     "webpack-dev-server": "^2.9.2",
     "webpack-strip-block": "^0.2.0",
-    "zlibjs": "^0.3.1",
-    "@trigrou/zip-js": "1.0.0"
+    "zlibjs": "^0.3.1"
   },
   "version": "0.1.0",
   "author": "Cruse Spezialmaschienen GmbH",
   "license": "UNLICENSED",
-  "description": "Cruse Web Scanviewer", 
+  "description": "Cruse Web Scanviewer",
   "name": "CruseWebViewer"
 }

@@ -1,8 +1,8 @@
-import IIPImageTileSource from 'cruse/IIPImageTileSource';
-import ScanViewer from 'cruse/ScanViewer';
-import PlanarOrbitManipulator from 'cruse/PlanarOrbitManipulator';
-import ScanViewerWidget from 'cruse/ScanViewerWidget';
-import Gallery from 'cruse/Gallery';
+import IIPImageTileSource from 'cruse3DViewer/IIPImageTileSource';
+import ScanViewer from 'cruse3DViewer/ScanViewer';
+import PlanarOrbitManipulator from 'cruse3DViewer/PlanarOrbitManipulator';
+import ScanViewerWidget from 'cruse3DViewer/ScanViewerWidget';
+//import Gallery from 'cruseGallery/Gallery';
 import cruseNameSpace from 'cruseNameSpace';
 
 var cruse = cruseNameSpace;
@@ -10,7 +10,7 @@ cruse.IIPImageTileSource = IIPImageTileSource;
 cruse.PlanarOrbitManipulator = PlanarOrbitManipulator; 
 cruse.ScanViewer = ScanViewer;
 cruse.ScanViewerWidget = ScanViewerWidget;
-cruse.Gallery = Gallery;
+//cruse.Gallery = Gallery;
 
 // for backward compatibility
 cruse.globalify = function() {
@@ -21,8 +21,7 @@ export {
     IIPImageTileSource,
     ScanViewer,
     PlanarOrbitManipulator,
-    ScanViewerWidget,
-    Gallery    
+    ScanViewerWidget,    
 };
 
 export default cruse;
