@@ -1,4 +1,4 @@
-import OSG from 'cruse/osg';
+import OSG from 'external/osg';
 import utils from 'tools/utils';
 
 var vec3 = OSG.osg.vec3;

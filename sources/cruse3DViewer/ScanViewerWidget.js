@@ -1,7 +1,7 @@
 
-import OSG from 'cruse/osg';
-import IIPImageTileSource from 'cruse/IIPImageTileSource';
-import ScanViewer from 'cruse/ScanViewer';
+import OSG from 'external/osg';
+import IIPImageTileSource from 'cruse3DViewer/IIPImageTileSource';
+import ScanViewer from 'cruse3DViewer/ScanViewer';
 
 var osg = OSG.osg;
 

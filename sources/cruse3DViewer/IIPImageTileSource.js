@@ -1,4 +1,4 @@
-import OSG from 'cruse/osg';
+import OSG from 'external/osg';
 import notify from 'tools/notify';
 
 var fileHelper = OSG.osgDB.fileHelper;

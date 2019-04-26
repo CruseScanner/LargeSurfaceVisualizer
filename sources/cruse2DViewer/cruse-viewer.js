@@ -1636,3 +1636,6 @@ Element.NativeEvents.hashchange = 1;
 /* Setup our list of protocol objects
  */
 if(typeof Protocols === 'undefined') var Protocols = {};
+
+
+export default IIPMooViewer;
