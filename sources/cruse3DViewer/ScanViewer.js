@@ -57,7 +57,13 @@ function initializeRootNode(scanViewer) {
  * @constructor
  * 
  */
-var ScanViewer = function(canvasElement, textureMapTileSource, normalMapTileSource) {
+var ScanViewer = function(canvasElement, options) {
+      
+    var textureMapTileSource = options.textureMapTileSource;
+    var normalMapTileSource = options.normalMapTileSource;
+    var glossMapTileSource = options.glossMapTileSource;
+    
+    
     this._renderTextureMaps = false;
     this._renderNormalMaps = false;
     this._enableLODDebugging = false;
@@ -83,13 +89,20 @@ var ScanViewer = function(canvasElement, textureMapTileSource, normalMapTileSour
             that._renderTextureMaps = true;
         }));
     }
+
     if (defined(normalMapTileSource)) {
         this._normalMapTileSource = normalMapTileSource;
         promises.push(normalMapTileSource.initializationPromise.then(function(){
             that._renderNormalMaps = true;
         }));
     }
-
+    
+    if (defined(glossMapTileSource)) {
+        this._glossMapTileSource = glossMapTileSource;
+        promises.push(glossMapTileSource.initializationPromise.then(function(){
+            that._renderGlossMaps = true;
+        }));
+    }
     
     var material = new osg.Material();
     material.setDiffuse ([1.0, 1.0, 1.0, 1.0]);           
@@ -115,8 +128,12 @@ var ScanViewer = function(canvasElement, textureMapTileSource, normalMapTileSour
         return initializeRootNode(that);});
 };  
 
-ScanViewer.prototype = {        
-    fetchAndApplyTileImagery: function(x, y, level, stateSet, textureIndex, tileSource) {       
+ScanViewer.prototype = {
+    /**
+     * Will fetch an image from the given tile source and and apply it to the
+     * given stateset as texture.
+     */
+    fetchAndApplyTileImagery: function(x, y, level, stateSet, textureIndex, tileSource) {        
         var image = new osg.Image();
         var options = {
                 imageCrossOrigin : true            
@@ -143,6 +160,12 @@ ScanViewer.prototype = {
         {
             promises.push(this.fetchAndApplyTileImagery(x, y, level, stateSet, 1, this._normalMapTileSource));
         }
+        
+        if (this._renderGlossMaps)
+        {
+            promises.push(this.fetchAndApplyTileImagery(x, y, level, stateSet, 2, this._glossMapTileSource));
+        }
+        
         return Promise.all(promises);
     },
     
@@ -222,7 +245,8 @@ ScanViewer.prototype = {
         
         var defines = [];
         if (this._renderNormalMaps) defines.push('#define WITH_NORMAL_MAP');
-        if (this._enableLODDebugging) defines.push('#define DEBUG_LOD');
+        if (this._renderGlossMaps) defines.push('#define WITH_GLOSS_MAP');
+        if (this._enableLODDebugging) defines.push('#define WITH_DEBUG_LOD');
 
         var vertexshader = this._shaderProcessor.getShader('scanviewer.vert.glsl', defines);
         var fragmentshader = this._shaderProcessor.getShader('scanviewer.frag.glsl', defines);
@@ -232,7 +256,7 @@ ScanViewer.prototype = {
             new osg.Shader('FRAGMENT_SHADER', fragmentshader)
         );
         
-        this._program.setTrackAttributes({ attributeKeys : ['Material', 'Light0'],  textureAttributeKeys : [ [ 'Texture' ], [ 'Texture' ] ]});
+        this._program.setTrackAttributes({ attributeKeys : ['Material', 'Light0'],  textureAttributeKeys : [ [ 'Texture' ], [ 'Texture' ], ['Texture'] ]});
         
         
         stateSet.setAttributeAndModes(this._program);        
@@ -328,8 +352,7 @@ ScanViewer.prototype = {
         };
     },
     
-    transformSphericalToWorld: function(elevation, azimuth, distance)
-    {
+    transformSphericalToWorld: function(elevation, azimuth, distance) {
         var direction = osg.vec3.fromValues(Math.cos(azimuth)*Math.cos(elevation), -Math.sin(azimuth)*Math.cos(elevation), Math.sin(elevation));
         osg.vec3.scale(direction, direction, distance);
         return direction;        
