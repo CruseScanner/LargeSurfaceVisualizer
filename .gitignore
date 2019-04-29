@@ -27,3 +27,5 @@ builds/dist/OSG.js
 builds/dist/OSG.js.map
 sources/version.js
 examples/media/*
+crusetools/CreateNormalMap/x64/
+crusetools/CreateNormalMap/.vs/

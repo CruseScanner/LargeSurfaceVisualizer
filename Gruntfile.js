@@ -109,7 +109,7 @@ var gruntTasks = {};
 
         // additional plugins for this specific mode
         plugins: webpackSources.plugins.concat(
-            new webpack.optimize.UglifyJsPlugin({ sourceMap: false })
+            new webpack.optimize.UglifyJsPlugin({ sourceMap: true })
         )
     };
 
@@ -269,6 +269,14 @@ var gruntTasks = {};
                 hostname: 'localhost'
             }
         },
+        proxies: [{
+            context: '/iipsrv', // the context of the data service
+            https: true,
+            secure: false,
+            //host: 'cim.crusescanner.de',
+            host: '3dviewer-dev.crusescanner.de', // wherever the data service is running
+            port: 443 // the port that the data service is running on
+          }],
         dist: {
             options: {
                 port: 9000,
@@ -277,6 +285,8 @@ var gruntTasks = {};
                 open: true,
                 middleware: function(connect, options, middlewares) {
                     // inject a custom middleware into the array of default middlewares
+                    middlewares.push(require('grunt-connect-proxy2/lib/utils').proxyRequest);
+                    
                     middlewares.unshift(function(req, res, next) {
                         var ext = path.extname(req.url);
                         if (ext === '.gz') {
@@ -387,7 +397,16 @@ var gruntTasks = {};
                     }
                 }
             ]
-        }
+        },
+        css: {    
+            files: [
+                {
+                    expand: true,
+                    src: ['css/**'],
+                    dest: DIST_PATH
+                }
+            ]            
+        }    
     };
 })();
 
@@ -402,6 +421,8 @@ module.exports = function(grunt) {
             gruntTasks
         )
     );
+
+    grunt.loadNpmTasks('grunt-connect-proxy2');
 
     grunt.loadNpmTasks('grunt-documentation');
 
@@ -435,10 +456,10 @@ module.exports = function(grunt) {
     grunt.registerTask('test', ['execute:test']);
     grunt.registerTask('benchmarks', ['execute:bench']);
 
-    grunt.registerTask('build', ['webpack:sources', 'webpack:tests']);
-    grunt.registerTask('build-release', ['webpack:release', 'copy:bundles']);
+    grunt.registerTask('build', ['webpack:sources', 'webpack:tests', 'copy:css']);
+    grunt.registerTask('build-release', ['webpack:release', 'copy:bundles', 'copy:css']);
 
     grunt.registerTask('docs', ['plato', 'documentation:default']);
     grunt.registerTask('default', ['check', 'build']);
-    grunt.registerTask('serve', ['sync', 'build', 'connect:dist:keepalive']);
+    grunt.registerTask('serve', ['sync', 'build', 'configureProxies:server', 'connect:dist:keepalive']);
 };

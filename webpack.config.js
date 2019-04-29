@@ -23,15 +23,7 @@ var externals = [
             commonjs: 'zlib',
             amd: 'zlib'
         }
-    },
-    {
-        bluebird: {
-            root: 'P',
-            commonjs2: 'bluebird',
-            commonjs: 'bluebird',
-            amd: 'bluebird'
-        }
-    },
+    },    
     {
         hammer: {
             root: 'Hammer',
@@ -59,14 +51,12 @@ var externals = [
 ];
 
 var mainlibConfig = {
-    entry: {
-        OSG: ['./sources/OSG.js']
-    },
+    entry: './sources/cruse.js',
     output: {
         path: BUILD_PATH,
-        filename: '[name].js',
+        filename: 'cruse.js',
         libraryTarget: 'umd',
-        library: 'OSG'
+        library: 'cruse'
     },
     externals: externals,
     resolve: resolve,
@@ -81,21 +71,18 @@ var mainlibConfig = {
     devtool: 'eval',
     plugins: [
         new webpack.BannerPlugin(
-            ['OSGJS', 'Cedric Pinson <trigrou@trigrou.com> (http://cedricpinson.com)'].join('\n')
+            ['Cruse Webscanviewer', 'Cruse Spezialmaschienen Gmbh (www.crusescanner.com)'].join('\n')
         )
     ]
 };
 
 var testconfig = {
     entry: {
-        tests: ['./tests/tests.js'],
-        benchmarks: ['./benchmarks/benchmarks.js']
+        tests: ['./tests/tests.js'],        
     },
     output: {
         path: BUILD_TESTS_PATH,
-        filename: '[name].js',
-        libraryTarget: 'umd',
-        library: 'OSG'
+        filename: '[name].js',       
     },
     node: {
         fs: 'empty'

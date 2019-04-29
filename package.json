@@ -10,6 +10,7 @@
     "eslint-plugin-private-variables": "*",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
+    "grunt-connect-proxy2": "^2.0.0",
     "grunt-contrib-connect": "~0.9",
     "grunt-documentation": "*",
     "grunt-execute": "^0.2.2",
@@ -25,6 +26,7 @@
     "grunt": ">=0.4.0"
   },
   "dependencies": {
+    "@trigrou/zip-js": "1.0.0",
     "bluebird": "^3.0.5",
     "d3": "^4.9.1",
     "dagre": "^0.7.4",
@@ -48,22 +50,11 @@
     "webpack": "^3.7.1",
     "webpack-dev-server": "^2.9.2",
     "webpack-strip-block": "^0.2.0",
-    "zlibjs": "^0.3.1",
-    "@trigrou/zip-js": "1.0.0"
+    "zlibjs": "^0.3.1"
   },
-  "contributors": [
-    "Paul Cheyrou-Lagrèze <tuan.kuranes@gmail.com>",
-    "Jordi Torres <jtorresfabra@gmail.com>",
-    "Matt Fontaine <tehqin@gmail.com>",
-    "Stephane Ginier <stephane.ginier@gmail.com>"
-  ],
-  "version": "0.2.9",
-  "author": "Cedric Pinson <trigrou@trigrou.com> (http://cedricpinson.com)",
-  "license": "MIT",
-  "description": "OpenSceneGraph implementation in javascript",
-  "repository": {
-    "url": "git@github.com:cedricpinson/osgjs.git",
-    "type": "git"
-  },
-  "name": "OpenSceneGraph"
+  "version": "0.1.0",
+  "author": "Cruse Spezialmaschienen GmbH",
+  "license": "UNLICENSED",
+  "description": "Cruse Web Scanviewer",
+  "name": "CruseWebViewer"
 }
