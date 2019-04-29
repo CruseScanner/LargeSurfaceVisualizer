@@ -1,7 +1,9 @@
 
 import OSG from 'external/osg';
+
 import IIPImageTileSource from 'cruse3DViewer/IIPImageTileSource';
 import ScanViewer from 'cruse3DViewer/ScanViewer';
+import defined from 'tools/defined';
 
 var osg = OSG.osg;
 
@@ -162,18 +164,23 @@ ScanViewerWidget.prototype = {
 
         this._shadingProject = shadingProject;
 
-        var diffuseTextureTileSource = new IIPImageTileSource(url, this._shadingProject.DiffuseColor);           
-        var normalMapTextureTileSource = new IIPImageTileSource(url, this._shadingProject.NormalMap);            
+        var options = {};
+        
+        options.textureMapTileSource = new IIPImageTileSource(url, this._shadingProject.DiffuseColor);           
+        options.normalMapTileSource = new IIPImageTileSource(url, this._shadingProject.NormalMap);
+        
+        if (defined(this._shadingProject.GlossMap)) {
+            options.glossMapTextureTileSource = new IIPImageTileSource(url, this._shadingProject.GlossMap);
+        }
         
         var canvas = this.createCanvas();
         this.createInfoElement();
 
-        if(this._scanViewer != undefined)
-        {
+        if(this._scanViewer != undefined) {
             this.stop();
         }
 
-        var scanViewer = new ScanViewer(canvas, diffuseTextureTileSource, normalMapTextureTileSource);
+        var scanViewer = new ScanViewer(canvas, options);
         
         var that = this;
        
