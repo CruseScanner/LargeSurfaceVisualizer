@@ -1,49 +1,80 @@
+ @import "https://fonts.googleapis.com/css?family=Exo+2:700|Roboto:100,300,400,500,700,900";
   
-  @import "https://fonts.googleapis.com/css?family=Exo+2:700|Roboto:100,300,400,500,700,900";
-  
-  .cruse-scanviewer-info {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    box-sizing: border-box;
-    padding: 20px 160px 20px 20px;
+.cruse-scanviewer-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  padding: 20px 160px 20px 20px;
     
-    font-family: "Roboto", sans-serif;
-    font-weight: 300;
-    line-height: 1.5;
-    color: #FFF;
-  }
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  line-height: 1.5;
+  color: #FFF;
+}
 
-  .cruse-scanviewer-description 
-  {
-    font-size: 14px;      
-  }
+.cruse-scanviewer-lightsource-slider {
+  width: 100%
+}
 
-  .cruse-scanviewer-caption {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    box-sizing: border-box;
-    padding: 15px 15px 15px 15px;
-    margin: 10px;
-    font-family: "Roboto", sans-serif;
-    font-weight: 300;
-    line-height: 1.5;
-    color: #FFF;
-    background: #222;
-    opacity: .5;
-    border-radius: .3em;
-    z-index:100;
-  }
+.cruse-scanviewer-lightsource-dialog {
+  position: absolute;
+/*  width: 300px;*/
+  /*height: 800px;*/
+  bottom: 400px;
+  left: 500px;  
+  background: #000;
+}
 
-  .cruse-scanviewer-toolbar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    box-sizing: border-box;
-    padding: 15px 15px 15px 15px;
-    margin: 10px;   
-    width: 100px; 
-    z-index:100;
-  }
+.cruse-scanviewer-lightsource-hemisphere {
+  width: 300px;
+  height: 300px;
+  border-radius: 300px;
+  background: #999;
+}
+  
+.cruse-scanviewer-lightsource-pointer {
+  position: absolute;
+  background: #000;
+  width: 20px;
+  height: 20px;
+  border-radius: 20px;
+  margin-top: -10px;
+  margin-left: -10px;
+  top: 50%;
+  left: 50%;
+}
+
+.cruse-scanviewer-description 
+{
+  font-size: 14px;      
+}
+
+.cruse-scanviewer-caption {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  box-sizing: border-box;
+  padding: 15px 15px 15px 15px;
+  margin: 10px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  line-height: 1.5;
+  color: #FFF;
+  background: #222;
+  opacity: .5;
+  border-radius: .3em;
+  z-index:100;
+}
+
+.cruse-scanviewer-toolbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  padding: 15px 15px 15px 15px;
+  margin: 10px;   
+  width: 100px; 
+  z-index:100;
+}

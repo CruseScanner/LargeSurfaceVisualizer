@@ -216,9 +216,9 @@ ScanViewer.prototype = {
      */
     getLightParameters: function(ambient, diffuse, specular, phongExponent) {
         return {
-            diffuse  : this._light.getDiffuse(),
-            specular : this._light.getSpecular(),
-            ambient  : this._light.getAmbient(),
+            diffuse  : osg.vec4.clone(this._light.getDiffuse()),
+            specular : osg.vec4.clone(this._light.getSpecular()),
+            ambient  : osg.vec4.clone(this._light.getAmbient()),
             phongExponent : this._material.getShininess()
         };
     },
