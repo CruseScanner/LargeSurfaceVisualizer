@@ -201,8 +201,11 @@ ScanViewerWidget.prototype = {
             lightSourcePointerElement.id = 'cruse-scanviewer-lightsource-pointer0';
          
             
+            var lightSourceFieldSetElement = document.createElement('fieldset');
+            var lightSourceFieldSetLegendElement = document.createElement('legend');
+            lightSourceFieldSetLegendElement.innerText = "Lightsource";
+            
                    
-          
             var lightSourceDiffuseSliderElement = document.createElement('input');
             lightSourceDiffuseSliderElement.className = 'cruse-scanviewer-lightsource-slider';
             lightSourceDiffuseSliderElement.id = 'cruse-scanviewer-lightsource-diffuse-slider0';
@@ -243,8 +246,21 @@ ScanViewerWidget.prototype = {
             lightSourceHemisphereElement.appendChild(lightSourceHemisphereWrapElement);                       
             lightSourceHemisphereWrapElement.appendChild(lightSourcePointerElement);
             lightSourceDialogElement.appendChild(lightSourceHemisphereElement);
-            lightSourceDialogElement.appendChild(lightSourceDiffuseSliderElement);
-            lightSourceDialogElement.appendChild(lightSourceSpecularSliderElement);
+            
+            lightSourceFieldSetElement.appendChild(lightSourceFieldSetLegendElement);
+            var labelElement = document.createElement("left");
+            labelElement.innerText = "Power";
+            lightSourceFieldSetElement.appendChild(labelElement);
+
+
+            lightSourceFieldSetElement.appendChild(lightSourceDiffuseSliderElement);
+
+            labelElement = document.createElement("left");
+            labelElement.innerText = "Glossiness";
+            lightSourceFieldSetElement.appendChild(labelElement);
+            
+            lightSourceFieldSetElement.appendChild(lightSourceSpecularSliderElement);
+            lightSourceDialogElement.appendChild(lightSourceFieldSetElement);
             parentElement.appendChild(lightSourceDialogElement);
 
             var dragging = false;
