@@ -127,7 +127,7 @@ ScanViewerWidget.prototype = {
         {
             infoElement = document.createElement('div');
             infoElement.className = "cruse-scanviewer-info";
-            infoElement.id = "cruse-scanviewerwidget-info-id";
+            infoElement.id = "cruse-scanviewer-info-id";
 
             var descriptionElement = document.createElement('div');
             descriptionElement.className = "cruse-scanviewer-description";
@@ -154,32 +154,58 @@ ScanViewerWidget.prototype = {
         return infoElement;
     },
     
-    createLightSourceDialog: function(scanViewer) {
+    createSideBar: function(viewElement) {
         
-        /*var infoElement = document.createElement('div');
-        infoElement.className = "cruse-scanviewerwidget-info";
-        infoElement.id = "cruse-scanviewerwidget-info-id";*/
+        var parentElement = viewElement.parentElement;
+        
+        var sideBarElement = document.createElement('div');
+        sideBarElement.className = 'cruse-scanviewer-sidebar';
+        
+        parentElement.insertBefore(sideBarElement, viewElement);
+        
+        var openSideBar = function() {
+            sideBarElement.style.width = "250px";
+            viewElement.style.marginLeft = "250px";
+        };
+
+        var closeSideBar = function () {
+            sideBarElement.style.width = "0";
+            viewElement.style.marginLeft= "0";
+        };
+        
+        openSideBar();
+        
+        return sideBarElement;
+    },
+    
+    createLightSourceDialog: function(scanViewer, parentElement) {
         
         var lightSourceDialogElement = document.getElementById('cruse-scanviewerwidget-lightsource-dialog');
+        
+        // TODO: update callbacks to modify the correct scanViewer 
         if (lightSourceDialogElement == null) {
             
             var lightSourceDialogElement = document.createElement('div');
             lightSourceDialogElement.className = 'cruse-scanviewer-lightsource-dialog';
-            lightSourceDialogElement.id = 'cruse-scanviewer-lightsource-dialog-id';
-            
+
             var lightSourceHemisphereElement = document.createElement('div');
             lightSourceHemisphereElement.className = 'cruse-scanviewer-lightsource-hemisphere';
-            lightSourceHemisphereElement.id = 'cruse-scanviewer-lightsource-hemisphere-id';
-           
-                 
-            var lightSourcePointer = document.createElement('div');
-            lightSourcePointer.className = 'cruse-scanviewer-lightsource-pointer';
-            lightSourcePointer.id = 'cruse-scanviewer-lightsource-pointer-0-id';
-       
             
-           
+            // Create absolutely positioned element so that pointer coordinates can be specified relative to the hemisphere div 
+            var lightSourceHemisphereWrapElement = document.createElement('div');
+            lightSourceHemisphereWrapElement.style = 'position: absolute';
+            
+                 
+            var lightSourcePointerElement = document.createElement('div');
+            lightSourcePointerElement.className = 'cruse-scanviewer-lightsource-pointer';
+            lightSourcePointerElement.id = 'cruse-scanviewer-lightsource-pointer0';
+         
+            
+                   
+          
             var lightSourceDiffuseSliderElement = document.createElement('input');
             lightSourceDiffuseSliderElement.className = 'cruse-scanviewer-lightsource-slider';
+            lightSourceDiffuseSliderElement.id = 'cruse-scanviewer-lightsource-diffuse-slider0';
             lightSourceDiffuseSliderElement.type = 'range';
             lightSourceDiffuseSliderElement.min = 0;
             lightSourceDiffuseSliderElement.max = 100;
@@ -188,6 +214,7 @@ ScanViewerWidget.prototype = {
             
             var lightSourceSpecularSliderElement = document.createElement('input');
             lightSourceSpecularSliderElement.className = 'cruse-scanviewer-lightsource-slider';
+            lightSourceSpecularSliderElement.id = 'cruse-scanviewer-lightsource-specular-slider0';
             lightSourceSpecularSliderElement.type = 'range';
             lightSourceSpecularSliderElement.min = 0;
             lightSourceSpecularSliderElement.max = 100;
@@ -213,14 +240,15 @@ ScanViewerWidget.prototype = {
             lightSourceSpecularSliderElement.oninput = updateSpecular;
             lightSourceSpecularSliderElement.onchange = updateSpecular;
             
-            lightSourceHemisphereElement.appendChild(lightSourcePointer);                       
+            lightSourceHemisphereElement.appendChild(lightSourceHemisphereWrapElement);                       
+            lightSourceHemisphereWrapElement.appendChild(lightSourcePointerElement);
             lightSourceDialogElement.appendChild(lightSourceHemisphereElement);
             lightSourceDialogElement.appendChild(lightSourceDiffuseSliderElement);
             lightSourceDialogElement.appendChild(lightSourceSpecularSliderElement);
-            this._viewDivElement.appendChild(lightSourceDialogElement);
+            parentElement.appendChild(lightSourceDialogElement);
 
             var dragging = false;
-            lightSourcePointer.onmousedown = function(e) {
+            lightSourcePointerElement.onmousedown = function(e) {
                 //if (e.button === 1) {
                     dragging = true;
                 //}
@@ -253,10 +281,7 @@ ScanViewerWidget.prototype = {
                 
                 var elevation = Math.asin(z);
                 var azimuth = Math.atan2(y, x);
-                console.log('x: ' + x + '; y: ' + y + '; z: ' +z);
-                //console.log('r: ' + r + '; 1-r^2: ' + (1.0 -r*r));
                 
-                var lightIndex = 0;
                 scanViewer.setDirectionalLight(elevation, azimuth);
                 
                 x*= radius;    
@@ -264,13 +289,10 @@ ScanViewerWidget.prototype = {
                 x+= radius;
                 y+= radius;
                 
-                lightSourcePointer.style.left = x + 'px';
-                lightSourcePointer.style.top  = y + 'px';
-            }
-            
+                lightSourcePointerElement.style.left = x + 'px';
+                lightSourcePointerElement.style.top  = y + 'px';
+            }           
         }
-       
-
     },
 
     setProgress: function(percent) {
@@ -292,6 +314,13 @@ ScanViewerWidget.prototype = {
             options.glossMapTextureTileSource = new IIPImageTileSource(url, this._shadingProject.GlossMap);
         }
         
+        // Set optional elevation map for displacement
+        // TODO: require meta-data
+        if (defined(this._shadingProject.ElevationMap)) {
+            options.elevationTileSource = new IIPImageTileSource(url, this._shadingProject.ElevationMap);
+        }
+
+        
         var canvas = this.createCanvas();
         this.createInfoElement();
 
@@ -299,9 +328,14 @@ ScanViewerWidget.prototype = {
             this.stop();
         }
 
-        var scanViewer = new ScanViewer(canvas, options);
-        this.createLightSourceDialog(scanViewer);
         
+        var scanViewer = new ScanViewer(canvas, options);
+        
+        this._sideBar = this.createSideBar(this._viewDivElement); 
+        this.createLightSourceDialog(scanViewer, this._sideBar);
+       
+        
+                
         var that = this;
        
         scanViewer.viewer.getDatabasePager().setProgressCallback(function(a, b) {
@@ -318,7 +352,7 @@ ScanViewerWidget.prototype = {
         this._scanviewer = scanViewer;
         this._config.lodScale = 0.1;
         this.initGui();
-        //  Cheat dat gui to show at least two decimals and start at 1.0
+        // Cheat dat gui to show at least two decimals and start at 1.0
         this._config.lodScale = 1.0;
         
         that.gui.__controllers.forEach(function(c) { c.updateDisplay(); });
