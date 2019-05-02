@@ -223,12 +223,20 @@ ScanViewerWidget.prototype = {
             lightSourceSpecularSliderElement.max = 100;
             lightSourceSpecularSliderElement.value = 100; 
             
+            var toHexColor = function (value) { 
+                var hex = Math.trunc(value*255).toString(16);
+                if (hex.length < 2) {
+                     hex = "0" + hex;
+                }
+                return '#' + hex + hex + hex;
+            };
 
             var updateDiffuse = function() {
                 var lp = scanViewer.getLightParameters();
                 var diffuse = lightSourceDiffuseSliderElement.value/100.0;
                 lp.diffuse = osg.vec4.fromValues(diffuse, diffuse, diffuse, 1.0);
                 scanViewer.setLightParameters(lp.ambient, lp.diffuse, lp.specular, lp.phongExponent);
+                lightSourcePointerElement.style.backgroundColor = toHexColor(diffuse);
             };
             var updateSpecular = function() {
                 var lp = scanViewer.getLightParameters();
