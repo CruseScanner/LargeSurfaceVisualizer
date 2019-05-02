@@ -208,13 +208,9 @@ ScanViewer.prototype = {
     },
     
     /**
-     * Sets lighting parameters.
-     * \param ambient Number[3] Ambient RGB contribution
-     * \param diffuse Number[3] Diffuse light color
-     * \param specular Number[3] Specular light color
-     * \param phongExponent Number   
+     * Gets lighting parameters.
      */
-    getLightParameters: function(ambient, diffuse, specular, phongExponent) {
+    getLightParameters: function() {
         return {
             diffuse  : osg.vec4.clone(this._light.getDiffuse()),
             specular : osg.vec4.clone(this._light.getSpecular()),
