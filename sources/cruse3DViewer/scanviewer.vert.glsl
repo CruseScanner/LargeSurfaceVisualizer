@@ -18,6 +18,10 @@ varying vec2 vTexCoord0;
 varying vec3 vViewNormal;
 #endif
 
+#ifdef WITH_DISPLACEMENT_MAP
+uniform sampled uDisplacementTexture;
+#endif
+
 varying vec4 vVertexColor;
 varying vec4 vViewVertex;
 

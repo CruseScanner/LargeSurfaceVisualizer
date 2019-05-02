@@ -65,10 +65,12 @@ var ScanViewer = function(canvasElement, options) {
     var textureMapTileSource = options.textureMapTileSource;
     var normalMapTileSource = options.normalMapTileSource;
     var glossMapTileSource = options.glossMapTileSource;
-    
+    var displacementMapTileSource = options.displacementMapTileSource;
+   
     
     this._renderTextureMaps = false;
     this._renderNormalMaps = false;
+    this._renderDisplacementMaps = false;
     this._enableLODDebugging = false;
     
 
@@ -98,12 +100,18 @@ var ScanViewer = function(canvasElement, options) {
         promises.push(normalMapTileSource.initializationPromise.then(function(){
             that._renderNormalMaps = true;
         }));
-    }
-    
+    }  
     if (defined(glossMapTileSource)) {
         this._glossMapTileSource = glossMapTileSource;
         promises.push(glossMapTileSource.initializationPromise.then(function(){
             that._renderGlossMaps = true;
+        }));
+    }
+
+    if (defined(displacementMapTileSource)) {
+        this._displacementMapTileSource = displacementMapTileSource;
+        promises.push(displacementMapTileSource.initializationPromise.then(function(){
+            that._renderDisplacementMaps = true;
         }));
     }
     
@@ -311,7 +319,8 @@ ScanViewer.prototype = {
         if (this._renderNormalMaps) defines.push('#define WITH_NORMAL_MAP');
         if (this._renderGlossMaps) defines.push('#define WITH_GLOSS_MAP');
         if (this._enableLODDebugging) defines.push('#define WITH_DEBUG_LOD');
-        
+        if (this._renderDisplacementMaps) defines.push('#define WITH_DISPLACEMENT_MAP');
+
         defines.push('#define LIGHT_COUNT ' + this.getLightCount());
 
         var vertexshader = this._shaderProcessor.getShader('scanviewer.vert.glsl', defines);
