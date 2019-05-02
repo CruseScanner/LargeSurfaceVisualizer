@@ -311,10 +311,11 @@ ScanViewer.prototype = {
 
         var stateSet = tileGeometry.getOrCreateStateSet(); 
         return this.fetchAndApplyAllTileImagery(x, y, level, stateSet).then(function() {
-            var tile;          
+            var levelUniform = osg.Uniform.createFloat1(level, 'uLODLevel');
+            stateSet.addUniform(levelUniform)
+
+            var tile;
             if (that._textureMapTileSource.hasChildren(x, y, level)) {
-                var levelUniform = osg.Uniform.createFloat1(level, 'uLODLevel');
-                stateSet.addUniform(levelUniform)
                 // LOD node
                 tile = new osg.PagedLOD();
                 tile.setRangeMode(osg.PagedLOD.PIXEL_SIZE_ON_SCREEN);
