@@ -265,6 +265,7 @@ var gruntTasks = {};
     gruntTasks.connect = {
         server: {
             options: {
+                livereload: true,
                 port: 9001,
                 hostname: 'localhost'
             }
@@ -461,5 +462,5 @@ module.exports = function(grunt) {
 
     grunt.registerTask('docs', ['plato', 'documentation:default']);
     grunt.registerTask('default', ['check', 'build']);
-    grunt.registerTask('serve', ['sync', 'build', 'configureProxies:server', 'connect:dist:keepalive']);
+    grunt.registerTask('serve', ['sync', 'build', 'configureProxies:server', 'connect:dist:keepalive', 'watch']);
 };
