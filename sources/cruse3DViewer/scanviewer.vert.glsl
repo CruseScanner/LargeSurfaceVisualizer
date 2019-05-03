@@ -29,10 +29,22 @@ varying vec4 vViewVertex;
 
 void main() 
 {
-    vec3 vertex = vec3(Vertex*uOffsetScale.zw + uOffsetScale.xy, 0.0);
+    vec3 vertex = vec3(Vertex, 0.0);
+
+    // Skirts are outside the [0..1]^2 domain
+   
+#ifdef WITH_DISPLACEMENT_MAP
+    vec2 d = max(-vertex.xy, vertex.xy - vec2(1.0));
+    float displace = max(0.0, max(d.x, d.y));
+#endif
+    // Clip vertex to [0..1] domain   
+    vertex = min(vec3(1.0), max(vec3(0.0), vertex));
+  
+    vertex = vec3(vertex.xy*uOffsetScale.zw + uOffsetScale.xy, 0.0);
+    
 #ifdef WITH_DISPLACEMENT_MAP
     vec2 displacementUV = Vertex*uDisplacementOffsetScale.zw + uDisplacementOffsetScale.xy;  
-    vertex.z+= texture2D(Texture3, displacementUV).r*300.0;
+    vertex.z+= (texture2D(Texture3, displacementUV).r-displace)*300.0; 
 #endif 
         
     vec4 viewVertex = uModelViewMatrix*vec4(vertex, 1.0);
