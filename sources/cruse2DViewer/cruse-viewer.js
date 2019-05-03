@@ -1,4 +1,5 @@
 import OpenSeadragon from 'openseadragon';
+import 'external/openseadragon-scalebar';
 
 var Cruse2DViewer = function(element, imageSource){
   
@@ -18,9 +19,20 @@ var Cruse2DViewer = function(element, imageSource){
   this.viewer = OpenSeadragon({
     element: element,
     tileSources:   [fullUrl],
-    toolbar: 'cruse-scanviewer-2d-toolbar'
+    toolbar: 'cruse-scanviewer-2d-toolbar',
   });
 
+  if(imageSource.scale != undefined)
+  {
+    this.viewer.scalebar({
+      type: 2,
+      stayInsideImage: false,
+      pixelsPerMeter: imageSource.scale * 1000,
+      backgroundColor: "rgba(0,0,0,0.5)",
+      fontColor: "rgba(255,255,255,0.5)",
+      color: "rgba(255,255,255,0.5)", 
+    });
+  }
   
   // small hack to fix position: the viewer seems to switch the positon 
   // to relative. Also move it to the end of the elements to fix draw order
