@@ -356,30 +356,68 @@ ScanViewer.prototype = {
         stateSet.setAttributeAndModes(this._program);        
     },
     
-    createGridGeometry :function(samplesX,samplesY) {
+    createGridGeometry :function(samplesX, samplesY, skirtSize) {
+        
+            var skirt = defined(skirtSize) ? 1 : 0;
+        
             var g = new osg.Geometry();
-
-            var vertex = new osg.Float32Array(samplesX*samplesY*3);
-            for (var y = 0; y < samplesY; y++) {
-                for (var x = 0; x < samplesX; x++) {
-                    vertex[(x+y*samplesX)*3    ] = x/(samplesX-1);
-                    vertex[(x+y*samplesX)*3 + 1] = y/(samplesY-1);
-                    vertex[(x+y*samplesX)*3 + 2] = 0.0;
+            
+            
+            var vX = samplesX + 2*skirt;
+            var vY = samplesY + 2*skirt;
+            
+            var vertex = new osg.Float32Array(vX*vY*3);
+            var vi = 0;
+            for (var y = -skirt; y < samplesY + skirt; y++) {
+                var yCoord;
+                if (y == -1) {
+                    yCoord = -skirtSize;
                 }
+                else if (y == samplesY) {
+                    yCoord = 1.0 + skirtSize;
+                }
+                else {
+                    yCoord = Math.max(0.0, y/(samplesY-1));
+                }
+                
+                
+                // Set leftmost skirt vertex
+                if (skirt) {
+                    vertex[vi*3    ] = -skirtSize;   
+                    vertex[vi*3 + 1] = yCoord;   
+                    vertex[vi*3 + 2] = 0.0;
+                    vi++;
+                }               
+                for (var x = 0; x < samplesX; x++) {
+                    vertex[vi*3    ] = x/(samplesX-1);
+                    vertex[vi*3 + 1] = yCoord;
+                    vertex[vi*3 + 2] = 0.0;
+                    vi++;
+                }
+                // Set rightmost skirt vertex
+                if (skirt) {
+                    vertex[vi*3]     = 1.0 + skirtSize;   
+                    vertex[vi*3 + 1] = yCoord;   
+                    vertex[vi*3 + 2] = 0.0;
+                    vi++;
+                }                
             }
                
-            var indices = new osg.Uint16Array((samplesX-1)*(samplesY-1)*6);
+            var quadsX = vX - 1;
+            var quadsY = vY - 1;
+            
+            var indices = new osg.Uint16Array(quadsX*quadsY*6);
             var q = 0;
-            for (var y = 0; y < samplesY-1; y++) {
-                for (var x = 0; x < samplesX-1; x++) {
-                    var o = x + y*samplesX;
-                    
-                    indices[q*6 + 0] = o;
-                    indices[q*6 + 1] = o + 1;
-                    indices[q*6 + 2] = o + samplesX;
-                    indices[q*6 + 3] = o + samplesX;
-                    indices[q*6 + 4] = o + 1;
-                    indices[q*6 + 5] = o + samplesX + 1;
+            for (var y = 0; y < quadsY; y++) {
+                vi = y*vX;                
+                for (var x = 0; x < quadsX; x++) {
+                    indices[q*6 + 0] = vi;
+                    indices[q*6 + 1] = vi + 1;
+                    indices[q*6 + 2] = vi + vX;
+                    indices[q*6 + 3] = vi + vX;
+                    indices[q*6 + 4] = vi + 1;
+                    indices[q*6 + 5] = vi + vX + 1;
+                    vi++;
                     q++;
                 }
             }
@@ -441,7 +479,7 @@ ScanViewer.prototype = {
             });                
         };
         
-        var tileGeometry = this.createGridGeometry(65, 65);
+        var tileGeometry = this.createGridGeometry(65, 65, 1.0);
         var stateSet = tileGeometry.getOrCreateStateSet();
         
         stateSet.setAttributeAndModes(new osg.CullFace(osg.CullFace.DISABLE)); 
