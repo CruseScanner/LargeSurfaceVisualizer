@@ -37,7 +37,7 @@ Cruse2DViewer.prototype = {
 
   restoreView : function(view)
   {
-    this.viewer.viewport.fitBounds(view);
+    this.viewer.viewport.fitBounds(view, true);
   },
 
   open: function(imageSource)
@@ -50,6 +50,13 @@ Cruse2DViewer.prototype = {
     var prefix = imageSource.prefix || '?IIIF='
     var fullUrl = imageSource.server + prefix + imageSource.image + '/info.json';  
  
+    var that = this;
+    var result = new Promise(function (resolve) {
+      that.viewer.addOnceHandler("open", function openedListener() {                   
+          resolve();
+      });
+    });
+  
     this.viewer.open(fullUrl);
   
     if(imageSource.scale != undefined)
@@ -79,6 +86,8 @@ Cruse2DViewer.prototype = {
     else{
       this.captionElement.style.visibility = "hidden";
     }
+
+    return result;
   }
 };
 

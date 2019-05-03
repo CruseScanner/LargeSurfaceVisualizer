@@ -198,25 +198,16 @@ Gallery.prototype = {
     }
 
     if (this.cruse2DViewer == undefined) {
-      this.cruse2DViewer = new Cruse2DViewer(this.viewer2dElement, {
-        server: image.server || null,
-        prefix: 'images/',
-        render: 'spiral',
-        image: image.image,
-        credit: image.caption,
-        scale: image.scale || null,
-        viewport: image.view || null,
-        navigation: { buttons: ['zoomIn', 'zoomOut', 'reset', 'rotateLeft', 'rotateRight'] }
-      });
+      this.cruse2DViewer = new Cruse2DViewer(this.viewer2dElement, image);
     }
     else {
-      this.cruse2DViewer.server = image.server || null;
-      this.cruse2DViewer.setCredit('<a href="' + image.caption + '" type="application/octet-stream" style="color:#fff"><img src="../cruseviewer/images/download.png" /></a>');
-      if(image.view != undefined)
-      {
-        this.cruse2DViewer.restoreView(image.view);
-      }
-      this.cruse2DViewer.changeImage(image.image);
+      var that = this;
+      this.cruse2DViewer.open(image).then(function(){
+        if(image.view != undefined)
+        {
+          that.cruse2DViewer.restoreView(image.view);
+        } 
+      });
     }
   },
 
@@ -226,6 +217,9 @@ Gallery.prototype = {
 
     if (this.scanViewerWidget == undefined) {
       this.scanViewerWidget = new ScanViewerWidget(this.viewer3dElement);
+    }
+    else {
+      this.scanViewerWidget.stop();
     }
 
     var that = this;
