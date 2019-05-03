@@ -65,7 +65,7 @@ var ScanViewer = function(canvasElement, options) {
     var textureMapTileSource = options.textureMapTileSource;
     var normalMapTileSource = options.normalMapTileSource;
     var glossMapTileSource = options.glossMapTileSource;
-    var displacementMapTileSource = options.displacementMapTileSource;
+    var elevationTileSource = options.elevationTileSource;
    
     
     this._renderTextureMaps = false;
@@ -107,10 +107,9 @@ var ScanViewer = function(canvasElement, options) {
             that._renderGlossMaps = true;
         }));
     }
-
-    if (defined(displacementMapTileSource)) {
-        this._displacementMapTileSource = displacementMapTileSource;
-        promises.push(displacementMapTileSource.initializationPromise.then(function(){
+    if (defined(elevationTileSource)) {
+        this._elevationTileSource = elevationTileSource;
+        promises.push(elevationTileSource.initializationPromise.then(function(){
             that._renderDisplacementMaps = true;
         }));
     }
@@ -178,6 +177,11 @@ ScanViewer.prototype = {
         if (this._renderGlossMaps)
         {
             promises.push(this.fetchAndApplyTileImagery(x, y, level, stateSet, 2, this._glossMapTileSource));
+        }
+        
+        if (this._renderDisplacementMaps)
+        {
+            promises.push(this.fetchAndApplyTileImagery(x, y, level, stateSet, 3, this._elevationTileSource));
         }
         
         return Promise.all(promises);
@@ -338,10 +342,50 @@ ScanViewer.prototype = {
         
         this._program.setTrackAttributes({ 
             attributeKeys : attributeKeys,  
-            textureAttributeKeys : [ [ 'Texture' ], [ 'Texture' ], ['Texture'] ]
+            textureAttributeKeys : [ [ 'Texture' ], [ 'Texture' ], ['Texture'], ['Texture'] ]
         });
         
         stateSet.setAttributeAndModes(this._program);        
+    },
+    
+    createGridGeometry :function(samplesX,samplesY) {
+            var g = new osg.Geometry();
+
+            var vertex = new osg.Float32Array(samplesX*samplesY*3);
+            for (var y = 0; y < samplesY; y++) {
+                for (var x = 0; x < samplesX; x++) {
+                    vertex[(x+y*samplesX)*3    ] = x/(samplesX-1);
+                    vertex[(x+y*samplesX)*3 + 1] = y/(samplesY-1);
+                    vertex[(x+y*samplesX)*3 + 2] = 0.0;
+                }
+            }
+               
+            var indices = new osg.Uint16Array((samplesX-1)*(samplesY-1)*6);
+            var q = 0;
+            for (var y = 0; y < samplesY-1; y++) {
+                for (var x = 0; x < samplesX-1; x++) {
+                    var o = x + y*samplesX;
+                    
+                    indices[q*6 + 0] = o;
+                    indices[q*6 + 1] = o + 1;
+                    indices[q*6 + 2] = o + samplesX;
+                    indices[q*6 + 3] = o + samplesX;
+                    indices[q*6 + 4] = o + 1;
+                    indices[q*6 + 5] = o + samplesX + 1;
+                    q++;
+                }
+            }
+
+            g.getAttributes().Vertex = new osg.BufferArray(osg.BufferArray.ARRAY_BUFFER, vertex, 3);
+
+            var primitive = new osg.DrawElements(
+                osg.primitiveSet.TRIANGLES,
+                new osg.BufferArray(osg.BufferArray.ELEMENT_ARRAY_BUFFER, indices, 1)
+            );
+            g.getPrimitives().push(primitive);
+            
+            
+            return g;
     },
 
     /**
@@ -389,13 +433,24 @@ ScanViewer.prototype = {
             });                
         };
         
-        var tileGeometry = osg.createTexturedQuadGeometry(x0, y0, 0, width, 0, 0, 0, height, 0, 0, 0, 1, 1);
+        var tileGeometry = this.createGridGeometry(65, 65);
+        var stateSet = tileGeometry.getOrCreateStateSet();
+        
+        stateSet.setAttributeAndModes(new osg.CullFace(osg.CullFace.DISABLE)); 
 
-        var stateSet = tileGeometry.getOrCreateStateSet(); 
+        var offsetScaleUniform = osg.Uniform.createFloat4(osg.vec4.fromValues(x0, y0, width, height), 'uOffsetScale');
+        stateSet.addUniform(offsetScaleUniform);
+       
+        var levelUniform = osg.Uniform.createFloat1(level, 'uLODLevel');
+        stateSet.addUniform(levelUniform);
+        
+        var boundingBox = new osg.BoundingBox();
+        boundingBox.expandByVec3(osg.vec3.fromValues(x0, y0, 0));
+        boundingBox.expandByVec3(osg.vec3.fromValues(x0 + width, y0 + height, 0));
+        tileGeometry.setBound(boundingBox);
+
+
         return this.fetchAndApplyAllTileImagery(x, y, level, stateSet).then(function() {
-            var levelUniform = osg.Uniform.createFloat1(level, 'uLODLevel');
-            stateSet.addUniform(levelUniform)
-
             var tile;
             if (that._textureMapTileSource.hasChildren(x, y, level)) {
                 // LOD node

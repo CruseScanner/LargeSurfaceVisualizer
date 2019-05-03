@@ -232,8 +232,8 @@ ScanViewerWidget.prototype = {
         // Set optional elevation map for displacement
         // TODO: require meta-data
         if (defined(this._shadingProject.ElevationMap)) {
-            options.elevationTileSource = new IIPImageTileSource(url, this._shadingProject.ElevationMap);
-        }       
+            options.elevationTileSource = new IIPImageTileSource(url, this._shadingProject.ElevationMap, { tileSize : 65, overlap : 1});
+        }
         
         var canvas = this.createCanvas();
         this.createInfoElement();
