@@ -25,8 +25,11 @@ function requestFile(url, options) {
     return fileHelper.requestURI(url, options);
 };
 
-var IIPImageTileSource = function(url, filename) {
-    this._tileSize = 256;
+var IIPImageTileSource = function(url, filename, options) {
+    options = options || {};
+    this._tileSize = options.tileSize || 256;
+    this._overlap = options.overlap || 0;
+    
     this._url = url;
     this._filename = filename;
     this._ready = false;
@@ -49,10 +52,10 @@ var IIPImageTileSource = function(url, filename) {
         });
 };
 
-IIPImageTileSource.prototype = {
-   
+IIPImageTileSource.prototype = { 
+    // Returns pixels covered by a tile at the given level 
     getTileSize: function(level) {
-        return this._tileSize*(1<<(this._levels - level))
+        return (this._tileSize-this._overlap)*(1<<(this._levels - level)) + this._overlap;
     },
     
     hasChildren: function(x, y, level) {
