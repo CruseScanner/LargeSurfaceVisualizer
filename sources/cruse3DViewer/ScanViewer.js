@@ -181,7 +181,15 @@ ScanViewer.prototype = {
         
         if (this._renderDisplacementMaps)
         {
-            promises.push(this.fetchAndApplyTileImagery(x, y, level, stateSet, 3, this._elevationTileSource));
+            var promise = this.fetchAndApplyTileImagery(x, y, level, stateSet, 3, this._elevationTileSource);
+            var ts = this._elevationTileSource;
+            promise.then(function() {
+                var e = ts.getRasterExtent(x, y, level);
+                
+                var offsetScaleUniform = osg.Uniform.createFloat4(osg.vec4.fromValues(1.0/e.w, 1.0/e.h, 1.0 - 2.0/e.w, 1.0 - 2.0/e.h), 'uDisplacementOffsetScale');
+                stateSet.addUniform(offsetScaleUniform);
+            });
+            promises.push(promise);
         }
         
         return Promise.all(promises);
