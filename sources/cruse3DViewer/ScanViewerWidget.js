@@ -230,10 +230,12 @@ ScanViewerWidget.prototype = {
         }
        
         // Set optional elevation map for displacement
-        // TODO: require meta-data
         if (defined(this._shadingProject.ElevationMap)) {
             options.elevationTileSource = new IIPImageTileSource(url, this._shadingProject.ElevationMap, { tileSize : 64, border : 1});
         }
+
+        options.heightMin  = defined(shadingProject.heightMin) ? shadingProject.heightMin : 0.0; 
+        options.heightMax  = defined(shadingProject.heightMax) ? shadingProject.heightMax : options.heightMin + 100; 
         
         var canvas = this.createCanvas();
         this.createInfoElement();
