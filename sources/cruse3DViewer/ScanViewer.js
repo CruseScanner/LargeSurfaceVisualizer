@@ -112,6 +112,13 @@ var ScanViewer = function(canvasElement, options) {
         promises.push(elevationTileSource.initializationPromise.then(function(){
             that._renderDisplacementMaps = true;
         }));
+        
+        this._heightMin = 0.0;
+        this._heightMax = Math.abs(options.heightMax - options.heightMin);
+    }
+    else {
+        this._heightMin = 0.0;
+        this._heightMax = 0.0;
     }
     
     var material = new osg.Material();
@@ -353,6 +360,9 @@ ScanViewer.prototype = {
             textureAttributeKeys : [ [ 'Texture' ], [ 'Texture' ], ['Texture'], ['Texture'] ]
         });
         
+        var displacementRangeUniform = osg.Uniform.createFloat1(this._heightMax - this._heightMin, 'uDisplacementRange');
+        stateSet.addUniform(displacementRangeUniform);
+        
         stateSet.setAttributeAndModes(this._program);        
     },
     
@@ -487,9 +497,11 @@ ScanViewer.prototype = {
         var levelUniform = osg.Uniform.createFloat1(level, 'uLODLevel');
         stateSet.addUniform(levelUniform);
         
+        // Sets a fairly conservative bounding box (due to global min/max height), shouldn't be an issue for 
+        // the typical dynamic range
         var boundingBox = new osg.BoundingBox();
-        boundingBox.expandByVec3(osg.vec3.fromValues(x0, y0, 0));
-        boundingBox.expandByVec3(osg.vec3.fromValues(x0 + width, y0 + height, 0));
+        boundingBox.expandByVec3(osg.vec3.fromValues(x0, y0, this._heightMin));
+        boundingBox.expandByVec3(osg.vec3.fromValues(x0 + width, y0 + height, this._heightMax));
         tileGeometry.setBound(boundingBox);
 
 

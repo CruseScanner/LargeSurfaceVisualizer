@@ -22,6 +22,7 @@ varying vec3 vViewNormal;
 #ifdef WITH_DISPLACEMENT_MAP
 uniform sampler2D Texture3;
 uniform vec4 uDisplacementOffsetScale;
+uniform float uDisplacementRange;
 #endif
 
 varying vec4 vVertexColor;
@@ -44,7 +45,7 @@ void main()
     
 #ifdef WITH_DISPLACEMENT_MAP
     vec2 displacementUV = Vertex*uDisplacementOffsetScale.zw + uDisplacementOffsetScale.xy;  
-    vertex.z+= (texture2D(Texture3, displacementUV).r-displace)*300.0; 
+    vertex.z+= (texture2D(Texture3, displacementUV).r-displace)*uDisplacementRange;
 #endif 
         
     vec4 viewVertex = uModelViewMatrix*vec4(vertex, 1.0);
