@@ -21,7 +21,7 @@ varying vec3 vViewNormal;
 
 #ifdef WITH_DISPLACEMENT_MAP
 uniform sampler2D Texture3;
-uniform vec4 uDisplacementOffsetScale;
+uniform vec4 uDisplacementOffsetScale; // Texture coordinate scaling / offset
 uniform float uDisplacementRange;
 #endif
 
@@ -31,10 +31,11 @@ varying vec4 vViewVertex;
 void main() 
 {
     vec3 vertex = vec3(Vertex, 0.0);
-
-    // Skirts are outside the [0..1]^2 domain
-   
+  
 #ifdef WITH_DISPLACEMENT_MAP
+    // We encode skirts by placing them outside the [0..1]^2 domain
+    // We then reproject onto the boundary (by clamping), and use the distance 
+    // between original and clamped vertex as skirt displacement
     vec2 d = max(-vertex.xy, vertex.xy - vec2(1.0));
     float displace = max(0.0, max(d.x, d.y));
 #endif

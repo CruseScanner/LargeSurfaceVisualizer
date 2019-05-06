@@ -213,7 +213,6 @@ ScanViewerWidget.prototype = {
     },
 
     run: function(shadingProject) {
-        // Get 3D canvas.
         var url = shadingProject.server || '/iipsrv/iipsrv.fcgi';
 
         this._shadingProject = shadingProject;
@@ -237,6 +236,7 @@ ScanViewerWidget.prototype = {
         options.heightMin  = defined(shadingProject.heightMin) ? shadingProject.heightMin : 0.0; 
         options.heightMax  = defined(shadingProject.heightMax) ? shadingProject.heightMax : options.heightMin + 100; 
         
+        // Get 3D canvas.
         var canvas = this.createCanvas();
         this.createInfoElement();
 
