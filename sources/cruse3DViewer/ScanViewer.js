@@ -366,7 +366,7 @@ ScanViewer.prototype = {
             var vX = samplesX + 2*skirt;
             var vY = samplesY + 2*skirt;
             
-            var vertex = new osg.Float32Array(vX*vY*3);
+            var vertex = new osg.Float32Array(vX*vY*2);
             var vi = 0;
             for (var y = -skirt; y < samplesY + skirt; y++) {
                 var yCoord;
@@ -383,22 +383,19 @@ ScanViewer.prototype = {
                 
                 // Set leftmost skirt vertex
                 if (skirt) {
-                    vertex[vi*3    ] = -skirtSize;   
-                    vertex[vi*3 + 1] = yCoord;   
-                    vertex[vi*3 + 2] = 0.0;
+                    vertex[vi*2    ] = -skirtSize;   
+                    vertex[vi*2 + 1] = yCoord;   
                     vi++;
                 }               
                 for (var x = 0; x < samplesX; x++) {
-                    vertex[vi*3    ] = x/(samplesX-1);
-                    vertex[vi*3 + 1] = yCoord;
-                    vertex[vi*3 + 2] = 0.0;
+                    vertex[vi*2    ] = x/(samplesX-1);
+                    vertex[vi*2 + 1] = yCoord;
                     vi++;
                 }
                 // Set rightmost skirt vertex
                 if (skirt) {
-                    vertex[vi*3]     = 1.0 + skirtSize;   
-                    vertex[vi*3 + 1] = yCoord;   
-                    vertex[vi*3 + 2] = 0.0;
+                    vertex[vi*2]     = 1.0 + skirtSize;   
+                    vertex[vi*2 + 1] = yCoord;   
                     vi++;
                 }                
             }
@@ -422,7 +419,7 @@ ScanViewer.prototype = {
                 }
             }
 
-            g.getAttributes().Vertex = new osg.BufferArray(osg.BufferArray.ARRAY_BUFFER, vertex, 3);
+            g.getAttributes().Vertex = new osg.BufferArray(osg.BufferArray.ARRAY_BUFFER, vertex, 2);
 
             var primitive = new osg.DrawElements(
                 osg.primitiveSet.TRIANGLES,
