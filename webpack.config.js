@@ -73,7 +73,7 @@ var mainlibConfig = {
         new webpack.BannerPlugin(
             ['Cruse Webscanviewer', 'Cruse Spezialmaschienen Gmbh (www.crusescanner.com)'].join('\n')
         )
-    ]
+    ],
 };
 
 var testconfig = {
