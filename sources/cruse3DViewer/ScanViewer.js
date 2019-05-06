@@ -193,6 +193,8 @@ ScanViewer.prototype = {
             promise.then(function() {
                 var e = ts.getRasterExtent(x, y, level);
                 
+                // Set scaling and offset for displacement mapping for exact sampling (we want to sample on the 
+                // pixel corners, and assume the heightmap to be center-sampled and have a border of one sample)
                 var offsetScaleUniform = osg.Uniform.createFloat4(osg.vec4.fromValues(1.0/e.w, 1.0/e.h, 1.0 - 2.0/e.w, 1.0 - 2.0/e.h), 'uDisplacementOffsetScale');
                 stateSet.addUniform(offsetScaleUniform);
             });
@@ -451,8 +453,9 @@ ScanViewer.prototype = {
      */
     createTileForGeometry: function(x, y, level) {
         // TODO: implement getTileExtent which dispatches between tmap/normal
-        // map as required
+        // map as required (i.e. in case we want to run without tmap)
         var tileExtent = this._textureMapTileSource.getTileExtent(x, y, level);
+        
         var x0 = tileExtent.x0;
         var y0 = tileExtent.y0;
         var width =  (tileExtent.x1-tileExtent.x0);
@@ -491,6 +494,7 @@ ScanViewer.prototype = {
         
         stateSet.setAttributeAndModes(new osg.CullFace(osg.CullFace.DISABLE)); 
 
+        // Set geometry offset and scale, used to scale and offset the [0..1]^2 grid geometry for placement in model space
         var offsetScaleUniform = osg.Uniform.createFloat4(osg.vec4.fromValues(x0, y0, width, height), 'uOffsetScale');
         stateSet.addUniform(offsetScaleUniform);
        
