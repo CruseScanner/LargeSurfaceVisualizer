@@ -19,6 +19,7 @@
 
 import ScanViewerWidget from 'cruse3DViewer/ScanViewerWidget';
 import Cruse2DViewer from 'cruse2DViewer/cruse-viewer';
+import Drag from 'tools/UI/drag';
 
 'use strict';
 
@@ -88,13 +89,7 @@ Gallery.prototype = {
     };
     containerElement.appendChild(thumbnail_container);
 
-    // Make the thumbnails draggable
-    // new Drag(thumbnail_container, {
-    //   style: false,
-    //   invert: true,
-    //   modifiers: { x: 'scrollLeft' }
-    // });
-
+    new Drag(thumbnail_container);
 
     // Create the inner thumbnail div
     this.thumbnails = document.createElement('div');
