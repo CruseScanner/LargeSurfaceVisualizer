@@ -85,10 +85,17 @@ IIPImageTileSource.prototype = {
     /**
      * Returns pixel coordinates of the image region covered by the given tile.  
      */
-    getRasterExtent: function(x, y, level) {
+    getRasterExtent: function(x, y, level, excludeBorder) {
         var levelFactor = 1<<(this._levels - level);
         var tileSize = this.getTileSize(level);
-        var borderSize = this._border*levelFactor;
+        var borderSize;
+        if (excludeBorder) {
+            borderSize = 0;
+        }
+        else {
+            borderSize = this._border*levelFactor;
+        }
+        
                
         var x0 = Math.max(x*tileSize - borderSize, 0);
         var y0 = Math.max(y*tileSize - borderSize, 0);
@@ -121,14 +128,15 @@ IIPImageTileSource.prototype = {
     
     getTileExtent: function(x, y, level) {
         // TODO: scale pixel to mm
-        var re = this.getRasterExtent(x, y, level);
+        var re = this.getRasterExtent(x, y, level, true);
+        var scale = 1.0;
         return {
-            x0:   re.x0,
-            y0: -(re.y1 + 1),
-            x1:  (re.x1 + 1),
-            y1: - re.y0,
-            w :   re.w,
-            h :   re.h
+            x0:   re.x0*scale,
+            y0: -(re.y1 + 1)*scale,
+            x1:  (re.x1 + 1)*scale,
+            y1: - re.y0*scale,
+            w :   re.w*scale,
+            h :   re.h*scale
         };
     },
         
