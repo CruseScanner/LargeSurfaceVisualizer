@@ -169,21 +169,80 @@ ScanViewer.prototype = {
         });        
     },
         
-    fetchAndApplyAllTileImagery: function(x, y, level, stateSet) {
+    fetchAndApplyAllTileImagery: function(x, y, level, node, parentGeometry) {
         var promises = [];
-        if (this._renderTextureMaps)
-        {
-            promises.push(this.fetchAndApplyTileImagery(x, y, level, stateSet, 0, this._textureMapTileSource));
+        
+        var stateSet = node.getOrCreateStateSet();
+        var parentStateSet;
+        if (parentGeometry) {
+            parentStateSet = parentGeometry.getOrCreateStateSet();
         }
         
-        if (this._renderNormalMaps)
-        {
-            promises.push(this.fetchAndApplyTileImagery(x, y, level, stateSet, 1, this._normalMapTileSource));
+        if (this._renderTextureMaps) {
+            if (level <= this._textureMapTileSource._levels)
+            {
+                promises.push(this.fetchAndApplyTileImagery(x, y, level, stateSet, 0, this._textureMapTileSource));
+            }
+            else
+            {
+                // Setup scaling/offset, and reuse parent texture
+                var textureUnit = 0;
+                var parentTexture = parentStateSet.getTextureAttribute(textureUnit, 'Texture');
+                stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);
+                
+                var parentOffsetScaleUniform = parentStateSet.getUniform('uDiffuseMapOffsetScale');
+                var offsetScale = osg.vec4.create();
+                if (defined(parentOffsetScaleUniform)) {
+                    for (var i = 0; i < 4; i++) {
+                        offsetScale[i] = parentOffsetScaleUniform.getInternalArray()[i];
+                    }
+                }
+                else {
+                    offsetScale[0] = 0.0; // offset x
+                    offsetScale[1] = 0.0; // offset y
+                    offsetScale[2] = 1.0; // scale x                  
+                    offsetScale[3] = 1.0; // scale y                 
+                }
+                
+                var dx = x - Math.trunc(x/2)*2; 
+                var dy = 1 - (y - Math.trunc(y/2)*2);
+                
+                offsetScale[2]*= 0.5;
+                offsetScale[3]*= 0.5;
+                offsetScale[0] = offsetScale[0] + dx*offsetScale[2]; 
+                offsetScale[1] = offsetScale[1] + dy*offsetScale[3]; 
+                
+                var offsetScaleUniform = osg.Uniform.createFloat4(offsetScale, 'uDiffuseMapOffsetScale');
+                stateSet.addUniform(offsetScaleUniform);
+            }
         }
         
-        if (this._renderGlossMaps)
-        {
-            promises.push(this.fetchAndApplyTileImagery(x, y, level, stateSet, 2, this._glossMapTileSource));
+        if (this._renderNormalMaps) {
+            if (this._normalMapTileSource.hasTile(x, y, level))
+            {
+                promises.push(this.fetchAndApplyTileImagery(x, y, level, stateSet, 1, this._normalMapTileSource));
+            }
+            else
+            {
+                // Setup scaling/offset, and reuse parent texture
+                var textureUnit = 1;
+                var parentTexture  = parentStateSet.getTextureAttribute(textureUnit, 'Texture');
+                stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);
+            }
+        }
+        
+        if (this._renderGlossMaps) {
+            if (this._glossMapTileSource.hasTile(x, y, level))
+            {
+                promises.push(this.fetchAndApplyTileImagery(x, y, level, stateSet, 2, this._glossMapTileSource));
+            }
+            else
+            {
+                //  Setup scaling/offset, and reuse parent texture
+                var textureUnit = 2;
+                var parentTexture  = parentStateSet.getTextureAttribute(textureUnit, 'Texture');
+                stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);
+            }
         }
         
         if (this._renderDisplacementMaps)
@@ -193,8 +252,10 @@ ScanViewer.prototype = {
             promise.then(function() {
                 var e = ts.getRasterExtent(x, y, level);
                 
-                // Set scaling and offset for displacement mapping for exact sampling (we want to sample on the 
-                // pixel corners, and assume the heightmap to be center-sampled and have a border of one sample)
+                // Set scaling and offset for displacement mapping for exact
+                // sampling (we want to sample on the
+                // pixel corners, and assume the heightmap to be center-sampled
+                // and have a border of one sample)
                 var offsetScaleUniform = osg.Uniform.createFloat4(osg.vec4.fromValues(1.0/e.w, 1.0/e.h, 1.0 - 2.0/e.w, 1.0 - 2.0/e.h), 'uDisplacementOffsetScale');
                 stateSet.addUniform(offsetScaleUniform);
             });
@@ -365,6 +426,8 @@ ScanViewer.prototype = {
         var displacementRangeUniform = osg.Uniform.createFloat1(this._heightMax - this._heightMin, 'uDisplacementRange');
         stateSet.addUniform(displacementRangeUniform);
         
+        stateSet.addUniform(osg.Uniform.createFloat4(osg.vec4.fromValues(0.0, 0.0, 1.0, 1.0), 'uDiffuseMapOffsetScale'));
+                
         stateSet.setAttributeAndModes(this._program);        
     },
     
@@ -442,6 +505,22 @@ ScanViewer.prototype = {
             
             return g;
     },
+    
+    _hasTile: function(x, y, level) {
+        // if (this._elevationTileSource) {
+            return this._elevationTileSource.hasTile(x, y, level);
+        // }
+        return this._textureTileSource.hasTile(x, y, level);
+    },
+    
+    _getTileExtent: function(x, y, level) {        
+        return this._elevationTileSource.getTileExtent(x, y, level);
+    },
+    
+    _hasChildren: function(x, y, level) {
+        return (this._elevationTileSource && this._elevationTileSource.hasChildren(x, y, level)) || 
+               (this._textureMapTileSource && this._textureMapTileSource.hasChildren(x, y, level));
+    },
 
     /**
      * Fetches normal and texture maps for the given tile, and returns a promise
@@ -451,10 +530,12 @@ ScanViewer.prototype = {
      *            x,y,level Quadtree tile address
      * 
      */
-    createTileForGeometry: function(x, y, level) {
-        // TODO: implement getTileExtent which dispatches between tmap/normal
-        // map as required (i.e. in case we want to run without tmap)
-        var tileExtent = this._textureMapTileSource.getTileExtent(x, y, level);
+    createTileForGeometry: function(x, y, level, parentNode) {
+        
+        var tileExtent = this._getTileExtent(x, y, level);
+        if (level >= this._textureMapTileSource._levels) {
+            console.log(tileExtent.x0 + ',' + tileExtent.y0 + ' - ' + tileExtent.x1 + ',' + tileExtent.y1);
+        }
         
         var x0 = tileExtent.x0;
         var y0 = tileExtent.y0;
@@ -462,17 +543,18 @@ ScanViewer.prototype = {
         var height = (tileExtent.y1-tileExtent.y0);
         
         var that = this;
-        var createPagedLODGroup = function(parent) {
+        var createPagedLODGroup = function(parentNode) {
             var childPromises = [];
             
             for (var i = 0; i < 4; i++) {
-                var addr = that.childAddress(i, parent.x, parent.y, parent.level);
+                var addr = that.childAddress(i, parentNode.x, parentNode.y, parentNode.level);
                 (function(child) {
-                    if (that._textureMapTileSource.hasTile(child.x, child.y, child.level)) {
+                    if (that._hasTile(child.x, child.y, child.level)) {
                         childPromises.push(that.createTileForGeometry(
                             child.x,
                             child.y,
-                            child.level
+                            child.level,
+                            parentNode
                         ));
                     }
                 })(addr);
@@ -489,30 +571,33 @@ ScanViewer.prototype = {
             });                
         };
         
-        var tileGeometry = this.createGridGeometry(65, 65, 1.0);
+        var tileGeometry = this.createGridGeometry(65, 65, 0.2);
         var stateSet = tileGeometry.getOrCreateStateSet();
         
-        stateSet.setAttributeAndModes(new osg.CullFace(osg.CullFace.DISABLE)); 
-
-        // Set geometry offset and scale, used to scale and offset the [0..1]^2 grid geometry for placement in model space
+        // Set geometry offset and scale, used to scale and offset the [0..1]^2
+        // grid geometry for placement in model space
         var offsetScaleUniform = osg.Uniform.createFloat4(osg.vec4.fromValues(x0, y0, width, height), 'uOffsetScale');
         stateSet.addUniform(offsetScaleUniform);
        
         var levelUniform = osg.Uniform.createFloat1(level, 'uLODLevel');
         stateSet.addUniform(levelUniform);
         
-        // Sets a fairly conservative bounding box (due to global min/max height), shouldn't be an issue for 
+        // Sets a fairly conservative bounding box (due to global min/max
+        // height), shouldn't be an issue for
         // the typical dynamic range
         var boundingBox = new osg.BoundingBox();
         boundingBox.expandByVec3(osg.vec3.fromValues(x0, y0, this._heightMin));
         boundingBox.expandByVec3(osg.vec3.fromValues(x0 + width, y0 + height, this._heightMax));
         tileGeometry.setBound(boundingBox);
 
-
-        return this.fetchAndApplyAllTileImagery(x, y, level, stateSet).then(function() {
+        var parentTileGeometry; 
+        if (parentNode) {
+            parentTileGeometry = parentNode.getChild(0);
+        }
+        
+        return this.fetchAndApplyAllTileImagery(x, y, level, tileGeometry, parentTileGeometry).then(function() {
             var tile;
-            if (that._textureMapTileSource.hasChildren(x, y, level)) {
-                // LOD node
+            if (that._hasChildren(x, y, level)) {    
                 tile = new osg.PagedLOD();
                 tile.setRangeMode(osg.PagedLOD.PIXEL_SIZE_ON_SCREEN);
                 tile.addChild(tileGeometry, 0, that.projectedTilePixels);
