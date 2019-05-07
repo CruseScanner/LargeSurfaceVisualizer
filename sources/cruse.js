@@ -3,7 +3,7 @@ import ScanViewer from 'cruse3DViewer/ScanViewer';
 import PlanarOrbitManipulator from 'cruse3DViewer/PlanarOrbitManipulator';
 import ScanViewerWidget from 'cruse3DViewer/ScanViewerWidget';
 import Gallery from 'cruseGallery/Gallery';
-import Cruse2DViewer from 'cruse2DViewer/cruse-viewer';
+import Cruse2DViewer from 'cruse2DViewer/cruse2DViewer';
 import cruseNameSpace from 'cruseNameSpace';
 
 var cruse = cruseNameSpace;
