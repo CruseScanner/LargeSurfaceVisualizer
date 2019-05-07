@@ -63,7 +63,11 @@ Gallery.prototype = {
     var containerElement = document.getElementById(this.container);
     containerElement.className += ' gallery';
 
-    this.viewer = new CruseViewer(containerElement);
+    var viewerElement = document.createElement('div');
+    viewerElement.className = "viewer";
+    containerElement.appendChild(viewerElement);
+    this.viewer = new CruseViewer(viewerElement);
+
 
     // Create the main thumbnail container
     var thumbnail_container = document.createElement('div');

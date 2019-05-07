@@ -1,12 +1,18 @@
 import OpenSeadragon from 'openseadragon';
 import 'external/openseadragon-scalebar';
 
-var Cruse2DViewer = function(element, imageSource){
+var Cruse2DViewer = function(containerElementOrID, imageSource){
   
-  if(typeof(element) == 'string')
+  if(typeof(containerElementOrID) == 'string')
   {
-    element = document.getElementById(element);
+    containerElementOrID = document.getElementById(containerElementOrID);
   }
+
+  var element = document.createElement('div');
+  element.style.position = "absolute";
+  element.style.width = "100%";
+  element.style.height = "100%";
+  containerElementOrID.appendChild(element);
 
   var toolbarElement = document.createElement('div');
   toolbarElement.className = 'cruse-scanviewer-toolbar';

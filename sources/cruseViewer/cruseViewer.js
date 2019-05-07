@@ -9,12 +9,16 @@ var CruseViewer = function(parentElement)
 
     // Create the cruse2DViewer container
     this.viewer2dElement = document.createElement('div');
-    this.viewer2dElement.className = 'viewer';
+    this.viewer2dElement.style.position = "absolute";
+    this.viewer2dElement.style.width = "100%";
+    this.viewer2dElement.style.height = "100%";    
     this.containerElement.appendChild(this.viewer2dElement);
 
     // Create the cruse3DViewer container
     this.viewer3dElement = document.createElement('div');
-    this.viewer3dElement.className = 'viewer';
+    this.viewer3dElement.style.position = "absolute";
+    this.viewer3dElement.style.width = "100%";
+    this.viewer3dElement.style.height = "100%";    
     this.containerElement.appendChild(this.viewer3dElement);
 };
 
