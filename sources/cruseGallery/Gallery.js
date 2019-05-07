@@ -18,7 +18,7 @@
 */
 
 import ScanViewerWidget from 'cruse3DViewer/ScanViewerWidget';
-import Cruse2DViewer from 'cruse2DViewer/cruse-viewer';
+import Cruse2DViewer from 'cruse2DViewer/cruse2DViewer';
 import Drag from 'tools/UI/drag';
 
 'use strict';
