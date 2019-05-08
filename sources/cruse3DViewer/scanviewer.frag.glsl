@@ -6,11 +6,11 @@
 
 #define SHADER_NAME ScanViewerFragment
 
-//uniform vec3 uLight0_viewDirection;
-uniform vec4 uLight0_viewPosition;
-uniform vec4 uLight0_ambient;
-uniform vec4 uLight0_diffuse;
-uniform vec4 uLight0_specular;
+//uniform vec3 uLight_viewDirection[LIGHT_COUNT];
+uniform vec4 uLight_viewPosition[LIGHT_COUNT];
+uniform vec4 uLight_ambient[LIGHT_COUNT];
+uniform vec4 uLight_diffuse[LIGHT_COUNT];
+uniform vec4 uLight_specular[LIGHT_COUNT];
 
 uniform vec4 uMaterialAmbient;
 uniform vec4 uMaterialDiffuse;
@@ -93,19 +93,25 @@ void main()
 
     N = normalize(N);
 
-    // L: vertex to light
-    vec3 L = normalize(uLight0_viewPosition.xyz - uLight0_viewPosition.w*vViewVertex.xyz);         
-    // V: vertex to eye 
-    vec3 V = normalize(-vViewVertex.xyz);
-
-    float NdotL = max(dot(N, L), 0.0);
+    vec3 diffuseContribution = vec3(0.0);
+    vec3 specularContribution = vec3(0.0);
+        
+    for (int i = 0; i < LIGHT_COUNT; i++) 
+    {   
+        // L: vertex to light
+        vec3 L = normalize(uLight_viewPosition[i].xyz - uLight_viewPosition[i].w*vViewVertex.xyz);         
+        // V: vertex to eye 
+        vec3 V = normalize(-vViewVertex.xyz);
     
-    //vec3 specularContribution = specularPhongBlinn(N, L, V, uMaterialShininess, uMaterialSpecular.rgb, uLight0_specular.rgb);
-    vec3 specularContribution = specularPhong(NdotL, N, L, V, uMaterialShininess, uMaterialSpecular.rgb, uLight0_specular.rgb);
+        float NdotL = max(dot(N, L), 0.0);
 
-    vec3 diffuseContribution = NdotL*uMaterialDiffuse.rgb*uLight0_diffuse.rgb;
-    diffuseContribution+= uMaterialAmbient.rgb*uLight0_ambient.rgb;
-   
+        //specularContribution+= specularPhongBlinn(N, L, V, uMaterialShininess, uMaterialSpecular.rgb, uLight_specular[i].rgb);        
+        specularContribution+= specularPhong(NdotL, N, L, V, uMaterialShininess, uMaterialSpecular.rgb, uLight_specular[i].rgb);
+        
+        diffuseContribution+= NdotL*uMaterialDiffuse.rgb*uLight_diffuse[i].rgb;
+        diffuseContribution+= uMaterialAmbient.rgb*uLight_ambient[i].rgb;  
+    }
+  
     vec3 totalContribution = diffuseContribution*diffuseTexture;
 
 #ifdef WITH_GLOSS_MAP

@@ -1,5 +1,8 @@
 import OSG from 'external/osg';
 
+
+import ArrayLight from 'cruse3DViewer/ArrayLight';
+
 var osg = OSG.osg;
 import PlanarOrbitManipulator from 'cruse3DViewer/PlanarOrbitManipulator';
 var osgShader = OSG.osgShader;
@@ -27,8 +30,8 @@ function initializeRootNode(scanViewer) {
         scanViewer.viewer.setSceneData(rootNode);
         var stateSet = rootNode.getOrCreateStateSet();
         
+        scanViewer.setupLights(rootNode);
         scanViewer.setupShader(stateSet);
-        scanViewer.setupLight(rootNode);
 
         scanViewer._rootNode = rootNode;
         
@@ -112,21 +115,24 @@ var ScanViewer = function(canvasElement, options) {
     material.setShininess(40.0);
     this._material = material;
     
-    var light = new osg.Light();
+    var light = new ArrayLight(0);
     light.setDiffuse([1.0, 1.0, 1.0, 1.0]);
     light.setSpecular([1.0, 1.0, 1.0, 1.0]);
     light.setAmbient([0.2, 0.2, 0.2, 1.0]);
 
-    // Setup directional light; note that direction property is only used for positional lights
+    // Setup directional light; note that direction property is only used for
+    // positional lights
     light.setPosition([0.0, 0.0, 1.0, 0.0]);
-    this._light = light;
+    this._light = [];
+    this._light[0] = light;
        
     var shaderProcessor = this._shaderProcessor;
     shaderProcessor.addShaders(shaderLib);
     
     this._initializationPromise = Promise.all(promises).then(function() {
-        return initializeRootNode(that);});
-};  
+        return initializeRootNode(that);
+    });
+};
 
 ScanViewer.prototype = {
     /**
@@ -170,53 +176,82 @@ ScanViewer.prototype = {
     },
     
     /**
-     * Sets the light source type to point light with the given position
-     * \param elevation Number Elevation angle in radians
-     * \param azimuth Number Azimuth angle in radians
-     * \param distance Number Distance from origin
+     * Sets the light source type to point light with the given position \param
+     * elevation Number Elevation angle in radians \param azimuth Number Azimuth
+     * angle in radians \param distance Number Distance from origin
      */
-    setPointLight: function(elevation, azimuth, distance) {
+    setPointLight: function(lightIndex, elevation, azimuth, distance) {
         var d = this.transformSphericalToWorld(elevation, azimuth, distance);        
         // The shader assumes implicit direction atm
-        this._light.setPosition([d[0], d[1], d[2], 1.0]);
-        //this._light.setDirection(...);
+        this._light[lightIndex].setPosition([d[0], d[1], d[2], 1.0]);
+        // this._light.setDirection(...);
     },
     
     /**
-     * Sets the light source type to point light with the given position
-     * \param elevation Elevation angle in radians
-     * \param azimuth Azimuth angle in radians
+     * Sets the light source type to point light with the given position \param
+     * elevation Elevation angle in radians \param azimuth Azimuth angle in
+     * radians
      */
-    setDirectionalLight: function(elevation, azimuth) {
+    setDirectionalLight: function(lightIndex, elevation, azimuth) {
         var d = this.transformSphericalToWorld(elevation, azimuth, 1.0);
-        this._light.setPosition([d[0], d[1], d[2], 0.0]);       
+        this._light[lightIndex].setPosition([d[0], d[1], d[2], 0.0]);
+    },
+    
+    _getOrCreateLight: function(lightIndex) {
+        console.assert((lightIndex <= this._light.length), 'Light source array must be populated consecutively.');
+        if (lightIndex > this._light.length) {
+            return undefined;
+        }
+        if (lightIndex == this._light.length) {
+            // Create light
+            this._light[lightIndex] = new ArrayLight(lightIndex);
+
+            // If root node exists, we can add a corresponding lightsource
+            if (defined(this._rootNode)) {
+                var lightSource = new osg.LightSource();
+                lightSource.setLight(this._light[lightIndex]);               
+                this._rootNode.addChild(lightSource);
+                // Update shader
+                this.setupShader(this._rootNode.getOrCreateStateSet());
+            }
+
+        }
+        return this._light[lightIndex];
     },
 
-
     /**
-     * Sets lighting parameters.
-     * \param ambient Number[3] Ambient RGB contribution
-     * \param diffuse Number[3] Diffuse light color
-     * \param specular Number[3] Specular light color
-     * \param phongExponent Number   
+     * Sets lighting parameters. \param ambient Number[3] Ambient RGB
+     * contribution \param diffuse Number[3] Diffuse light color \param specular
+     * Number[3] Specular light color \param phongExponent Number
      */
-    setLightParameters: function(ambient, diffuse, specular, phongExponent) {
-            this._light.setDiffuse(diffuse);
-            this._light.setSpecular(specular);
-            this._light.setAmbient(ambient);
-            this._material.setShininess(phongExponent);
+    setLightParameters: function(lightIndex, ambient, diffuse, specular, phongExponent) {
+        var light = this._getOrCreateLight(lightIndex);
+        if (!defined(light)) {
+            return;
+        }
+        light.setDiffuse(diffuse);
+        light.setSpecular(specular);
+        light.setAmbient(ambient);
+        this._material.setShininess(phongExponent);
     },
     
     /**
      * Gets lighting parameters.
      */
-    getLightParameters: function() {
+    getLightParameters: function(lightIndex) {
+        if (this._light.length <= lightIndex) {
+            throw 'out of bounds';
+        }     
         return {
-            diffuse  : osg.vec4.clone(this._light.getDiffuse()),
-            specular : osg.vec4.clone(this._light.getSpecular()),
-            ambient  : osg.vec4.clone(this._light.getAmbient()),
+            diffuse  : osg.vec4.clone(this._light[lightIndex].getDiffuse()),
+            specular : osg.vec4.clone(this._light[lightIndex].getSpecular()),
+            ambient  : osg.vec4.clone(this._light[lightIndex].getAmbient()),
             phongExponent : this._material.getShininess()
         };
+    },
+    
+    getLightCount: function() {
+        return this._light.length;
     },
     
     setEnableLODVisualization: function(value)
@@ -226,13 +261,14 @@ ScanViewer.prototype = {
         this.setupShader(stateSet);
     },
      
-    setupLight : function(node) {
+    setupLights : function(node) {
         var stateSet = node.getOrCreateStateSet();
-      
-        var lightSource = new osg.LightSource();
-        lightSource.setLight(this._light);
-       
-        node.addChild(lightSource);
+
+        for (var i = 0; i < this._light.length; i++) {
+            var lightSource = new osg.LightSource();
+            lightSource.setLight(this._light[i]);
+            node.addChild(lightSource);            
+        }
     },
     
     setupShader : function(stateSet) {
@@ -243,6 +279,8 @@ ScanViewer.prototype = {
         if (this._renderNormalMaps) defines.push('#define WITH_NORMAL_MAP');
         if (this._renderGlossMaps) defines.push('#define WITH_GLOSS_MAP');
         if (this._enableLODDebugging) defines.push('#define WITH_DEBUG_LOD');
+        
+        defines.push('#define LIGHT_COUNT ' + this.getLightCount());
 
         var vertexshader = this._shaderProcessor.getShader('scanviewer.vert.glsl', defines);
         var fragmentshader = this._shaderProcessor.getShader('scanviewer.frag.glsl', defines);
@@ -252,8 +290,15 @@ ScanViewer.prototype = {
             new osg.Shader('FRAGMENT_SHADER', fragmentshader)
         );
         
-        this._program.setTrackAttributes({ attributeKeys : ['Material', 'Light0'],  textureAttributeKeys : [ [ 'Texture' ], [ 'Texture' ], ['Texture'] ]});
+        var attributeKeys = [ 'Material' ];
+        for (var i = 0; i  < this.getLightCount(); i++) {
+            attributeKeys.push('ArrayLight' + i);
+        }
         
+        this._program.setTrackAttributes({ 
+            attributeKeys : attributeKeys,  
+            textureAttributeKeys : [ [ 'Texture' ], [ 'Texture' ], ['Texture'] ]
+        });
         
         stateSet.setAttributeAndModes(this._program);        
     },

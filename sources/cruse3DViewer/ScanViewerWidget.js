@@ -59,11 +59,11 @@ ScanViewerWidget.prototype = {
         
         var config = this._config;
         var updateLightPosition = function() {
-            scanviewer.setDirectionalLight(config.elevation, config.azimuth);
+            scanviewer.setDirectionalLight(0, config.elevation, config.azimuth);
         };
         
         var updateLightParameters = function(value) {
-            scanviewer.setLightParameters(
+            scanviewer.setLightParameters(0, 
                     [config.ambient, config.ambient, config.ambient, 1.0], 
                     [config.diffuse, config.diffuse, config.diffuse, 1.0],
                     [config.specular, config.specular, config.specular, 1.0],
@@ -232,17 +232,17 @@ ScanViewerWidget.prototype = {
             };
 
             var updateDiffuse = function() {
-                var lp = scanViewer.getLightParameters();
+                var lp = scanViewer.getLightParameters(0);
                 var diffuse = lightSourceDiffuseSliderElement.value/100.0;
                 lp.diffuse = osg.vec4.fromValues(diffuse, diffuse, diffuse, 1.0);
-                scanViewer.setLightParameters(lp.ambient, lp.diffuse, lp.specular, lp.phongExponent);
+                scanViewer.setLightParameters(0, lp.ambient, lp.diffuse, lp.specular, lp.phongExponent);
                 lightSourcePointerElement.style.backgroundColor = toHexColor(diffuse);
             };
             var updateSpecular = function() {
-                var lp = scanViewer.getLightParameters();
+                var lp = scanViewer.getLightParameters(0);
                 var specular = lightSourceSpecularSliderElement.value/100.0;
                 lp.specular = osg.vec4.fromValues(specular, specular, specular, 1.0);
-                scanViewer.setLightParameters(lp.ambient, lp.diffuse, lp.specular, lp.phongExponent);
+                scanViewer.setLightParameters(0, lp.ambient, lp.diffuse, lp.specular, lp.phongExponent);
             };          
           
             lightSourceDiffuseSliderElement.oninput = updateDiffuse;
@@ -306,7 +306,7 @@ ScanViewerWidget.prototype = {
                 var elevation = Math.asin(z);
                 var azimuth = Math.atan2(y, x);
                 
-                scanViewer.setDirectionalLight(elevation, azimuth);
+                scanViewer.setDirectionalLight(0, elevation, azimuth);
                 
                 x*= radius;    
                 y*= radius;
@@ -366,7 +366,7 @@ ScanViewerWidget.prototype = {
             that.setProgress(a + b);
         });
 
-        var lp = scanViewer.getLightParameters();
+        var lp = scanViewer.getLightParameters(0);
         this._config.ambient = this._shadingProject.ambient || lp.ambient[0];
         this._config.diffuse = this._shadingProject.diffuse || lp.diffuse[0];
         this._config.specular = this._shadingProject.specular || lp.specular[0];
@@ -382,13 +382,14 @@ ScanViewerWidget.prototype = {
         that.gui.__controllers.forEach(function(c) { c.updateDisplay(); });
         
         scanViewer.setLightParameters(
+            0,
             [this._config.ambient, this._config.ambient, this._config.ambient, 1.0], 
             [this._config.diffuse, this._config.diffuse, this._config.diffuse, 1.0],
             [this._config.specular, this._config.specular, this._config.specular, 1.0],
             this._config.phongExponent
         );
 
-        scanViewer.setDirectionalLight(this._config.elevation, this._config.azimuth);
+        scanViewer.setDirectionalLight(0, this._config.elevation, this._config.azimuth);
 
         return scanViewer.run();
     },
