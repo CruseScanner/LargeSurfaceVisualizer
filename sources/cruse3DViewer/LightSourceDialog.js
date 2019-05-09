@@ -17,105 +17,131 @@ var LightSourceDialog = function(scanViewer, parentElement) {
     this._scanViewer = scanViewer;
     this._lightSourcePointerElement = [];
     this._activeLightIndex = 0;
-    
-    
-    var lightSourceDialogElement = document.getElementById('cruse-scanviewerwidget-lightsource-dialog');
-    if (lightSourceDialogElement == null) {       
-        var lightSourceDialogElement = document.createElement('div');
-        lightSourceDialogElement.className = 'cruse-scanviewer-lightsource-dialog';
-
-        var lightSourceHemisphereElement = document.createElement('div');
-        lightSourceHemisphereElement.className = 'cruse-scanviewer-lightsource-hemisphere';
-        this._lightSourceHemisphereElement = lightSourceHemisphereElement;
-        
-        // Create absolutely positioned element so that pointer coordinates can be specified relative to the hemisphere div 
-        var lightSourceHemisphereWrapElement = document.createElement('div');
-        lightSourceHemisphereWrapElement.style = 'position: absolute';
-        this._lightSourceHemisphereWrapElement = lightSourceHemisphereWrapElement;
-        
-        var lightSourceFieldSetElement = document.createElement('fieldset');
-        var lightSourceFieldSetLegendElement = document.createElement('legend');
-        lightSourceFieldSetLegendElement.innerText = "Lightsource";
-               
-        var lightSourceDiffuseSliderElement = document.createElement('input');
-        lightSourceDiffuseSliderElement.className = 'cruse-scanviewer-lightsource-slider';
-        lightSourceDiffuseSliderElement.type = 'range';
-        lightSourceDiffuseSliderElement.min = 0;
-        lightSourceDiffuseSliderElement.max = 100;
-        lightSourceDiffuseSliderElement.value = 100;
-        this._lightSourceDiffuseSliderElement = lightSourceDiffuseSliderElement;
-        
-        var lightSourceSpecularSliderElement = document.createElement('input');
-        lightSourceSpecularSliderElement.className = 'cruse-scanviewer-lightsource-slider';
-        lightSourceSpecularSliderElement.type = 'range';
-        lightSourceSpecularSliderElement.min = 0;
-        lightSourceSpecularSliderElement.max = 100;
-        lightSourceSpecularSliderElement.value = 100; 
-        this._lightSourceSpecularSliderElement = lightSourceSpecularSliderElement;
-        
-        var that = this;
-       
-        var updateDiffuse = function() {
-            var lp = that._scanViewer.getLightParameters(that._activeLightIndex);
-            var diffuse = lightSourceDiffuseSliderElement.value/100.0;
-            lp.diffuse = osg.vec4.fromValues(diffuse, diffuse, diffuse, 1.0);
-            that._scanViewer.setLightParameters(that._activeLightIndex, lp.ambient, lp.diffuse, lp.specular, lp.phongExponent);
-            that._lightSourcePointerElement[that._activeLightIndex].style.backgroundColor = toHexColor(diffuse);
-        };
-        var updateSpecular = function() {
-            var lp = that._scanViewer.getLightParameters(that._activeLightIndex);
-            var specular = lightSourceSpecularSliderElement.value/100.0;
-            lp.specular = osg.vec4.fromValues(specular, specular, specular, 1.0);
-            that._scanViewer.setLightParameters(that._activeLightIndex, lp.ambient, lp.diffuse, lp.specular, lp.phongExponent);
-        };          
       
-        lightSourceDiffuseSliderElement.oninput = updateDiffuse;
-        lightSourceDiffuseSliderElement.onchange = updateDiffuse;
+    var lightSourceDialogElement = document.createElement('div');
+    lightSourceDialogElement.className = 'cruse-scanviewer-lightsource-dialog';
 
-        lightSourceSpecularSliderElement.oninput = updateSpecular;
-        lightSourceSpecularSliderElement.onchange = updateSpecular;
-        
-        lightSourceHemisphereElement.appendChild(lightSourceHemisphereWrapElement);
-        lightSourceDialogElement.appendChild(lightSourceHemisphereElement);
-        
-        lightSourceFieldSetElement.appendChild(lightSourceFieldSetLegendElement);
-        var labelElement = document.createElement("left");
-        labelElement.innerText = "Power";
-        lightSourceFieldSetElement.appendChild(labelElement);
+    var lightSourceHemisphereElement = document.createElement('div');
+    lightSourceHemisphereElement.className = 'cruse-scanviewer-lightsource-hemisphere';
+    this._lightSourceHemisphereElement = lightSourceHemisphereElement;
+    
+    // Create absolutely positioned element so that pointer coordinates can be specified relative to the hemisphere div 
+    var lightSourceHemisphereWrapElement = document.createElement('div');
+    lightSourceHemisphereWrapElement.style = 'position: absolute';
+    this._lightSourceHemisphereWrapElement = lightSourceHemisphereWrapElement;
+    
+    var lightSourceFieldSetElement = document.createElement('fieldset');
+    var lightSourceFieldSetLegendElement = document.createElement('legend');
+    lightSourceFieldSetLegendElement.innerText = "Lightsource";
+           
+    var lightSourceDiffuseSliderElement = document.createElement('input');
+    lightSourceDiffuseSliderElement.className = 'cruse-scanviewer-lightsource-slider';
+    lightSourceDiffuseSliderElement.type = 'range';
+    lightSourceDiffuseSliderElement.min = 0;
+    lightSourceDiffuseSliderElement.max = 100;
+    lightSourceDiffuseSliderElement.value = 100;
+    this._lightSourceDiffuseSliderElement = lightSourceDiffuseSliderElement;
+    
+    var lightSourceSpecularSliderElement = document.createElement('input');
+    lightSourceSpecularSliderElement.className = 'cruse-scanviewer-lightsource-slider';
+    lightSourceSpecularSliderElement.type = 'range';
+    lightSourceSpecularSliderElement.min = 0;
+    lightSourceSpecularSliderElement.max = 100;
+    lightSourceSpecularSliderElement.value = 100; 
+    this._lightSourceSpecularSliderElement = lightSourceSpecularSliderElement;
+    
+    var that = this;
+   
+    var updateDiffuse = function() {
+        var lp = that._scanViewer.getLightParameters(that._activeLightIndex);
+        var diffuse = lightSourceDiffuseSliderElement.value/100.0;
+        lp.diffuse = osg.vec4.fromValues(diffuse, diffuse, diffuse, 1.0);
+        that._scanViewer.setLightParameters(that._activeLightIndex, lp.ambient, lp.diffuse, lp.specular, lp.phongExponent);
+        that._lightSourcePointerElement[that._activeLightIndex].style.backgroundColor = toHexColor(diffuse);
+    };
+    var updateSpecular = function() {
+        var lp = that._scanViewer.getLightParameters(that._activeLightIndex);
+        var specular = lightSourceSpecularSliderElement.value/100.0;
+        lp.specular = osg.vec4.fromValues(specular, specular, specular, 1.0);
+        that._scanViewer.setLightParameters(that._activeLightIndex, lp.ambient, lp.diffuse, lp.specular, lp.phongExponent);
+    };          
+  
+    lightSourceDiffuseSliderElement.oninput = updateDiffuse;
+    lightSourceDiffuseSliderElement.onchange = updateDiffuse;
 
-        lightSourceFieldSetElement.appendChild(lightSourceDiffuseSliderElement);
+    lightSourceSpecularSliderElement.oninput = updateSpecular;
+    lightSourceSpecularSliderElement.onchange = updateSpecular;
+    
+    lightSourceHemisphereElement.appendChild(lightSourceHemisphereWrapElement);
+    lightSourceDialogElement.appendChild(lightSourceHemisphereElement);
+    
+    lightSourceFieldSetElement.appendChild(lightSourceFieldSetLegendElement);
+    var labelElement = document.createElement("left");
+    labelElement.innerText = "Power";
+    lightSourceFieldSetElement.appendChild(labelElement);
 
-        labelElement = document.createElement("left");
-        labelElement.innerText = "Glossiness";
-        lightSourceFieldSetElement.appendChild(labelElement);
-        
-        lightSourceFieldSetElement.appendChild(lightSourceSpecularSliderElement);
-        lightSourceDialogElement.appendChild(lightSourceFieldSetElement);
-        parentElement.appendChild(lightSourceDialogElement);
+    lightSourceFieldSetElement.appendChild(lightSourceDiffuseSliderElement);
 
-        
-        for (var i = 0; i < scanViewer.getLightCount(); i++) {
-            this._addLightPointerElement();
-            this._updateLightStateFromScanviewer(i);
+    labelElement = document.createElement("left");
+    labelElement.innerText = "Glossiness";
+    lightSourceFieldSetElement.appendChild(labelElement);
+    
+    lightSourceFieldSetElement.appendChild(lightSourceSpecularSliderElement);
+    lightSourceDialogElement.appendChild(lightSourceFieldSetElement);
+    parentElement.appendChild(lightSourceDialogElement);
+
+    
+    for (var i = 0; i < scanViewer.getLightCount(); i++) {
+        this._addLightPointerElement();
+        this._updateLightStateFromScanViewer(i);
+    }
+   
+    this._dragging = false;
+    window.onmousemove = function(e) {
+        if (!that._dragging) {
+            return;
         }
-                
-        this._dragging = false;
-        window.onmousemove = function(e) {
-            if (!that._dragging) {
-                return;
-            }
-            var spherical = that._mouseToSpherical(e.x, e.y);
-            scanViewer.setDirectionalLight(that._activeLightIndex, spherical.elevation, spherical.azimuth);
-            that._updateLightPosition(that._activeLightIndex, spherical.azimuth, spherical.elevation);
-        }
-                
+        var spherical = that._mouseToSpherical(e.x, e.y);
+        scanViewer.setDirectionalLight(that._activeLightIndex, spherical.elevation, spherical.azimuth);
+        that._updateLightPosition(that._activeLightIndex, spherical.azimuth, spherical.elevation);
     }
 };
 
 LightSourceDialog.prototype = {
+    update(scanViewer, activeLightIndex) {
+        this._scanViewer = scanViewer;
+        if (activeLightIndex !== undefined) {
+            this._activeLightIndex = activeLightIndex;
+        }
+
+        while (this._lightSourcePointerElement.length > scanViewer.getLightCount()) {
+            this._removeLightPointerElement();
+        }
+        while (this._lightSourcePointerElement.length < scanViewer.getLightCount()) {
+            var index = this._addLightPointerElement();
+        }
+        for (var i = 0; i < this._lightSourcePointerElement.length; i++) {
+            this._updateLightStateFromScanViewer(i);
+        }
+    },
+    
+    activateLight(index) {
+        if (index !== this._activeLightIndex) {
+            this._activeLightIndex = index;
+            // update sliders
+            this._updateSliders();
+        }
+    },
+    
+    _updateSliders: function() {
+        var index = this._activeLightIndex;
+        var lp = this._scanViewer.getLightParameters(index);
+        this._lightSourceDiffuseSliderElement.value = lp.diffuse[0]*100;           
+        this._lightSourceSpecularSliderElement.value = lp.specular[0]*100;           
+    },
         
     // Initialize/update widget state from scanviewer light state
-    _updateLightStateFromScanviewer: function(index) {
+    _updateLightStateFromScanViewer: function(index) {
         if (index >= this._lightSourcePointerElement.length) {
             return;
         }
@@ -123,21 +149,19 @@ LightSourceDialog.prototype = {
         if (index >= this._scanViewer.getLightCount()) {
             return;
         }
-        
-        var lp = this._scanViewer.getLightParameters(index);
+
+        // Update sliders
         if (index === this._activeLightIndex) {
-            // update sliders
-            this._lightSourceDiffuseSliderElement.value = lp.diffuse[0]*100;           
-            this._lightSourceSpecularSliderElement.value = lp.specular[0]*100;
+            this._updateSliders();
         }
         
         // update pointer position
         var p = this._scanViewer.getLightPosition(index);
         if (p !== undefined) {
             this._updateLightPosition(index, p.azimuth, p.elevation);
-        }
-       
+        }       
         // update pointer color
+        var lp = this._scanViewer.getLightParameters(index);
         this._lightSourcePointerElement[index].style.backgroundColor = toHexColor(lp.diffuse[0]);
     },
     
@@ -171,7 +195,6 @@ LightSourceDialog.prototype = {
         var XX = x*radius + radius;
         var YY = y*radius + radius;
         
-        console.log("From " + XX + "," + YY + " to e: " + Math.asin(z) + ", a: " + Math.atan2(y, x)); 
         return {
             elevation : Math.asin(z),
             azimuth : Math.atan2(y, x)
@@ -193,8 +216,6 @@ LightSourceDialog.prototype = {
         x+= radius;
         y+= radius;    
         
-        console.log("From e: " + elevation + ", a: " + azimuth + " to " + x + ", "+ y); 
-        
         return [x, y];
     },
 
@@ -210,7 +231,7 @@ LightSourceDialog.prototype = {
         
         var that = this;
         lightSourcePointerElement.onmousedown = function(e) {
-            that._activeLightIndex = index; 
+            that.activateLight(index); 
             //if (e.button === 1) {
                 that._dragging = true;
             //}
@@ -221,7 +242,23 @@ LightSourceDialog.prototype = {
             //}
         }
         return index;
+    },
+    
+    _removeLightPointerElement: function() {
+        var index = this._lightSourcePointerElement.length - 1;
+        if (index < 1) {
+            return;
+        }
+        
+        this._lightSourcePointerElement[index].remove();
+        this._lightSourcePointerElement.length = index;
+        
+        if (this._activeLightSource === index) {
+            this._dragging = false;
+            this._activeLightSource--;
+        }
     }
+    
 };
 
 export default LightSourceDialog;
