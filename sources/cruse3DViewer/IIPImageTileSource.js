@@ -11,8 +11,9 @@ function initialize(tileSource, jsonData) {
     var tilesX =  Math.ceil(tileSource._imageWidth/tileSource._tileSize);
     var tilesY =  Math.ceil(tileSource._imageHeight/tileSource._tileSize);
     
-    // TODO: log2 not supported prior to ECMAscript6, add polyfill or use standard log
-    tileSource._levels = Math.ceil(Math.log2(Math.max(tilesX, tilesY)));       
+    // TODO: log2 not supported prior to ECMAscript6, add polyfill or use
+    // standard log
+    tileSource._levels = Math.ceil(Math.log2(Math.max(tilesX, tilesY))) + 1;       
     tileSource._tilesX = tilesX;
     tileSource._tilesY = tilesY;
       
@@ -53,9 +54,10 @@ var IIPImageTileSource = function(url, filename, options) {
 };
 
 IIPImageTileSource.prototype = { 
-    // Returns pixels covered by a tile at the given level (excluding border) 
+    // Returns pixels covered by a tile at the given level (excluding border)
     getTileSize: function(level) {
-        return this._tileSize*(1<<(this._levels - level));
+        return this._tileSize*(1<<(this._levels - level - 1));
+    },
     },
     
     hasChildren: function(x, y, level) {
@@ -86,7 +88,7 @@ IIPImageTileSource.prototype = {
      * Returns pixel coordinates of the image region covered by the given tile.  
      */
     getRasterExtent: function(x, y, level, excludeBorder) {
-        var levelFactor = 1<<(this._levels - level);
+        var levelFactor = 1<<(this._levels - level - 1);
         var tileSize = this.getTileSize(level);
         var borderSize;
         if (excludeBorder) {
