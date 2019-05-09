@@ -48,7 +48,7 @@ function initializeRootNode(scanViewer) {
         manipulator.setAutoPushTarget(false);
         manipulator.setLimitZoomIn(boundingSphere.radius() * 0.3);
         manipulator.setLimitZoomOut(boundingSphere.radius() * 3.0);
-        manipulator.setMinSpeed(256*10);
+        manipulator.setMinSpeed(256*10*scanViewer.getPixelScale());
         manipulator.setDistance(boundingSphere.radius() * 1.5);
         manipulator.setLimitPitchDown(15.0*Math.PI/180.0);
     });
@@ -113,12 +113,17 @@ var ScanViewer = function(canvasElement, options) {
             that._renderDisplacementMaps = true;
         }));
         
-        this._heightMin = 0.0;
-        this._heightMax = Math.abs(options.heightMax - options.heightMin);
+        this._elevationMin = 0.0;
+        if (defined(options.elevationMax) && defined(options.elevationMin)) {
+            this._elevationMax = Math.abs(options.elevationMax - options.elevationMin);
+        }
+        else {
+            this._elevationMax = 10.0; // default to 10mm
+        }
     }
     else {
-        this._heightMin = 0.0;
-        this._heightMax = 0.0;
+        this._elevationMin = 0.0;
+        this._elevationMax = 0.0;
     }
     
     var material = new osg.Material();
@@ -378,6 +383,12 @@ ScanViewer.prototype = {
         return this._light.length;
     },
     
+    getPixelScale: function() {
+        if (defined(this._textureMapTileSource)) {
+            return this._textureMapTileSource.getPixelScale();
+        }
+    },
+                
     setEnableLODVisualization: function(value)
     {
         this._enableLODDebugging = value;
@@ -425,7 +436,7 @@ ScanViewer.prototype = {
             textureAttributeKeys : [ [ 'Texture' ], [ 'Texture' ], ['Texture'], ['Texture'] ]
         });
         
-        var displacementRangeUniform = osg.Uniform.createFloat1(this._heightMax - this._heightMin, 'uDisplacementRange');
+        var displacementRangeUniform = osg.Uniform.createFloat1(this._elevationMax - this._elevationMin, 'uDisplacementRange');
         stateSet.addUniform(displacementRangeUniform);
         
         stateSet.addUniform(osg.Uniform.createFloat4(osg.vec4.fromValues(0.0, 0.0, 1.0, 1.0), 'uDiffuseMapOffsetScale'));
@@ -549,10 +560,7 @@ ScanViewer.prototype = {
     createTileForGeometry: function(x, y, level, parentNode) {
         
         var tileExtent = this._getTileExtent(x, y, level);
-        if (level >= this._textureMapTileSource._levels) {
-            console.log(tileExtent.x0 + ',' + tileExtent.y0 + ' - ' + tileExtent.x1 + ',' + tileExtent.y1);
-        }
-        
+       
         var x0 = tileExtent.x0;
         var y0 = tileExtent.y0;
         var width =  (tileExtent.x1-tileExtent.x0);
@@ -602,8 +610,8 @@ ScanViewer.prototype = {
         // height), shouldn't be an issue for
         // the typical dynamic range
         var boundingBox = new osg.BoundingBox();
-        boundingBox.expandByVec3(osg.vec3.fromValues(x0, y0, this._heightMin));
-        boundingBox.expandByVec3(osg.vec3.fromValues(x0 + width, y0 + height, this._heightMax));
+        boundingBox.expandByVec3(osg.vec3.fromValues(x0, y0, this._elevationMin));
+        boundingBox.expandByVec3(osg.vec3.fromValues(x0 + width, y0 + height, this._elevationMax));
         tileGeometry.setBound(boundingBox);
 
         var parentTileGeometry; 
