@@ -154,11 +154,11 @@ ScanViewerWidget.prototype = {
         };
 
         var closeSideBar = function () {
-            sideBarElement.style.width = "0";
-            viewElement.style.marginLeft= "0";
+            sideBarElement.style.width = "0px";
+            viewElement.style.marginLeft= "0px";
         };
         
-        openSideBar();
+        closeSideBar();
         
         return sideBarElement;
     },
@@ -202,9 +202,9 @@ ScanViewerWidget.prototype = {
 
         
         var scanViewer = new ScanViewer(canvas, options);
-        this._sideBar = this.createSideBar(this._viewDivElement);
-              
         
+        // Creating page with sidebar open is extremly slow (takes >1 sec for initial startup/layouting), WHY?
+        this._sideBar = this.createSideBar(this._viewDivElement);
         if (!defined(this._lightSourceDialog)) {
             this._lightSourceDialog = new LightSourceDialog(scanViewer, this._sideBar); 
         }

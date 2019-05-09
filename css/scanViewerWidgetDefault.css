@@ -15,14 +15,14 @@
 }
 
 #ViewContainer {
-  transition: margin-left .5s;
+  transition: margin-left 0.5s;
+  margin-left: 0px;
 }
 
-
 .cruse-scanviewer-sidebar {
-  height: 100%;
-  width: 0;
   position: fixed;
+  height: 100%;
+  width: 0px;
   z-index: 1;
   top: 0;
   left: 0;
