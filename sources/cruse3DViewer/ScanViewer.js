@@ -432,74 +432,89 @@ ScanViewer.prototype = {
     },
     
     createGridGeometry :function(samplesX, samplesY, skirtSize) {
+        if (!defined(this._gridGeometryCache)) {
+            this._gridGeometryCache = {};
+        }
+        var cache = this._gridGeometryCache;
+        
         var skirt = defined(skirtSize) ? 1 : 0;
     
-        var g = new osg.Geometry();
+        var gridID = samplesX.toString() + "_" + samplesY.toString() + "_" + skirtSize.toString();
+        var cacheEntry = cache[gridID];
         
-        
-        var vX = samplesX + 2*skirt;
-        var vY = samplesY + 2*skirt;
-        
-        var vertex = new osg.Float32Array(vX*vY*2);
-        var vi = 0;
-        for (var y = -skirt; y < samplesY + skirt; y++) {
-            var yCoord;
-            if (y == -1) {
-                yCoord = -skirtSize;
+        if (!defined(cacheEntry)) {
+            //console.log("Got cache miss for " + gridID);
+            cacheEntry = cache[gridID] = {};
+            
+            var vX = samplesX + 2*skirt;
+            var vY = samplesY + 2*skirt;
+            
+            var vertex = new osg.Float32Array(vX*vY*2);
+            var vi = 0;
+            for (var y = -skirt; y < samplesY + skirt; y++) {
+                var yCoord;
+                if (y == -1) {
+                    yCoord = -skirtSize;
+                }
+                else if (y == samplesY) {
+                    yCoord = 1.0 + skirtSize;
+                }
+                else {
+                    yCoord = Math.max(0.0, y/(samplesY-1));
+                }
+                
+                
+                // Set leftmost skirt vertex
+                if (skirt) {
+                    vertex[vi*2    ] = -skirtSize;   
+                    vertex[vi*2 + 1] = yCoord;   
+                    vi++;
+                }               
+                for (var x = 0; x < samplesX; x++) {
+                    vertex[vi*2    ] = x/(samplesX-1);
+                    vertex[vi*2 + 1] = yCoord;
+                    vi++;
+                }
+                // Set rightmost skirt vertex
+                if (skirt) {
+                    vertex[vi*2]     = 1.0 + skirtSize;   
+                    vertex[vi*2 + 1] = yCoord;   
+                    vi++;
+                }                
             }
-            else if (y == samplesY) {
-                yCoord = 1.0 + skirtSize;
-            }
-            else {
-                yCoord = Math.max(0.0, y/(samplesY-1));
+               
+            var quadsX = vX - 1;
+            var quadsY = vY - 1;
+            
+            var indices = new osg.Uint16Array(quadsX*quadsY*6);
+            var q = 0;
+            for (var y = 0; y < quadsY; y++) {
+                vi = y*vX;                
+                for (var x = 0; x < quadsX; x++) {
+                    indices[q*6 + 0] = vi;
+                    indices[q*6 + 1] = vi + 1;
+                    indices[q*6 + 2] = vi + vX;
+                    indices[q*6 + 3] = vi + vX;
+                    indices[q*6 + 4] = vi + 1;
+                    indices[q*6 + 5] = vi + vX + 1;
+                    vi++;
+                    q++;
+                }
             }
             
-            
-            // Set leftmost skirt vertex
-            if (skirt) {
-                vertex[vi*2    ] = -skirtSize;   
-                vertex[vi*2 + 1] = yCoord;   
-                vi++;
-            }               
-            for (var x = 0; x < samplesX; x++) {
-                vertex[vi*2    ] = x/(samplesX-1);
-                vertex[vi*2 + 1] = yCoord;
-                vi++;
-            }
-            // Set rightmost skirt vertex
-            if (skirt) {
-                vertex[vi*2]     = 1.0 + skirtSize;   
-                vertex[vi*2 + 1] = yCoord;   
-                vi++;
-            }                
+            cacheEntry.primitives = new osg.DrawElements(
+                osg.primitiveSet.TRIANGLES,
+                new osg.BufferArray(osg.BufferArray.ELEMENT_ARRAY_BUFFER, indices, 1)
+            );
+            cacheEntry.vertexBuffer = new osg.BufferArray(osg.BufferArray.ARRAY_BUFFER, vertex, 2);
         }
-           
-        var quadsX = vX - 1;
-        var quadsY = vY - 1;
-        
-        var indices = new osg.Uint16Array(quadsX*quadsY*6);
-        var q = 0;
-        for (var y = 0; y < quadsY; y++) {
-            vi = y*vX;                
-            for (var x = 0; x < quadsX; x++) {
-                indices[q*6 + 0] = vi;
-                indices[q*6 + 1] = vi + 1;
-                indices[q*6 + 2] = vi + vX;
-                indices[q*6 + 3] = vi + vX;
-                indices[q*6 + 4] = vi + 1;
-                indices[q*6 + 5] = vi + vX + 1;
-                vi++;
-                q++;
-            }
+        else {
+            //console.log("Got cache hit for " + gridID);
         }
 
-        g.getAttributes().Vertex = new osg.BufferArray(osg.BufferArray.ARRAY_BUFFER, vertex, 2);
-
-        var primitive = new osg.DrawElements(
-            osg.primitiveSet.TRIANGLES,
-            new osg.BufferArray(osg.BufferArray.ELEMENT_ARRAY_BUFFER, indices, 1)
-        );
-        g.getPrimitives().push(primitive);
+        var g = new osg.Geometry();        
+        g.getAttributes().Vertex = cacheEntry.vertexBuffer; 
+        g.getPrimitives().push(cacheEntry.primitives);
         
         
         return g;
