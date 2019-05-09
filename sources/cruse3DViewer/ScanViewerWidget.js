@@ -218,16 +218,12 @@ ScanViewerWidget.prototype = {
 
         
         var scanViewer = new ScanViewer(canvas, options);
-        
         this._sideBar = this.createSideBar(this._viewDivElement);
+              
         
-        if (defined(this._lightSourceDialog)) {
-            this._lightSourceDialog.update(scanViewer);
-        }
-        else {
+        if (!defined(this._lightSourceDialog)) {
             this._lightSourceDialog = new LightSourceDialog(scanViewer, this._sideBar); 
         }
-                
         var that = this;
        
         scanViewer.viewer.getDatabasePager().setProgressCallback(function(a, b) {
