@@ -7,6 +7,7 @@
     "diffuse" : 0.8,
     "specular" : 0.2,
     "phongExponent" : 10,
+    "caption": "Some Info about the 3D scan <br>100 x 12 Pixel <br> 26.83cm x 20.86cm<br>",
     "server": "/iipsrv/iipsrv.fcgi"
 },
 {
