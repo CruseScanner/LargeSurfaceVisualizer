@@ -186,6 +186,17 @@ ScanViewer.prototype = {
         this._light[lightIndex].setPosition([d[0], d[1], d[2], 1.0]);
         // this._light.setDirection(...);
     },
+
+    /**
+     * Returns light position in spherical coordinates.
+     */
+    getLightPosition: function(lightIndex) {
+        if (lightIndex >= this._light.length) return undefined;
+        var p = this._light[lightIndex].getPosition();
+        var result = this.transformWorldToSpherical(osg.vec3.fromValues(p[0], p[1], p[2]));
+        result.directional = (p[3] === 0.0);
+        return result;
+    },
     
     /**
      * Sets the light source type to point light with the given position \param
@@ -196,6 +207,19 @@ ScanViewer.prototype = {
         var d = this.transformSphericalToWorld(elevation, azimuth, 1.0);
         this._light[lightIndex].setPosition([d[0], d[1], d[2], 0.0]);
     },
+    
+    getDirectionalLight: function(lightIndex) {
+        if (lightIndex <= this._light.length) {
+            return undefined;
+        }
+        var p = this._light[lightIndex].getPosition();
+        if (p[3] != 0.0) {
+            return undefined;
+        }
+        
+        return this.transformWorldToSpherical(p);
+    },
+        
     
     _getOrCreateLight: function(lightIndex) {
         console.assert((lightIndex <= this._light.length), 'Light source array must be populated consecutively.');
@@ -398,8 +422,31 @@ ScanViewer.prototype = {
         var direction = osg.vec3.fromValues(Math.cos(azimuth)*Math.cos(elevation), -Math.sin(azimuth)*Math.cos(elevation), Math.sin(elevation));
         osg.vec3.scale(direction, direction, distance);
         return direction;        
-    },   
-   
+    },
+    
+    transformWorldToSpherical: function(world) {
+        var spherical = {};
+        spherical.distance = osg.vec3.length(world);
+        if (spherical.distance === 0.0) {
+            return undefined;
+        }
+        
+        var n = osg.vec3.scale(osg.vec3.create(), world, 1.0/spherical.distance);
+       
+        var nl = osg.vec2.length(n);
+        if (nl < 1.0E-5) {
+            spherical.elevation = Math.PI / 2.0;
+            spherical.azimuth = 0.0;
+            return spherical;
+        }
+        spherical.elevation = Math.acos(nl);
+        spherical.azimuth = -Math.atan2(n[1]*nl, n[0]*nl);
+        if (spherical.azimuth < 0.0) {
+            spherical.azimuth += 2.0*Math.PI;
+        }
+        return spherical;
+    },  
+     
     run: function() {
         var that = this;
         return this._initializationPromise.then(function() {
