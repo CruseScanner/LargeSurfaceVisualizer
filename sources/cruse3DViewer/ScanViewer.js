@@ -432,78 +432,77 @@ ScanViewer.prototype = {
     },
     
     createGridGeometry :function(samplesX, samplesY, skirtSize) {
+        var skirt = defined(skirtSize) ? 1 : 0;
+    
+        var g = new osg.Geometry();
         
-            var skirt = defined(skirtSize) ? 1 : 0;
         
-            var g = new osg.Geometry();
-            
-            
-            var vX = samplesX + 2*skirt;
-            var vY = samplesY + 2*skirt;
-            
-            var vertex = new osg.Float32Array(vX*vY*2);
-            var vi = 0;
-            for (var y = -skirt; y < samplesY + skirt; y++) {
-                var yCoord;
-                if (y == -1) {
-                    yCoord = -skirtSize;
-                }
-                else if (y == samplesY) {
-                    yCoord = 1.0 + skirtSize;
-                }
-                else {
-                    yCoord = Math.max(0.0, y/(samplesY-1));
-                }
-                
-                
-                // Set leftmost skirt vertex
-                if (skirt) {
-                    vertex[vi*2    ] = -skirtSize;   
-                    vertex[vi*2 + 1] = yCoord;   
-                    vi++;
-                }               
-                for (var x = 0; x < samplesX; x++) {
-                    vertex[vi*2    ] = x/(samplesX-1);
-                    vertex[vi*2 + 1] = yCoord;
-                    vi++;
-                }
-                // Set rightmost skirt vertex
-                if (skirt) {
-                    vertex[vi*2]     = 1.0 + skirtSize;   
-                    vertex[vi*2 + 1] = yCoord;   
-                    vi++;
-                }                
+        var vX = samplesX + 2*skirt;
+        var vY = samplesY + 2*skirt;
+        
+        var vertex = new osg.Float32Array(vX*vY*2);
+        var vi = 0;
+        for (var y = -skirt; y < samplesY + skirt; y++) {
+            var yCoord;
+            if (y == -1) {
+                yCoord = -skirtSize;
             }
-               
-            var quadsX = vX - 1;
-            var quadsY = vY - 1;
-            
-            var indices = new osg.Uint16Array(quadsX*quadsY*6);
-            var q = 0;
-            for (var y = 0; y < quadsY; y++) {
-                vi = y*vX;                
-                for (var x = 0; x < quadsX; x++) {
-                    indices[q*6 + 0] = vi;
-                    indices[q*6 + 1] = vi + 1;
-                    indices[q*6 + 2] = vi + vX;
-                    indices[q*6 + 3] = vi + vX;
-                    indices[q*6 + 4] = vi + 1;
-                    indices[q*6 + 5] = vi + vX + 1;
-                    vi++;
-                    q++;
-                }
+            else if (y == samplesY) {
+                yCoord = 1.0 + skirtSize;
             }
-
-            g.getAttributes().Vertex = new osg.BufferArray(osg.BufferArray.ARRAY_BUFFER, vertex, 2);
-
-            var primitive = new osg.DrawElements(
-                osg.primitiveSet.TRIANGLES,
-                new osg.BufferArray(osg.BufferArray.ELEMENT_ARRAY_BUFFER, indices, 1)
-            );
-            g.getPrimitives().push(primitive);
+            else {
+                yCoord = Math.max(0.0, y/(samplesY-1));
+            }
             
             
-            return g;
+            // Set leftmost skirt vertex
+            if (skirt) {
+                vertex[vi*2    ] = -skirtSize;   
+                vertex[vi*2 + 1] = yCoord;   
+                vi++;
+            }               
+            for (var x = 0; x < samplesX; x++) {
+                vertex[vi*2    ] = x/(samplesX-1);
+                vertex[vi*2 + 1] = yCoord;
+                vi++;
+            }
+            // Set rightmost skirt vertex
+            if (skirt) {
+                vertex[vi*2]     = 1.0 + skirtSize;   
+                vertex[vi*2 + 1] = yCoord;   
+                vi++;
+            }                
+        }
+           
+        var quadsX = vX - 1;
+        var quadsY = vY - 1;
+        
+        var indices = new osg.Uint16Array(quadsX*quadsY*6);
+        var q = 0;
+        for (var y = 0; y < quadsY; y++) {
+            vi = y*vX;                
+            for (var x = 0; x < quadsX; x++) {
+                indices[q*6 + 0] = vi;
+                indices[q*6 + 1] = vi + 1;
+                indices[q*6 + 2] = vi + vX;
+                indices[q*6 + 3] = vi + vX;
+                indices[q*6 + 4] = vi + 1;
+                indices[q*6 + 5] = vi + vX + 1;
+                vi++;
+                q++;
+            }
+        }
+
+        g.getAttributes().Vertex = new osg.BufferArray(osg.BufferArray.ARRAY_BUFFER, vertex, 2);
+
+        var primitive = new osg.DrawElements(
+            osg.primitiveSet.TRIANGLES,
+            new osg.BufferArray(osg.BufferArray.ELEMENT_ARRAY_BUFFER, indices, 1)
+        );
+        g.getPrimitives().push(primitive);
+        
+        
+        return g;
     },
     
     _hasTile: function(x, y, level) {
