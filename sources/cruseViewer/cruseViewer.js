@@ -20,6 +20,10 @@ var CruseViewer = function(parentElement)
     this.viewer3dElement.style.width = "100%";
     this.viewer3dElement.style.height = "100%";    
     this.containerElement.appendChild(this.viewer3dElement);
+
+    this.captionElement = document.createElement('div');
+    this.captionElement.className = 'cruse-scanviewer-caption';
+    this.containerElement.appendChild(this.captionElement);
 };
 
 CruseViewer.prototype = {
@@ -27,6 +31,15 @@ CruseViewer.prototype = {
     open: function (image) {
 
         this.image = image;
+
+        if(image.caption != undefined)
+        {
+          this.captionElement.style.visibility = "visible";
+          this.captionElement.innerHTML = image.caption;
+        } 
+        else{
+          this.captionElement.style.visibility = "hidden";
+        }
 
         if (this.is3DImage(image)) {
           return this.update3DViewer(image)

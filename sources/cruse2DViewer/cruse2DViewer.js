@@ -28,10 +28,6 @@ var Cruse2DViewer = function(containerElementOrID, imageSource){
   // to relative. 
   toolbarElement.style.position = "absolute";
 
-  this.captionElement = document.createElement('div');
-  this.captionElement.className = 'cruse-scanviewer-caption';
-  element.appendChild(this.captionElement);
-
   this.open(imageSource);
 };
 
@@ -82,16 +78,7 @@ Cruse2DViewer.prototype = {
         {
           type: 0,
         });      
-    }
-    
-    if(imageSource.caption != undefined)
-    {
-      this.captionElement.style.visibility = "visible";
-      this.captionElement.innerHTML = imageSource.caption;
-    } 
-    else{
-      this.captionElement.style.visibility = "hidden";
-    }
+    }       
 
     return result;
   }
