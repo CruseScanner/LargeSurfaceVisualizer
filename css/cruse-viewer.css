@@ -47,3 +47,37 @@
     width: 100px; 
     z-index:100;
   }
+
+
+  .cruse-scanviewer-caption {
+    transition: opacity 0.2s ease-out;
+    opacity: 0;
+  } 
+
+  .active {
+    opacity: 0.5;
+  }
+
+  .cruse-scanviewer-caption-button {
+    background-color: #777;
+    color: white;
+    cursor: pointer;
+    padding: 5px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+  } 
+  
+  .cruse-scanviewer-caption-button:after {
+    content: '\002B';
+    color: white;
+    font-weight: bold;
+    float: right;
+    margin-left: 5px;
+  }
+  
+  .cruse-scanviewer-caption-content {
+    padding: 0 5px;  
+  }
