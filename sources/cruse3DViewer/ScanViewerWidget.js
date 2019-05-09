@@ -20,10 +20,7 @@ var ScanViewerWidget = function(elementOrElementId) {
     this._config = {
         lodScale: 0.01,
         acceptNewRequests: true,
-        elevation : Math.PI/4.0,
-        azimuth : Math.PI,
         phongExponent  : 40.0,
-        specular : 0.2,
         ambient : 0.1,
         LODVisualization : false
     };
@@ -46,10 +43,6 @@ ScanViewerWidget.prototype = {
         var scanviewer = this._scanviewer;
         // config to let dat.gui change the scale
         var lodScaleController = this.gui.add(this._config, 'lodScale', 0.01, 3.0);
-        var elevationController = this.gui.add(this._config, 'elevation', 0.00, Math.PI/2.0);
-        var azimuthController = this.gui.add(this._config, 'azimuth', 0.0, 2.0*Math.PI);
-        var diffuseController = this.gui.add(this._config, 'diffuse', 0.0, 1.0);
-        var specularController = this.gui.add(this._config, 'specular', 0.0, 1.0);
         var ambientController = this.gui.add(this._config, 'ambient', 0.0, 1.0);
         var phongExponentController = this.gui.add(this._config, 'phongExponent', 2.00, 128.0);
         
@@ -59,10 +52,6 @@ ScanViewerWidget.prototype = {
         });
         
         var config = this._config;
-        var updateLightPosition = function() {
-            scanviewer.setDirectionalLight(0, config.elevation, config.azimuth);
-        };
-        
         var updateLightParameters = function(value) {
             scanviewer.setLightParameters(0, 
                     [config.ambient, config.ambient, config.ambient, 1.0], 
@@ -72,15 +61,10 @@ ScanViewerWidget.prototype = {
             );
         };
         
-        
-        azimuthController.onChange(updateLightPosition);
-        elevationController.onChange(updateLightPosition);
         phongExponentController.onChange(updateLightParameters);
-        diffuseController.onChange(updateLightParameters);
-        specularController.onChange(updateLightParameters);
         ambientController.onChange(updateLightParameters);
         
-        
+            
         var acceptRequestscontroller = this.gui.add(this._config, 'acceptNewRequests');
         acceptRequestscontroller.onChange(function(value) {
             self.viewer.getDatabasePager().setAcceptNewDatabaseRequests(value);
