@@ -181,9 +181,14 @@ ScanViewer.prototype = {
      * angle in radians \param distance Number Distance from origin
      */
     setPointLight: function(lightIndex, elevation, azimuth, distance) {
+        var light = this._getOrCreateLight(lightIndex);
+        if (!defined(light)) {
+            return;
+        }        
+        
         var d = this.transformSphericalToWorld(elevation, azimuth, distance);        
         // The shader assumes implicit direction atm
-        this._light[lightIndex].setPosition([d[0], d[1], d[2], 1.0]);
+        light.setPosition([d[0], d[1], d[2], 1.0]);
         // this._light.setDirection(...);
     },
 
@@ -204,8 +209,12 @@ ScanViewer.prototype = {
      * radians
      */
     setDirectionalLight: function(lightIndex, elevation, azimuth) {
+        var light = this._getOrCreateLight(lightIndex);
+        if (!defined(light)) {
+            return;
+        }        
         var d = this.transformSphericalToWorld(elevation, azimuth, 1.0);
-        this._light[lightIndex].setPosition([d[0], d[1], d[2], 0.0]);
+        light.setPosition([d[0], d[1], d[2], 0.0]);
     },
     
     getDirectionalLight: function(lightIndex) {
@@ -219,7 +228,6 @@ ScanViewer.prototype = {
         
         return this.transformWorldToSpherical(p);
     },
-        
     
     _getOrCreateLight: function(lightIndex) {
         console.assert((lightIndex <= this._light.length), 'Light source array must be populated consecutively.');

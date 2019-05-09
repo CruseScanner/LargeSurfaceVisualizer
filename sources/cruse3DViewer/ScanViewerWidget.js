@@ -35,6 +35,46 @@ var ScanViewerWidget = function(elementOrElementId) {
     }
 };
 
+function setupShadingParameters(scanViewer, shadingParameters) {
+    if (defined(shadingParameters) && defined(shadingParameters.LightSources)) {
+        var lp = scanViewer.getLightParameters(0);    
+        var ambient = defined(shadingParameters.Ambient) ? shadingParameters.Ambient : lp.ambient[0];
+        var phongExponent = defined(shadingParameters.PhongExponent) ? shadingParameters.PhongExponent : lp.phongExponent;
+
+        var lightCount = shadingParameters.LightSources.length;
+        for (var i = 0; i < lightCount; i++) {
+            var ls = shadingParameters.LightSources[i];
+
+            var diffuse = defined(ls.Diffuse) ? [ls.Diffuse, ls.Diffuse, ls.Diffuse, 1.0] : lp.diffuse;
+            var specular = defined(ls.Specular) ? [ls.Specular, ls.Specular, ls.Specular, 1.0] : lp.specular;
+
+            scanViewer.setLightParameters(
+                    i,
+                    (i == 0) ? [ambient, ambient, ambient, 1.0] : [0.0, 0.0, 0.0, 1.0], // set global ambient for first light source only  
+                    diffuse,
+                    specular,
+                    phongExponent
+            );
+
+            if (ls.LightPosition) {
+                scanViewer.setDirectionalLight(i, ls.LightPosition.Elevation, ls.LightPosition.Azimuth);
+            }
+        }
+    }
+    else {
+        scanViewer.setLightParameters(
+                0,
+                [0.2, 0.2, 0.2, 1.0], 
+                [0.8, 0.8, 0.8, 1.0],
+                [0.8, 0.8, 0.8, 1.0],
+                80.0
+        );
+        scanViewer.setDirectionalLight(0, Math.PI/4, 0.0);        
+    }
+}
+
+
+
 ScanViewerWidget.prototype = {
     initGui: function() {
      
@@ -145,7 +185,7 @@ ScanViewerWidget.prototype = {
         
         var sideBarElement = document.createElement('div');
         sideBarElement.className = 'cruse-scanviewer-sidebar';
-        
+       
         parentElement.insertBefore(sideBarElement, viewElement);
         
         var openSideBar = function() {
@@ -190,8 +230,7 @@ ScanViewerWidget.prototype = {
         // TODO: require meta-data
         if (defined(this._shadingProject.ElevationMap)) {
             options.elevationTileSource = new IIPImageTileSource(url, this._shadingProject.ElevationMap);
-        }
-
+        }       
         
         var canvas = this.createCanvas();
         this.createInfoElement();
@@ -208,17 +247,13 @@ ScanViewerWidget.prototype = {
         if (!defined(this._lightSourceDialog)) {
             this._lightSourceDialog = new LightSourceDialog(scanViewer, this._sideBar); 
         }
+            
         var that = this;
        
         scanViewer.viewer.getDatabasePager().setProgressCallback(function(a, b) {
             that.setProgress(a + b);
         });
 
-        var lp = scanViewer.getLightParameters(0);
-        this._config.ambient = this._shadingProject.ambient || lp.ambient[0];
-        this._config.diffuse = this._shadingProject.diffuse || lp.diffuse[0];
-        this._config.specular = this._shadingProject.specular || lp.specular[0];
-        this._config.phongExponent = this._shadingProject.phongExponent || lp.phongExponent;
         
        
         this._scanviewer = scanViewer;
@@ -229,15 +264,12 @@ ScanViewerWidget.prototype = {
         
         that.gui.__controllers.forEach(function(c) { c.updateDisplay(); });
         
-        scanViewer.setLightParameters(
-            0,
-            [this._config.ambient, this._config.ambient, this._config.ambient, 1.0], 
-            [this._config.diffuse, this._config.diffuse, this._config.diffuse, 1.0],
-            [this._config.specular, this._config.specular, this._config.specular, 1.0],
-            this._config.phongExponent
-        );
-
-        scanViewer.setDirectionalLight(0, this._config.elevation, this._config.azimuth);
+        setupShadingParameters(this._scanviewer, shadingProject.Shading); 
+        
+        // Update light source dialog to reflect scanViewer state
+        if (defined(this._lightSourceDialog)) {
+            this._lightSourceDialog.update(scanViewer, 0);
+        }
 
         return scanViewer.run();
     },
