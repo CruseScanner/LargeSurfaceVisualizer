@@ -179,7 +179,7 @@ ScanViewer.prototype = {
         }
         
         if (this._renderTextureMaps) {
-            if (level <= this._textureMapTileSource._levels)
+            if (this._textureMapTileSource.hasTile(x, y, level))
             {
                 promises.push(this.fetchAndApplyTileImagery(x, y, level, stateSet, 0, this._textureMapTileSource));
             }
@@ -224,10 +224,11 @@ ScanViewer.prototype = {
             }
             else
             {
-                // Setup scaling/offset, and reuse parent texture
+                // Reuse parent texture
+                // TODO: use separate tex. coords to allow for resolution differences in diffuse / normal maps
                 var textureUnit = 1;
-                var parentTexture  = parentStateSet.getTextureAttribute(textureUnit, 'Texture');
-                stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);
+                var parentTexture = parentStateSet.getTextureAttribute(textureUnit, 'Texture');
+                stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);               
             }
         }
         
@@ -238,7 +239,8 @@ ScanViewer.prototype = {
             }
             else
             {
-                //  Setup scaling/offset, and reuse parent texture
+                // Reuse parent texture
+                // TODO: use separate tex. coords to allow for resolution differences in diffuse / normal maps
                 var textureUnit = 2;
                 var parentTexture  = parentStateSet.getTextureAttribute(textureUnit, 'Texture');
                 stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);
