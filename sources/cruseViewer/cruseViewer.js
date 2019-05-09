@@ -22,7 +22,20 @@ var CruseViewer = function(parentElement)
     this.containerElement.appendChild(this.viewer3dElement);
 
     this.captionElement = document.createElement('div');
-    this.captionElement.className = 'cruse-scanviewer-caption';
+    this.captionElement.className = 'cruse-scanviewer-caption active';
+    var buttonElement = document.createElement('button');
+    buttonElement.classList.add('cruse-scanviewer-caption-button');
+    buttonElement.innerText = "Info";
+    this.captionElement.appendChild(buttonElement);
+
+    var that = this;
+    buttonElement.addEventListener('click', function(){
+        that.captionElement.classList.toggle("active");        
+    });
+    this.captionContentElement = document.createElement('div');
+    this.captionContentElement.classList.add('cruse-scanviewer-caption-content');
+    this.captionElement.appendChild(this.captionContentElement);
+
     this.containerElement.appendChild(this.captionElement);
 };
 
@@ -35,7 +48,7 @@ CruseViewer.prototype = {
         if(image.caption != undefined)
         {
           this.captionElement.style.visibility = "visible";
-          this.captionElement.innerHTML = image.caption;
+          this.captionContentElement.innerHTML = image.caption;
         } 
         else{
           this.captionElement.style.visibility = "hidden";
@@ -104,6 +117,11 @@ CruseViewer.prototype = {
         else{
             return this.cruse2DViewer.restoreView(view);
         }
+      },
+
+      toggleShowCaption : function()
+      {
+        that.captionElement.classList.toggle("active");  
       },
 };
 
