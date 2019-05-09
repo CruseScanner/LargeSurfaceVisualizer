@@ -1,5 +1,6 @@
 import OSG from 'external/osg';
 import notify from 'tools/notify';
+import defined from 'tools/defined';
 
 var fileHelper = OSG.osgDB.fileHelper;
 
@@ -28,15 +29,16 @@ function requestFile(url, options) {
 
 var IIPImageTileSource = function(url, filename, options) {
     options = options || {};
-    this._tileSize = options.tileSize || 256;
-    this._border = options.border || 0;
+    this._tileSize = defined(options.tileSize) ? options.tileSize : 256;
+    this._border = defined(options.border) ? options.border : 0;
+    this._pixelScale = defined(options.pixelScale) ? options.pixelScale : 1.0;
     
     this._url = url;
     this._filename = filename;
     this._ready = false;
 
     var that = this;
-    // Download and parse JSON    
+    // Download and parse JSON
     this._initializationPromise = requestFile(url + '?IIIF=' + filename + '/info.json').
         then(function(str) {
             var data;
@@ -58,6 +60,9 @@ IIPImageTileSource.prototype = {
     getTileSize: function(level) {
         return this._tileSize*(1<<(this._levels - level - 1));
     },
+    
+    getPixelScale: function() {
+        return this._pixelScale;
     },
     
     hasChildren: function(x, y, level) {
@@ -85,7 +90,7 @@ IIPImageTileSource.prototype = {
     },
    
     /**
-     * Returns pixel coordinates of the image region covered by the given tile.  
+     * Returns pixel coordinates of the image region covered by the given tile.
      */
     getRasterExtent: function(x, y, level, excludeBorder) {
         var levelFactor = 1<<(this._levels - level - 1);
@@ -117,7 +122,7 @@ IIPImageTileSource.prototype = {
             ty0: y*tileSize - borderSize,
             tx1: x*tileSize + tileSize + borderSize,
             ty1: x*tileSize + tileSize + borderSize,
-            // source region of tile clipped against image 
+            // source region of tile clipped against image
             x0: x0,
             y0: y0,
             x1: x1,
@@ -129,9 +134,8 @@ IIPImageTileSource.prototype = {
     },
     
     getTileExtent: function(x, y, level) {
-        // TODO: scale pixel to mm
         var re = this.getRasterExtent(x, y, level, true);
-        var scale = 1.0;
+        var scale = this._pixelScale;
         return {
             x0:   re.x0*scale,
             y0: -(re.y1 + 1)*scale,

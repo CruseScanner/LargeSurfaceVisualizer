@@ -219,22 +219,22 @@ ScanViewerWidget.prototype = {
 
         var options = {};
         
-        options.textureMapTileSource = new IIPImageTileSource(url, this._shadingProject.DiffuseColor);
+        options.textureMapTileSource = new IIPImageTileSource(url, this._shadingProject.DiffuseColor, { pixelScale : shadingProject.pixelSize });
         
         if (defined(this._shadingProject.NormalMap)) {
-            options.normalMapTileSource = new IIPImageTileSource(url, this._shadingProject.NormalMap);
+            options.normalMapTileSource = new IIPImageTileSource(url, this._shadingProject.NormalMap, { pixelScale : shadingProject.pixelSize });
         }        
         if (defined(this._shadingProject.GlossMap)) {
-            options.glossMapTextureTileSource = new IIPImageTileSource(url, this._shadingProject.GlossMap);
+            options.glossMapTextureTileSource = new IIPImageTileSource(url, this._shadingProject.GlossMap, { pixelScale : shadingProject.pixelSize });
         }
        
         // Set optional elevation map for displacement
         if (defined(this._shadingProject.ElevationMap)) {
-            options.elevationTileSource = new IIPImageTileSource(url, this._shadingProject.ElevationMap, { tileSize : 64, border : 1});
+            options.elevationTileSource = new IIPImageTileSource(url, this._shadingProject.ElevationMap, { tileSize : 64, border : 1, pixelScale : shadingProject.pixelSize });
         }
 
-        options.heightMin  = defined(shadingProject.heightMin) ? shadingProject.heightMin : 0.0; 
-        options.heightMax  = defined(shadingProject.heightMax) ? shadingProject.heightMax : options.heightMin + 100; 
+        options.elevationMin = shadingProject.elevationMin; 
+        options.elevationMax = shadingProject.elevationMax;
         
         // Get 3D canvas.
         var canvas = this.createCanvas();

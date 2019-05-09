@@ -3,11 +3,29 @@
     "NormalMap" : "/var/www/3dviewer_dev_sample/data_new/jpx/Coffee_Factory_normals_flatness4_0.48_-0.42.jpx",
     "DiffuseColor" : "/var/www/3dviewer_dev_sample/data_new/jpx/Coffee_Factory_diffuse_color_flatness4.jpx",
     "ElevationMap" : "/var/www/3dviewer_dev_sample/data_new/jpx/Coffee_Factory_depth_flatness4_0.48_-0.42.jpx",
-    "heightMin" : -100.0,
-    "heightMax" :  500.0,
-    "ambient" : 0.2,
-    "diffuse" : 0.8,
-    "specular" : 0.2,
-    "phongExponent" : 10,
-    "server": "/iipsrv/iipsrv.fcgi"
+    "Shading" : {
+        "Ambient": 0.2,
+        "PhongExponent" : 10,
+        "LightSources": 
+        [{
+            "Diffuse" :  0.8,
+            "Specular" : 0.8,
+            "LightPosition" : {
+                "Elevation": 1.570796326794897,
+                "Azimuth": 0.0
+            }
+        },
+        {
+            "Diffuse" : 0.8,
+            "Specular" : 0.8,
+            "LightPosition" : {
+                "Elevation": 0.0,
+                "Azimuth": 0.7853981633974485
+            }
+        }]
+    },
+    "pixelSize"  : 0.0254, 
+    "elevationMin" : 0.0,
+    "elevationMax" : 6.0,
+    "server" : "/iipsrv/iipsrv.fcgi"
 }
