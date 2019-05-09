@@ -71,8 +71,11 @@
   left: 50%;
 }
 
-.cruse-scanviewer-description 
-{
+.activeLight {
+  border: 2px solid yellow;
+}
+
+.cruse-scanviewer-description {
   font-size: 14px;
 }
 

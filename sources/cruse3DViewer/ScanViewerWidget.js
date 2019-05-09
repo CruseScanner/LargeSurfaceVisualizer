@@ -93,10 +93,11 @@ ScanViewerWidget.prototype = {
         
         var config = this._config;
         var updateLightParameters = function(value) {
+            var lp = scanviewer.getLightParameters(0);            
             scanviewer.setLightParameters(0, 
                     [config.ambient, config.ambient, config.ambient, 1.0], 
-                    [config.diffuse, config.diffuse, config.diffuse, 1.0],
-                    [config.specular, config.specular, config.specular, 1.0],
+                    lp.diffuse,
+                    lp.specular,
                     config.phongExponent
             );
         };
@@ -107,7 +108,7 @@ ScanViewerWidget.prototype = {
             
         var acceptRequestscontroller = this.gui.add(this._config, 'acceptNewRequests');
         acceptRequestscontroller.onChange(function(value) {
-            self.viewer.getDatabasePager().setAcceptNewDatabaseRequests(value);
+            scanviewer.viewer.getDatabasePager().setAcceptNewDatabaseRequests(value);
         });
 
         var enableLODDebugController = this.gui.add(this._config, 'LODVisualization');
@@ -219,13 +220,15 @@ ScanViewerWidget.prototype = {
 
         var options = {};
         
-        options.textureMapTileSource = new IIPImageTileSource(url, this._shadingProject.DiffuseColor);           
-        options.normalMapTileSource = new IIPImageTileSource(url, this._shadingProject.NormalMap);
+        options.textureMapTileSource = new IIPImageTileSource(url, this._shadingProject.DiffuseColor);
         
+        if (defined(this._shadingProject.NormalMap)) {
+            options.normalMapTileSource = new IIPImageTileSource(url, this._shadingProject.NormalMap);
+        }        
         if (defined(this._shadingProject.GlossMap)) {
             options.glossMapTextureTileSource = new IIPImageTileSource(url, this._shadingProject.GlossMap);
         }
-        
+       
         // Set optional elevation map for displacement
         // TODO: require meta-data
         if (defined(this._shadingProject.ElevationMap)) {
@@ -248,28 +251,25 @@ ScanViewerWidget.prototype = {
             this._lightSourceDialog = new LightSourceDialog(scanViewer, this._sideBar); 
         }
             
-        var that = this;
-       
+        var that = this;       
         scanViewer.viewer.getDatabasePager().setProgressCallback(function(a, b) {
             that.setProgress(a + b);
         });
 
-        
-       
         this._scanviewer = scanViewer;
+        setupShadingParameters(this._scanviewer, shadingProject.Shading); 
+        // Update light source dialog to reflect scanViewer state
+        if (defined(this._lightSourceDialog)) {
+            this._lightSourceDialog.update(scanViewer, 0);
+        }
+
         this._config.lodScale = 0.1;
+        this._config.phongExponent = scanViewer.getLightParameters(0).phongExponent;       
         this.initGui();
         // Cheat dat gui to show at least two decimals and start at 1.0
         this._config.lodScale = 1.0;
         
         that.gui.__controllers.forEach(function(c) { c.updateDisplay(); });
-        
-        setupShadingParameters(this._scanviewer, shadingProject.Shading); 
-        
-        // Update light source dialog to reflect scanViewer state
-        if (defined(this._lightSourceDialog)) {
-            this._lightSourceDialog.update(scanViewer, 0);
-        }
 
         return scanViewer.run();
     },

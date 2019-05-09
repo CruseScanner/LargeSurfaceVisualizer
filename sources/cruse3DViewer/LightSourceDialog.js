@@ -59,7 +59,9 @@ var LightSourceDialog = function(scanViewer, parentElement) {
         that._scanViewer.setLightParameters(that._activeLightIndex, lp.ambient, lp.diffuse, lp.specular, lp.phongExponent);
         that._lightSourcePointerElement[that._activeLightIndex].style.backgroundColor = toHexColor(diffuse);
     };
+    
     var updateSpecular = function() {
+        // TODO: specular should probably be a global scale factor for diffuse intensity (i.e. a material property) 
         var lp = that._scanViewer.getLightParameters(that._activeLightIndex);
         var specular = lightSourceSpecularSliderElement.value/100.0;
         lp.specular = osg.vec4.fromValues(specular, specular, specular, 1.0);
@@ -111,7 +113,7 @@ LightSourceDialog.prototype = {
     update(scanViewer, activeLightIndex) {
         this._scanViewer = scanViewer;
         if (activeLightIndex !== undefined) {
-            this._activeLightIndex = activeLightIndex;
+            this.activateLight(activeLightIndex);
         }
 
         while (this._lightSourcePointerElement.length > scanViewer.getLightCount()) {
@@ -127,9 +129,18 @@ LightSourceDialog.prototype = {
     
     activateLight(index) {
         if (index !== this._activeLightIndex) {
-            this._activeLightIndex = index;
+            var oldElement = this._lightSourcePointerElement[this._activeLightIndex]; 
+            if (oldElement !== undefined) {
+                oldElement.classList.remove("activeLight");
+            }
+           
+            this._activeLightIndex = Math.min(index, this._lightSourcePointerElement.length - 1);
+            if (this._activeLightIndex >= 0) {
+                this._lightSourcePointerElement[this._activeLightIndex].classList.add("activeLight");
+            }            
             // update sliders
             this._updateSliders();
+            
         }
     },
     
@@ -220,10 +231,13 @@ LightSourceDialog.prototype = {
     },
 
     _addLightPointerElement: function() {
-        var index = this._lightSourcePointerElement.length; 
+        var index = this._lightSourcePointerElement.length;
         
         var lightSourcePointerElement = document.createElement('div');
         lightSourcePointerElement.className = 'cruse-scanviewer-lightsource-pointer';
+        if (index === 0) {
+            lightSourcePointerElement.classList.add('activeLight');
+        }        
         lightSourcePointerElement.id = 'cruse-scanviewer-lightsource-pointer'+index;
 
         this._lightSourceHemisphereWrapElement.appendChild(lightSourcePointerElement);       
