@@ -534,14 +534,17 @@ ScanViewer.prototype = {
     },
     
     _hasTile: function(x, y, level) {
-        // if (this._elevationTileSource) {
+        if (this._elevationTileSource) {
             return this._elevationTileSource.hasTile(x, y, level);
-        // }
-        return this._textureTileSource.hasTile(x, y, level);
+        }
+        return this._textureMapTileSource.hasTile(x, y, level);
     },
     
-    _getTileExtent: function(x, y, level) {        
-        return this._elevationTileSource.getTileExtent(x, y, level);
+    _getTileExtent: function(x, y, level) {
+        if (this._elevationTileSource) {
+            return this._elevationTileSource.getTileExtent(x, y, level);
+        }
+        return this._textureMapTileSource.getTileExtent(x, y, level);
     },
     
     _hasChildren: function(x, y, level) {
