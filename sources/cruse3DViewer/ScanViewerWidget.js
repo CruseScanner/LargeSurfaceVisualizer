@@ -170,7 +170,7 @@ ScanViewerWidget.prototype = {
         options.normalMapTileSource = new IIPImageTileSource(url, this._shadingProject.NormalMap);
         
         if (defined(this._shadingProject.GlossMap)) {
-            options.glossMapTextureTileSource = new IIPImageTileSource(url, this._shadingProject.GlossMap);
+            options.glossMapTileSource = new IIPImageTileSource(url, this._shadingProject.GlossMap);
         }
         
         var canvas = this.createCanvas();
