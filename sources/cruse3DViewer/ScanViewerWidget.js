@@ -225,7 +225,7 @@ ScanViewerWidget.prototype = {
             options.normalMapTileSource = new IIPImageTileSource(url, this._shadingProject.NormalMap, { pixelScale : shadingProject.pixelSize });
         }        
         if (defined(this._shadingProject.GlossMap)) {
-            options.glossMapTextureTileSource = new IIPImageTileSource(url, this._shadingProject.GlossMap, { pixelScale : shadingProject.pixelSize });
+            options.glossMapTileSource = new IIPImageTileSource(url, this._shadingProject.GlossMap, { pixelScale : shadingProject.pixelSize });
         }
        
         // Set optional elevation map for displacement
