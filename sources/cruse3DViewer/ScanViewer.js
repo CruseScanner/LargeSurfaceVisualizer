@@ -454,10 +454,10 @@ ScanViewer.prototype = {
     
         var gridID = samplesX.toString() + "_" + samplesY.toString() + "_" + skirtSize.toString();
         var cacheEntry = cache[gridID];
-        
+       
         if (!defined(cacheEntry)) {
             //console.log("Got cache miss for " + gridID);
-            cacheEntry = cache[gridID] = {};
+            cacheEntry = /*cache[gridID] =*/ {};
             
             var vX = samplesX + 2*skirt;
             var vY = samplesY + 2*skirt;
