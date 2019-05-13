@@ -1,49 +1,108 @@
-  
-  @import "https://fonts.googleapis.com/css?family=Exo+2:700|Roboto:100,300,400,500,700,900";
-  
-  .cruse-scanviewer-info {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    box-sizing: border-box;
-    padding: 20px 160px 20px 20px;
-    
-    font-family: "Roboto", sans-serif;
-    font-weight: 300;
-    line-height: 1.5;
-    color: #FFF;
-  }
+ @import "https://fonts.googleapis.com/css?family=Exo+2:700|Roboto:100,300,400,500,700,900";
 
-  .cruse-scanviewer-description 
-  {
-    font-size: 14px;      
-  }
+.cruse-scanviewer-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  padding: 20px 160px 20px 20px;
 
-  .cruse-scanviewer-caption {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    box-sizing: border-box;
-    padding: 15px 15px 15px 15px;
-    margin: 10px;
-    font-family: "Roboto", sans-serif;
-    font-weight: 300;
-    line-height: 1.5;
-    color: #FFF;
-    background: #222;
-    opacity: .5;
-    border-radius: .3em;
-    z-index:100;
-  }
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  line-height: 1.5;
+  color: #FFF;
+}
 
-  .cruse-scanviewer-toolbar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    box-sizing: border-box;
-    padding: 15px 15px 15px 15px;
-    margin: 10px;   
-    width: 100px; 
-    z-index:100;
-  }
+#ViewContainer {
+  transition: margin-left 0.5s;
+  margin-left: 0px;
+}
+
+.cruse-scanviewer-sidebar {
+  position: fixed;
+  height: 100%;
+  width: 0px;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+}
+
+.cruse-scanviewer-sidebar .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+
+.cruse-scanviewer-lightsource-slider {
+  width: 100%
+}
+
+.cruse-scanviewer-lightsource-dialog {
+  width: 100%;
+  background: #333;
+}
+
+.cruse-scanviewer-lightsource-hemisphere {
+/*  position: absolute;*/
+  width: 250px;
+  height: 250px;
+  border-radius: 250px;
+  background: #999;
+}
+
+.cruse-scanviewer-lightsource-pointer {
+  position: absolute;
+  background: #ffffff;
+  border: 2px solid black;
+  width: 20px;
+  height: 20px;
+  border-radius: 20px;
+  margin-top: -10px;
+  margin-left: -10px;
+  top: 100%;
+  left: 50%;
+}
+
+.activeLight {
+  border: 2px solid yellow;
+}
+
+.cruse-scanviewer-description {
+  font-size: 14px;
+}
+
+.cruse-scanviewer-caption {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  box-sizing: border-box;
+  padding: 15px 15px 15px 15px;
+  margin: 10px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  line-height: 1.5;
+  color: #FFF;
+  background: #222;
+  opacity: .5;
+  border-radius: .3em;
+  z-index:100;
+}
+
+.cruse-scanviewer-toolbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  padding: 15px 15px 15px 15px;
+  margin: 10px;   
+  width: 100px; 
+  z-index:100;
+}
