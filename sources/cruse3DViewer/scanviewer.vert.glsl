@@ -27,9 +27,7 @@ void main()
     gl_Position = uProjectionMatrix*viewVertex;
 
 #ifndef WITH_NORMAL_MAP
-    vec3 viewNormal;
-    viewNormal = uModelViewNormalMatrix*vec3(0.0, 0.0, 1.0);
-    vViewNormal = viewNormal;
+    vViewNormal = uModelViewNormalMatrix*vec3(0.0, 0.0, 1.0);
 #endif
 
     vViewVertex = viewVertex;

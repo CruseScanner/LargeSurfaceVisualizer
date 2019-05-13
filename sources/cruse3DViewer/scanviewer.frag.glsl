@@ -64,6 +64,10 @@ uniform sampler2D Texture1;
 varying vec3 vViewNormal;
 #endif
 
+#ifdef WITH_GLOSS_MAP
+uniform sampler2D Texture2;
+#endif
+
 // All components are in the range [0…1], including hue.
 vec3 hsv2rgb(vec3 c)
 {
@@ -85,6 +89,8 @@ void main()
     vec3 N = gl_FrontFacing ? vViewNormal : -vViewNormal;
 #endif
 
+
+
     N = normalize(N);
 
     // L: vertex to light
@@ -101,10 +107,16 @@ void main()
     diffuseContribution+= uMaterialAmbient.rgb*uLight0_ambient.rgb;
    
     vec3 totalContribution = diffuseContribution*diffuseTexture;
+
+#ifdef WITH_GLOSS_MAP
+    // Modulate by gloss map
+    specularContribution*= texture2D(Texture2, vTexCoord0).r;
+#endif
+    
     totalContribution+= specularContribution;
     totalContribution+= uMaterialEmission.rgb;
     
-#ifdef DEBUG_LOD 
+#ifdef WITH_DEBUG_LOD 
     gl_FragColor = vec4(hsv2rgb(vec3(uLODLevel / 5.0, 0.5, 0.2)) * (totalContribution.r + totalContribution.g + totalContribution.b), 1.0);  
 #else
     gl_FragColor = vec4(totalContribution, 1.0);     
