@@ -1,5 +1,7 @@
 import ScanViewerWidget from 'cruse3DViewer/ScanViewerWidget';
 import Cruse2DViewer from 'cruse2DViewer/cruse2DViewer';
+import openseadragon from 'openseadragon';
+import screenfull from 'tools/UI/fullscreen';
 
 'use strict';
 
@@ -37,9 +39,75 @@ var CruseViewer = function(parentElement)
     this.captionElement.appendChild(this.captionContentElement);
 
     this.containerElement.appendChild(this.captionElement);
+
+    var toolbarElement = document.createElement('div');
+    toolbarElement.className = 'cruse-scanviewer-toolbar';
+    toolbarElement.id = 'cruse-scanviewer-2d-toolbar';
+    this.containerElement.appendChild(toolbarElement);
+    this.createButtons(toolbarElement);
+    this.currentViewer = undefined;
 };
 
 CruseViewer.prototype = {
+
+    prefixUrl:              "/images/",
+    navImages: {
+        zoomIn: {
+            REST:   'zoomin_rest.png',
+            GROUP:  'zoomin_grouphover.png',
+            HOVER:  'zoomin_hover.png',
+            DOWN:   'zoomin_pressed.png'
+        },
+        zoomOut: {
+            REST:   'zoomout_rest.png',
+            GROUP:  'zoomout_grouphover.png',
+            HOVER:  'zoomout_hover.png',
+            DOWN:   'zoomout_pressed.png'
+        },
+        home: {
+            REST:   'home_rest.png',
+            GROUP:  'home_grouphover.png',
+            HOVER:  'home_hover.png',
+            DOWN:   'home_pressed.png'
+        },
+        fullpage: {
+            REST:   'fullpage_rest.png',
+            GROUP:  'fullpage_grouphover.png',
+            HOVER:  'fullpage_hover.png',
+            DOWN:   'fullpage_pressed.png'
+        },
+        rotateleft: {
+            REST:   'rotateleft_rest.png',
+            GROUP:  'rotateleft_grouphover.png',
+            HOVER:  'rotateleft_hover.png',
+            DOWN:   'rotateleft_pressed.png'
+        },
+        rotateright: {
+            REST:   'rotateright_rest.png',
+            GROUP:  'rotateright_grouphover.png',
+            HOVER:  'rotateright_hover.png',
+            DOWN:   'rotateright_pressed.png'
+        },
+        flip: { // Flip icon designed by Yaroslav Samoylov from the Noun Project and modified by Nelson Campos ncampos@criteriamarathon.com, https://thenounproject.com/term/flip/136289/
+            REST:   'flip_rest.png',
+            GROUP:  'flip_grouphover.png',
+            HOVER:  'flip_hover.png',
+            DOWN:   'flip_pressed.png'
+        },
+        previous: {
+            REST:   'previous_rest.png',
+            GROUP:  'previous_grouphover.png',
+            HOVER:  'previous_hover.png',
+            DOWN:   'previous_pressed.png'
+        },
+        next: {
+            REST:   'next_rest.png',
+            GROUP:  'next_grouphover.png',
+            HOVER:  'next_hover.png',
+            DOWN:   'next_pressed.png'
+        }
+    },
+
 
     open: function (image) {
 
@@ -75,6 +143,7 @@ CruseViewer.prototype = {
           this.cruse2DViewer = new Cruse2DViewer(this.viewer2dElement);
         }
      
+        this.currentViewer = this.cruse2DViewer;
         return this.cruse2DViewer.open(image);
       },
     
@@ -88,7 +157,9 @@ CruseViewer.prototype = {
         else {
           this.scanViewerWidget.stop();
         }
-    
+
+        this.currentViewer = this.scanViewerWidget;
+
         return this.scanViewerWidget.run(image);
       },
 
@@ -123,6 +194,53 @@ CruseViewer.prototype = {
       {
         that.captionElement.classList.toggle("active");  
       },
+
+      resolveUrl : function( prefix, url ) {
+        return prefix ? prefix + url : url;
+      },
+    
+      createButton: function(parentElement, id, tooltip, onClick)
+      {
+        var button = new openseadragon.Button({            
+            tooltip:    tooltip,
+            srcRest:    this.resolveUrl( this.prefixUrl, this.navImages[id].REST ),
+            srcGroup:   this.resolveUrl( this.prefixUrl, this.navImages[id].GROUP ),
+            srcHover:   this.resolveUrl( this.prefixUrl, this.navImages[id].HOVER ),
+            srcDown:    this.resolveUrl( this.prefixUrl, this.navImages[id].DOWN ),
+            onClick: onClick,
+            });
+        button.element.id = id;
+        parentElement.appendChild(button.element);
+      },
+      
+      createButtons: function(toolbarElement)
+      {
+        this.createButton(toolbarElement, "zoomIn", "Zoom In", this.zoomIn.bind(this));
+        this.createButton(toolbarElement, "zoomOut", "Zoom Out", this.zoomOut.bind(this));
+        this.createButton(toolbarElement, "home", "Reset View", this.resetView.bind(this));
+        this.createButton(toolbarElement, "fullpage", "Toogle Fullscreen", this.toggleFullScreen.bind(this));
+      },
+
+      zoomIn : function()
+      {
+        this.currentViewer.zoomIn();
+      },
+
+      zoomOut : function()
+      {
+        this.currentViewer.zoomOut();
+      },
+
+      resetView : function()
+      {
+        this.currentViewer.resetView();
+      },
+
+      toggleFullScreen : function()
+      {
+        screenfull.toggle(this.containerElement);
+      },
+
 };
 
 
