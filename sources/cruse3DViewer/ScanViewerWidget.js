@@ -4,6 +4,7 @@ import OSG from 'external/osg';
 import IIPImageTileSource from 'cruse3DViewer/IIPImageTileSource';
 import ScanViewer from 'cruse3DViewer/ScanViewer';
 import defined from 'tools/defined';
+import LightSourceDialog from 'cruse3DViewer/LightSourceDialog';
 
 var osg = OSG.osg;
 
@@ -19,10 +20,7 @@ var ScanViewerWidget = function(elementOrElementId) {
     this._config = {
         lodScale: 0.01,
         acceptNewRequests: true,
-        elevation : Math.PI/4.0,
-        azimuth : Math.PI,
         phongExponent  : 40.0,
-        specular : 0.2,
         ambient : 0.1,
         LODVisualization : false
     };
@@ -37,6 +35,46 @@ var ScanViewerWidget = function(elementOrElementId) {
     }
 };
 
+function setupShadingParameters(scanViewer, shadingParameters) {
+    if (defined(shadingParameters) && defined(shadingParameters.LightSources)) {
+        var lp = scanViewer.getLightParameters(0);    
+        var ambient = defined(shadingParameters.Ambient) ? shadingParameters.Ambient : lp.ambient[0];
+        var phongExponent = defined(shadingParameters.PhongExponent) ? shadingParameters.PhongExponent : lp.phongExponent;
+
+        var lightCount = shadingParameters.LightSources.length;
+        for (var i = 0; i < lightCount; i++) {
+            var ls = shadingParameters.LightSources[i];
+
+            var diffuse = defined(ls.Diffuse) ? [ls.Diffuse, ls.Diffuse, ls.Diffuse, 1.0] : lp.diffuse;
+            var specular = defined(ls.Specular) ? [ls.Specular, ls.Specular, ls.Specular, 1.0] : lp.specular;
+
+            scanViewer.setLightParameters(
+                    i,
+                    (i == 0) ? [ambient, ambient, ambient, 1.0] : [0.0, 0.0, 0.0, 1.0], // set global ambient for first light source only  
+                    diffuse,
+                    specular,
+                    phongExponent
+            );
+
+            if (ls.LightPosition) {
+                scanViewer.setDirectionalLight(i, ls.LightPosition.Elevation, ls.LightPosition.Azimuth);
+            }
+        }
+    }
+    else {
+        scanViewer.setLightParameters(
+                0,
+                [0.2, 0.2, 0.2, 1.0], 
+                [0.8, 0.8, 0.8, 1.0],
+                [0.8, 0.8, 0.8, 1.0],
+                80.0
+        );
+        scanViewer.setDirectionalLight(0, Math.PI/4, 0.0);        
+    }
+}
+
+
+
 ScanViewerWidget.prototype = {
     initGui: function() {
      
@@ -45,10 +83,6 @@ ScanViewerWidget.prototype = {
         var scanviewer = this._scanviewer;
         // config to let dat.gui change the scale
         var lodScaleController = this.gui.add(this._config, 'lodScale', 0.01, 3.0);
-        var elevationController = this.gui.add(this._config, 'elevation', 0.00, Math.PI/2.0);
-        var azimuthController = this.gui.add(this._config, 'azimuth', 0.0, 2.0*Math.PI);
-        var diffuseController = this.gui.add(this._config, 'diffuse', 0.0, 1.0);
-        var specularController = this.gui.add(this._config, 'specular', 0.0, 1.0);
         var ambientController = this.gui.add(this._config, 'ambient', 0.0, 1.0);
         var phongExponentController = this.gui.add(this._config, 'phongExponent', 2.00, 128.0);
         
@@ -58,31 +92,23 @@ ScanViewerWidget.prototype = {
         });
         
         var config = this._config;
-        var updateLightPosition = function() {
-            scanviewer.setDirectionalLight(config.elevation, config.azimuth);
-        };
-        
         var updateLightParameters = function(value) {
-            scanviewer.setLightParameters(
+            var lp = scanviewer.getLightParameters(0);            
+            scanviewer.setLightParameters(0, 
                     [config.ambient, config.ambient, config.ambient, 1.0], 
-                    [config.diffuse, config.diffuse, config.diffuse, 1.0],
-                    [config.specular, config.specular, config.specular, 1.0],
+                    lp.diffuse,
+                    lp.specular,
                     config.phongExponent
             );
         };
         
-        
-        azimuthController.onChange(updateLightPosition);
-        elevationController.onChange(updateLightPosition);
         phongExponentController.onChange(updateLightParameters);
-        diffuseController.onChange(updateLightParameters);
-        specularController.onChange(updateLightParameters);
         ambientController.onChange(updateLightParameters);
         
-        
+            
         var acceptRequestscontroller = this.gui.add(this._config, 'acceptNewRequests');
         acceptRequestscontroller.onChange(function(value) {
-            self.viewer.getDatabasePager().setAcceptNewDatabaseRequests(value);
+            scanviewer.viewer.getDatabasePager().setAcceptNewDatabaseRequests(value);
         });
 
         var enableLODDebugController = this.gui.add(this._config, 'LODVisualization');
@@ -127,7 +153,7 @@ ScanViewerWidget.prototype = {
         {
             infoElement = document.createElement('div');
             infoElement.className = "cruse-scanviewer-info";
-            infoElement.id = "cruse-scanviewerwidget-info-id";
+            infoElement.id = "cruse-scanviewer-info-id";
 
             var descriptionElement = document.createElement('div');
             descriptionElement.className = "cruse-scanviewer-description";
@@ -153,6 +179,34 @@ ScanViewerWidget.prototype = {
         
         return infoElement;
     },
+    
+    createSideBar: function(viewElement) {
+        
+        var parentElement = viewElement.parentElement;
+        
+        var sideBarElement = document.createElement('div');
+        sideBarElement.className = 'cruse-scanviewer-sidebar';
+       
+        parentElement.insertBefore(sideBarElement, viewElement);
+        
+        var openSideBar = function() {
+            sideBarElement.style.width = "250px";
+            viewElement.style.marginLeft = "250px";
+        };
+
+        var closeSideBar = function () {
+            sideBarElement.style.width = "0px";
+            viewElement.style.marginLeft= "0px";
+        };
+        
+        closeSideBar();
+        
+        return sideBarElement;
+    },
+    
+    createLightSourceDialog: function(scanViewer, parentElement) {
+        this._lightSourceDialog = new LightSourceDialog(scanViewer, parentElement);
+    },
 
     setProgress: function(percent) {
         this._progressElement.style.width = percent + "px";
@@ -166,12 +220,20 @@ ScanViewerWidget.prototype = {
 
         var options = {};
         
-        options.textureMapTileSource = new IIPImageTileSource(url, this._shadingProject.DiffuseColor);           
-        options.normalMapTileSource = new IIPImageTileSource(url, this._shadingProject.NormalMap);
+        options.textureMapTileSource = new IIPImageTileSource(url, this._shadingProject.DiffuseColor);
         
+        if (defined(this._shadingProject.NormalMap)) {
+            options.normalMapTileSource = new IIPImageTileSource(url, this._shadingProject.NormalMap);
+        }        
         if (defined(this._shadingProject.GlossMap)) {
             options.glossMapTileSource = new IIPImageTileSource(url, this._shadingProject.GlossMap);
         }
+       
+        // Set optional elevation map for displacement
+        // TODO: require meta-data
+        if (defined(this._shadingProject.ElevationMap)) {
+            options.elevationTileSource = new IIPImageTileSource(url, this._shadingProject.ElevationMap);
+        }       
         
         var canvas = this.createCanvas();
         this.createInfoElement();
@@ -180,37 +242,34 @@ ScanViewerWidget.prototype = {
             this.stop();
         }
 
+        
         var scanViewer = new ScanViewer(canvas, options);
         
-        var that = this;
-       
+        // Creating page with sidebar open is extremly slow (takes >1 sec for initial startup/layouting), WHY?
+        this._sideBar = this.createSideBar(this._viewDivElement);
+        if (!defined(this._lightSourceDialog)) {
+            this._lightSourceDialog = new LightSourceDialog(scanViewer, this._sideBar); 
+        }
+            
+        var that = this;       
         scanViewer.viewer.getDatabasePager().setProgressCallback(function(a, b) {
             that.setProgress(a + b);
         });
 
-        var lp = scanViewer.getLightParameters();
-        this._config.ambient = this._shadingProject.ambient || lp.ambient[0];
-        this._config.diffuse = this._shadingProject.diffuse || lp.diffuse[0];
-        this._config.specular = this._shadingProject.specular || lp.specular[0];
-        this._config.phongExponent = this._shadingProject.phongExponent || lp.phongExponent;
-        
-       
         this._scanviewer = scanViewer;
+        setupShadingParameters(this._scanviewer, shadingProject.Shading); 
+        // Update light source dialog to reflect scanViewer state
+        if (defined(this._lightSourceDialog)) {
+            this._lightSourceDialog.update(scanViewer, 0);
+        }
+
         this._config.lodScale = 0.1;
+        this._config.phongExponent = scanViewer.getLightParameters(0).phongExponent;       
         this.initGui();
-        //  Cheat dat gui to show at least two decimals and start at 1.0
+        // Cheat dat gui to show at least two decimals and start at 1.0
         this._config.lodScale = 1.0;
         
         that.gui.__controllers.forEach(function(c) { c.updateDisplay(); });
-        
-        scanViewer.setLightParameters(
-            [this._config.ambient, this._config.ambient, this._config.ambient, 1.0], 
-            [this._config.diffuse, this._config.diffuse, this._config.diffuse, 1.0],
-            [this._config.specular, this._config.specular, this._config.specular, 1.0],
-            this._config.phongExponent
-        );
-
-        scanViewer.setDirectionalLight(this._config.elevation, this._config.azimuth);
 
         return scanViewer.run();
     },
