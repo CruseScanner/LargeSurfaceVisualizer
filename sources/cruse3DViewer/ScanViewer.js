@@ -350,6 +350,19 @@ ScanViewer.prototype = {
         this.viewer.getManipulator().setPose(pose);
     },
 
+    zoomIn : function(){
+        this.viewer.getManipulator().mouseWheel(undefined, -1);
+    },
+    
+    zoomOut : function(){
+        this.viewer.getManipulator().mouseWheel(undefined, 1);
+    },
+
+    resetView : function(){   
+        this.viewer.getManipulator().reset();
+        this.viewer.getManipulator().computeHomePosition();     
+    },
+
     destroy: function() {
         this.viewer.setDone(true);
         this.viewer.dispose();

@@ -14,19 +14,10 @@ var Cruse2DViewer = function(containerElementOrID, imageSource){
   element.style.height = "100%";
   containerElementOrID.appendChild(element);
 
-  var toolbarElement = document.createElement('div');
-  toolbarElement.className = 'cruse-scanviewer-toolbar';
-  toolbarElement.id = 'cruse-scanviewer-2d-toolbar';
-  element.appendChild(toolbarElement);
-
   this.viewer = OpenSeadragon({
     element: element,
-    toolbar: 'cruse-scanviewer-2d-toolbar',
+    showNavigationControl: false,
   });
-
-  // small hack to fix position: the viewer seems to switch the positon 
-  // to relative. 
-  toolbarElement.style.position = "absolute";
 
   this.open(imageSource);
 };
@@ -81,7 +72,32 @@ Cruse2DViewer.prototype = {
     }       
 
     return result;
-  }
+  },
+
+  zoomIn : function(){
+    if ( this.viewer.viewport ) {
+      this.viewer.viewport.zoomBy(
+          this.viewer.zoomPerClick / 1.0
+      );
+      this.viewer.viewport.applyConstraints();
+    }
+  },
+
+  zoomOut : function(){
+    if ( this.viewer.viewport ) {
+      this.viewer.viewport.zoomBy(
+          1.0 / this.viewer.zoomPerClick 
+      );
+      this.viewer.viewport.applyConstraints();
+    }
+  },
+
+  resetView : function()
+  {
+    if ( this.viewer.viewport ) {
+      this.viewer.viewport.goHome();
+    }
+  },
 };
 
 export default Cruse2DViewer;
