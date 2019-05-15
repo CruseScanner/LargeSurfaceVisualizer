@@ -85,22 +85,22 @@ utils.createPrototypeObject(
 
         getCurrentPose: function(){
             var pose = {
-                'rotation' : this._rotation,
-                'rotate' : this._rotate._current,
-                'pan' : this._pan._current,
-                'zoom' : this._zoom._current,
-                'target' : this._target,
+                'rotation' : Float64Array.from(this._rotation),
+                'rotate' : Float64Array.from(this._rotate._current),
+                'pan' : Float64Array.from(this._pan._current),
+                'zoom' : Float64Array.from(this._zoom._current),
+                'target' :  Float64Array.from(this._target),
                 'distance' : this._distance
             };
             return pose;
         },
 
         setPose : function(pose){
-            this._rotation = pose.rotation;
-            this._rotate.setTarget(pose.rotate[0], pose.rotate[1]);
-            this._pan.setTarget(pose.pan[0], pose.pan[1]);
-            this._zoom.setTarget(pose.zoom[0]);
-            this._target = pose.target;
+            this._rotation = Float64Array.from(pose.rotation);
+            this._rotate.set(pose.rotate[0], pose.rotate[1]);
+            this._pan.set(pose.pan[0], pose.pan[1]);
+            this._zoom.set(pose.zoom[0]);
+            this._target = Float64Array.from(pose.target);
             this._distance = pose.distance;                        
         }
     }),
