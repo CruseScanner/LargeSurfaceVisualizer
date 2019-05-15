@@ -1,30 +1,23 @@
 import OpenSeadragon from 'openseadragon';
 import 'external/openseadragon-scalebar';
 
-var Cruse2DViewer = function(element, imageSource){
+var Cruse2DViewer = function(containerElementOrID, imageSource){
   
-  if(typeof(element) == 'string')
+  if(typeof(containerElementOrID) == 'string')
   {
-    element = document.getElementById(element);
+    containerElementOrID = document.getElementById(containerElementOrID);
   }
 
-  var toolbarElement = document.createElement('div');
-  toolbarElement.className = 'cruse-scanviewer-toolbar';
-  toolbarElement.id = 'cruse-scanviewer-2d-toolbar';
-  element.appendChild(toolbarElement);
+  var element = document.createElement('div');
+  element.style.position = "absolute";
+  element.style.width = "100%";
+  element.style.height = "100%";
+  containerElementOrID.appendChild(element);
 
   this.viewer = OpenSeadragon({
     element: element,
-    toolbar: 'cruse-scanviewer-2d-toolbar',
+    showNavigationControl: false,
   });
-
-  // small hack to fix position: the viewer seems to switch the positon 
-  // to relative. 
-  toolbarElement.style.position = "absolute";
-
-  this.captionElement = document.createElement('div');
-  this.captionElement.className = 'cruse-scanviewer-caption';
-  element.appendChild(this.captionElement);
 
   this.open(imageSource);
 };
@@ -76,19 +69,35 @@ Cruse2DViewer.prototype = {
         {
           type: 0,
         });      
-    }
-    
-    if(imageSource.caption != undefined)
-    {
-      this.captionElement.style.visibility = "visible";
-      this.captionElement.innerHTML = imageSource.caption;
-    } 
-    else{
-      this.captionElement.style.visibility = "hidden";
-    }
+    }       
 
     return result;
-  }
+  },
+
+  zoomIn : function(){
+    if ( this.viewer.viewport ) {
+      this.viewer.viewport.zoomBy(
+          this.viewer.zoomPerClick / 1.0
+      );
+      this.viewer.viewport.applyConstraints();
+    }
+  },
+
+  zoomOut : function(){
+    if ( this.viewer.viewport ) {
+      this.viewer.viewport.zoomBy(
+          1.0 / this.viewer.zoomPerClick 
+      );
+      this.viewer.viewport.applyConstraints();
+    }
+  },
+
+  resetView : function()
+  {
+    if ( this.viewer.viewport ) {
+      this.viewer.viewport.goHome();
+    }
+  },
 };
 
 export default Cruse2DViewer;

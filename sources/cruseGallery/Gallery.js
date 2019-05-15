@@ -18,7 +18,9 @@
 */
 
 import ScanViewerWidget from 'cruse3DViewer/ScanViewerWidget';
-import Cruse2DViewer from 'cruse2DViewer/cruse-viewer';
+import Cruse2DViewer from 'cruse2DViewer/cruse2DViewer';
+import Drag from 'tools/UI/drag';
+import { CruseViewer } from '../cruse';
 
 'use strict';
 
@@ -61,20 +63,11 @@ Gallery.prototype = {
     var containerElement = document.getElementById(this.container);
     containerElement.className += ' gallery';
 
-    var _this = this;
+    var viewerElement = document.createElement('div');
+    viewerElement.className = "viewer";
+    containerElement.appendChild(viewerElement);
+    this.viewer = new CruseViewer(viewerElement);
 
-
-
-
-    // Create the cruse2DViewer container
-    this.viewer2dElement = document.createElement('div');
-    this.viewer2dElement.className = 'viewer';
-    containerElement.appendChild(this.viewer2dElement);
-
-    // Create the cruse3DViewer container
-    this.viewer3dElement = document.createElement('div');
-    this.viewer3dElement.className = 'viewer';
-    containerElement.appendChild(this.viewer3dElement);
 
     // Create the main thumbnail container
     var thumbnail_container = document.createElement('div');
@@ -88,13 +81,7 @@ Gallery.prototype = {
     };
     containerElement.appendChild(thumbnail_container);
 
-    // Make the thumbnails draggable
-    // new Drag(thumbnail_container, {
-    //   style: false,
-    //   invert: true,
-    //   modifiers: { x: 'scrollLeft' }
-    // });
-
+    new Drag(thumbnail_container);
 
     // Create the inner thumbnail div
     this.thumbnails = document.createElement('div');
@@ -102,9 +89,8 @@ Gallery.prototype = {
     thumbnail_container.appendChild(this.thumbnails);
 
     // Create our thumbnails and viewer object
-    this.updateViewer(this.images[0]);
+    this.viewer.open(this.images[0]);
     this.createThumbnails();
-
   },
 
   thumbnailClicked: function (event) {
@@ -123,12 +109,7 @@ Gallery.prototype = {
       var currentImage = this.images[this.current_image];
 
       // Record the current location
-      if (this.is3DImage(currentImage)) {
-        currentImage.view = this.scanViewerWidget.getCurrentViewPose();
-      }
-      else {
-        currentImage.view = this.cruse2DViewer.getView();        
-      }
+      currentImage.view = this.viewer.getView();
 
       // Save the current index and update our viewer
       this.current_image = index;
@@ -142,22 +123,12 @@ Gallery.prototype = {
   createThumbnails: function () {
 
     // Calculate height of thumbnail container
-    var height = Math.floor(this.thumbnails.parentElement.getBoundingClientRect().y) - 20;
     var that = this;
     var thumbnails = this.thumbnails;
     this.images.forEach(function (i, index) {
 
       // Create our image URL ( limit our widths to at most 2*height )
-      var src = "";
-
-      if (that.is3DImage(i)) {
-        src = (i.server || '/fcgi-bin/iipsrv.fcgi') + '?FIF=' + i.DiffuseColor +
-          '&HEI=' + height + '&WID=' + (2 * height) + '&CVT=JPEG';
-      }
-      else {
-        src = (i.server || '/fcgi-bin/iipsrv.fcgi') + '?FIF=' + i.image +
-          '&HEI=' + height + '&WID=' + (2 * height) + '&CVT=JPEG';
-      }
+      var src = that.createImageUrl(i);
 
       // Create image and inject into our thumbnail container
       var thumbnail = document.createElement('img');
@@ -167,68 +138,38 @@ Gallery.prototype = {
       thumbnails.appendChild(thumbnail);
       
       if (index == 0) thumbnail.className = 'selected';
-
     });
-
   },
 
-  is3DImage: function (image) {
-    return 'NormalMap' in image;
+  createImageUrl: function(i) {
+    var height = Math.floor(this.thumbnails.parentElement.getBoundingClientRect().y) - 20;    
+    var src = "";
+
+    if ('DiffuseColor' in i) {
+      src = (i.server || '/fcgi-bin/iipsrv.fcgi') + '?FIF=' + i.DiffuseColor +
+        '&HEI=' + height + '&WID=' + (2 * height) + '&CVT=JPEG';
+    }
+    else {
+      src = (i.server || '/fcgi-bin/iipsrv.fcgi') + '?FIF=' + i.image +
+        '&HEI=' + height + '&WID=' + (2 * height) + '&CVT=JPEG';
+    }
+    return src;
   },
 
   /* Create our viewer object and load an image
    */
   updateViewer: function (image) {
-
-    if (this.is3DImage(image)) {
-      this.update3DViewer(image)
-    }
-    else {
-      this.update2DViewer(image)
-    }
-  },
-
-  update2DViewer: function (image) {
-
-    this.viewer3dElement.style.display = "none";
-    this.viewer2dElement.style.display = "block";
-
-    if (this.scanViewerWidget != undefined) {
-      this.scanViewerWidget.stop();
-    }
-
-    if (this.cruse2DViewer == undefined) {
-      this.cruse2DViewer = new Cruse2DViewer(this.viewer2dElement, image);
-    }
-    else {
-      var that = this;
-      this.cruse2DViewer.open(image).then(function(){
-        if(image.view != undefined)
-        {
-          that.cruse2DViewer.restoreView(image.view);
-        } 
-      });
-    }
-  },
-
-  update3DViewer: function (image) {
-    this.viewer2dElement.style.display = "none";
-    this.viewer3dElement.style.display = "block";
-
-    if (this.scanViewerWidget == undefined) {
-      this.scanViewerWidget = new ScanViewerWidget(this.viewer3dElement);
-    }
-    else {
-      this.scanViewerWidget.stop();
-    }
-
     var that = this;
-    this.scanViewerWidget.run(image).then(function () {
-      if (image.view != undefined) {
-        that.scanViewerWidget.setViewPose(image.view);
-      }
+
+    this.viewer.open(image).then(function(){
+      if(image.view != undefined)
+      {
+        that.viewer.restoreView(image.view);
+      } 
     });
   },
 };
 
 export default Gallery;
+
+

@@ -98,7 +98,7 @@ var gruntTasks = {};
 
     var release = {
         devtool: 'none',
-        output: { filename: '[name].min.js' },
+        output: { filename: 'cruse.min.js' },
 
         module: {
             loaders: webpackSources.module.loaders.concat({
@@ -467,7 +467,7 @@ module.exports = function(grunt) {
     grunt.registerTask('benchmarks', ['execute:bench']);
 
     grunt.registerTask('build', ['webpack:sources', 'webpack:tests', 'copy:css:images']);
-    grunt.registerTask('build-release', ['webpack:release', 'copy:bundles', 'copy:css:images']);
+    grunt.registerTask('build-release', ['webpack:release', 'copy:bundles', 'copy:css', 'copy:images']);
 
     grunt.registerTask('docs', ['plato', 'documentation:default']);
     grunt.registerTask('default', ['check', 'build']);

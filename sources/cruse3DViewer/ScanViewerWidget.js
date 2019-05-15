@@ -302,7 +302,20 @@ ScanViewerWidget.prototype = {
 
     setViewPose : function(pose){
         this._scanviewer.setViewPose(pose);
-    }
+    },
+
+    zoomIn : function(){
+        this._scanviewer.zoomIn();
+    },
+    
+    zoomOut : function(){
+        this._scanviewer.zoomOut();
+    },
+    
+    resetView : function()
+    {
+        this._scanviewer.resetView();
+    },
 };
 
 export default ScanViewerWidget;
