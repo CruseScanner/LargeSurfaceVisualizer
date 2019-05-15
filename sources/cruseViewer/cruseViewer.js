@@ -105,7 +105,13 @@ CruseViewer.prototype = {
             GROUP:  'next_grouphover.png',
             HOVER:  'next_hover.png',
             DOWN:   'next_pressed.png'
-        }
+        },
+        info: {
+          REST:   'info_rest.png',
+          GROUP:  'info_grouphover.png',
+          HOVER:  'info_hover.png',
+          DOWN:   'info_pressed.png'
+      }
     },
 
 
@@ -215,10 +221,14 @@ CruseViewer.prototype = {
       
       createButtons: function(toolbarElement)
       {
+        var that = this;
         this.createButton(toolbarElement, "zoomIn", "Zoom In", this.zoomIn.bind(this));
         this.createButton(toolbarElement, "zoomOut", "Zoom Out", this.zoomOut.bind(this));
         this.createButton(toolbarElement, "home", "Reset View", this.resetView.bind(this));
         this.createButton(toolbarElement, "fullpage", "Toogle Fullscreen", this.toggleFullScreen.bind(this));
+        this.createButton(toolbarElement, "info", "Show/Hide Info",  function() {
+          that.captionElement.classList.toggle("active");
+        });
       },
 
       zoomIn : function()
