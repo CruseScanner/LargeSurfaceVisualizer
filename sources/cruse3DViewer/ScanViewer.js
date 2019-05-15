@@ -48,6 +48,8 @@ function initializeRootNode(scanViewer) {
         manipulator.setMinSpeed(256*10);
         manipulator.setDistance(boundingSphere.radius() * 1.5);
         manipulator.setLimitPitchDown(15.0*Math.PI/180.0);
+
+        scanViewer._homePose = manipulator.getCurrentPose();
     });
 };
 
@@ -62,6 +64,7 @@ var ScanViewer = function(canvasElement, textureMapTileSource, normalMapTileSour
     this._renderNormalMaps = false;
     this._enableLODDebugging = false;
     
+    this._zoomFactor = 0.25;
 
     this._input = new osgDB.Input();
     this.projectedTilePixels = Math.PI/4.0*256*256;
@@ -351,16 +354,21 @@ ScanViewer.prototype = {
     },
 
     zoomIn : function(){
-        this.viewer.getManipulator().mouseWheel(undefined, -1);
+        var intDelta = 1 / this._zoomFactor;
+        var manipulator = this.viewer.getManipulator();
+//        var zoomTarget = manipulator.getZoomInterpolator().getTarget()[0] - intDelta;
+        manipulator.getZoomInterpolator().addTarget(-intDelta);
     },
     
     zoomOut : function(){
-        this.viewer.getManipulator().mouseWheel(undefined, 1);
+        var intDelta = 1 / this._zoomFactor;
+        var manipulator = this.viewer.getManipulator();
+       // var zoomTarget = manipulator.getZoomInterpolator().getTarget()[0] + intDelta;
+        manipulator.getZoomInterpolator().addTarget(intDelta);
     },
 
     resetView : function(){   
-        this.viewer.getManipulator().reset();
-        this.viewer.getManipulator().computeHomePosition();     
+        this.setViewPose(this._homePose); 
     },
 
     destroy: function() {
