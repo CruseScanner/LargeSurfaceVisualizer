@@ -105,7 +105,7 @@ var LightSourceDialog = function(scanViewer, parentElement) {
             return;
         }
         var spherical = that._mouseToSpherical(e.x, e.y);
-        scanViewer.setDirectionalLight(that._activeLightIndex, spherical.elevation, spherical.azimuth);
+        that._scanViewer.setDirectionalLight(that._activeLightIndex, spherical.elevation, spherical.azimuth);
         that._updateLightPosition(that._activeLightIndex, spherical.azimuth, spherical.elevation);
     }
 };
