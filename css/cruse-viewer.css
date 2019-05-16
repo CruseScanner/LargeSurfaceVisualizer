@@ -83,8 +83,8 @@
 
   .cruse-scanviewer-lightoverlay {
     position:absolute;
-    right:0;
-    top:0;
+    left:0;
+    top:50px;
   }
 
 #ViewContainer {
