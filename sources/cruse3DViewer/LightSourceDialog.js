@@ -31,6 +31,7 @@ var LightSourceDialog = function(scanViewer, parentElement) {
     this._lightSourceHemisphereWrapElement = lightSourceHemisphereWrapElement;
     
     var lightSourceFieldSetElement = document.createElement('fieldset');
+    lightSourceFieldSetElement.className = 'cruse-scanviewer-lightsource-allSliders';
     var lightSourceFieldSetLegendElement = document.createElement('legend');
     lightSourceFieldSetLegendElement.innerText = "Lightsource";
            

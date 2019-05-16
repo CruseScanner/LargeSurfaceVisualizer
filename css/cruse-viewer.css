@@ -15,28 +15,6 @@
     color: #FFF;
   }
 
-  .cruse-scanviewer-description 
-  {
-    font-size: 14px;      
-  }
-
-  .cruse-scanviewer-caption {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    box-sizing: border-box;
-    padding: 15px 15px 15px 15px;
-    margin: 10px;
-    font-family: "Roboto", sans-serif;
-    font-weight: 300;
-    line-height: 1.5;
-    color: #FFF;
-    background: #222;
-    opacity: .5;
-    border-radius: .3em;
-    z-index:100;
-  }
-
   .cruse-scanviewer-toolbar {
     position: absolute;
     top: 0;
@@ -48,17 +26,32 @@
     z-index:100;
   }
 
+  .cruse-scanviewer-description 
+  {
+    font-size: 14px;      
+  }
 
-  .cruse-scanviewer-caption {
+  .cruse-scanviewer-overlay { 
+    box-sizing: border-box;
+    padding: 15px 15px 15px 15px;
+    margin: 10px;
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
+    line-height: 1.5;
+    color: #FFF;
+    background: #222;
+    opacity: .5;
+    border-radius: .3em;
+    z-index:100;
     transition: opacity 0.2s ease-out;
     opacity: 0;
-  } 
+  }
 
-  .active {
+  .cruse-scanviewer-overlay-active {
     opacity: 0.5;
   }
 
-  .cruse-scanviewer-caption-button {
+  .cruse-scanviewer-overlay-button {
     background-color: #777;
     color: white;
     cursor: pointer;
@@ -70,7 +63,7 @@
     font-size: 15px;
   } 
   
-  .cruse-scanviewer-caption-button:after {
+  .cruse-scanviewer-overlay-button:after {
     content: '\002B';
     color: white;
     font-weight: bold;
@@ -78,8 +71,14 @@
     margin-left: 5px;
   }
   
-  .cruse-scanviewer-caption-content {
+  .cruse-scanviewer-overlay-content {
     padding: 0 5px;  
+  }
+
+  .cruse-scanviewer-captionoverlay {
+    position: absolute;
+    bottom: 0;
+    right: 0;
   }
 
 #ViewContainer {
@@ -108,14 +107,20 @@
   margin-left: 50px;
 }
 
+.cruse-scanviewer-lightsource-allSliders {
+  visibility:hidden;
+}
 
 .cruse-scanviewer-lightsource-slider {
   width: 100%
 }
 
 .cruse-scanviewer-lightsource-dialog {
-  width: 100%;
+  width: 250px;
   background: #333;
+  position:absolute;
+  right:0;
+  opacity: 0.5;
 }
 
 .cruse-scanviewer-lightsource-hemisphere {

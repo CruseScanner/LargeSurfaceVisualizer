@@ -23,22 +23,7 @@ var CruseViewer = function(parentElement)
     this.viewer3dElement.style.height = "100%";    
     this.containerElement.appendChild(this.viewer3dElement);
 
-    this.captionElement = document.createElement('div');
-    this.captionElement.className = 'cruse-scanviewer-caption active';
-    var buttonElement = document.createElement('button');
-    buttonElement.classList.add('cruse-scanviewer-caption-button');
-    buttonElement.innerText = "Info";
-    this.captionElement.appendChild(buttonElement);
-
-    var that = this;
-    buttonElement.addEventListener('click', function(){
-        that.captionElement.classList.toggle("active");        
-    });
-    this.captionContentElement = document.createElement('div');
-    this.captionContentElement.classList.add('cruse-scanviewer-caption-content');
-    this.captionElement.appendChild(this.captionContentElement);
-
-    this.containerElement.appendChild(this.captionElement);
+    this.captionOverlay = this.createOverlayWindow("Info", "cruse-scanviewer-captionoverlay");    
 
     var toolbarElement = document.createElement('div');
     toolbarElement.className = 'cruse-scanviewer-toolbar';
@@ -114,19 +99,45 @@ CruseViewer.prototype = {
       }
     },
 
+    createOverlayWindow: function(title, className) {
+      var captionElement = document.createElement('div');
+      captionElement.className = 'cruse-scanviewer-overlay active';
+      captionElement.classList.add(className);
+      var buttonElement = document.createElement('button');
+      buttonElement.classList.add('cruse-scanviewer-overlay-button');
+      buttonElement.innerText = title;
+      captionElement.appendChild(buttonElement);
+      
+      buttonElement.addEventListener('click', function () {
+        captionElement.classList.toggle("cruse-scanviewer-overlay-active");
+      });
+      var captionContentElement = document.createElement('div');
+      captionContentElement.classList.add('cruse-scanviewer-overlay-content');
+      captionElement.appendChild(captionContentElement);
+    
+      this.containerElement.appendChild(captionElement);
+
+      return {
+        element: captionElement,
+        contentElement: captionContentElement,
+        setVisible: function(visible) {
+          captionElement.style.visibility = visible ? "visible" : "hidden";
+        },
+        toggleCollapsed: function() {
+          captionElement.classList.toggle("cruse-scanviewer-overlay-active")
+        }
+      }
+    },
 
     open: function (image) {
 
         this.image = image;
 
+        this.captionOverlay.setVisible(image.caption != undefined)
         if(image.caption != undefined)
-        {
-          this.captionElement.style.visibility = "visible";
-          this.captionContentElement.innerHTML = image.caption;
+        {                   
+          this.captionOverlay.contentElement.innerHTML = image.caption;
         } 
-        else{
-          this.captionElement.style.visibility = "hidden";
-        }
 
         if (this.is3DImage(image)) {
           return this.update3DViewer(image)
@@ -158,7 +169,7 @@ CruseViewer.prototype = {
         this.viewer3dElement.style.display = "block";
     
         if (this.scanViewerWidget == undefined) {
-          this.scanViewerWidget = new ScanViewerWidget(this.viewer3dElement);
+          this.scanViewerWidget = new ScanViewerWidget(this.viewer3dElement, this.containerElement);                  
         }
         else {
           this.scanViewerWidget.stop();
@@ -198,7 +209,7 @@ CruseViewer.prototype = {
 
       toggleShowCaption : function()
       {
-        that.captionElement.classList.toggle("active");  
+        this.captionOverlay.toggleCollapsed(); 
       },
 
       resolveUrl : function( prefix, url ) {
@@ -227,7 +238,7 @@ CruseViewer.prototype = {
         this.createButton(toolbarElement, "home", "Reset View", this.resetView.bind(this));
         this.createButton(toolbarElement, "fullpage", "Toogle Fullscreen", this.toggleFullScreen.bind(this));
         this.createButton(toolbarElement, "info", "Show/Hide Info",  function() {
-          that.captionElement.classList.toggle("active");
+          that.captionOverlay.toggleCollapsed();
         });
       },
 
@@ -255,3 +266,5 @@ CruseViewer.prototype = {
 
 
 export default CruseViewer;
+
+
