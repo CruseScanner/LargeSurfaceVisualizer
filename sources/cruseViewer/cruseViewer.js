@@ -24,6 +24,7 @@ var CruseViewer = function(parentElement)
     this.containerElement.appendChild(this.viewer3dElement);
 
     this.captionOverlay = this.createOverlayWindow("Info", "cruse-scanviewer-captionoverlay");    
+    this.lightSettingsOverlay = this.createOverlayWindow("Lighting", "cruse-scanviewer-lightoverlay");    
 
     var toolbarElement = document.createElement('div');
     toolbarElement.className = 'cruse-scanviewer-toolbar';
@@ -96,13 +97,20 @@ CruseViewer.prototype = {
           GROUP:  'info_grouphover.png',
           HOVER:  'info_hover.png',
           DOWN:   'info_pressed.png'
-      }
+      },
+      lights: {
+        REST:   'lights_rest.png',
+        GROUP:  'lights_grouphover.png',
+        HOVER:  'lights_hover.png',
+        DOWN:   'lights_pressed.png'
+    }
     },
 
     createOverlayWindow: function(title, className) {
       var captionElement = document.createElement('div');
-      captionElement.className = 'cruse-scanviewer-overlay active';
+      captionElement.className = 'cruse-scanviewer-overlay';
       captionElement.classList.add(className);
+      captionElement.classList.add('cruse-scanviewer-overlay-active');
       var buttonElement = document.createElement('button');
       buttonElement.classList.add('cruse-scanviewer-overlay-button');
       buttonElement.innerText = title;
@@ -139,6 +147,10 @@ CruseViewer.prototype = {
           this.captionOverlay.contentElement.innerHTML = image.caption;
         } 
 
+        this.lightSettingsOverlay.setVisible(this.is3DImage(image));
+
+        this.showLightsButton.element.style.visibility = this.is3DImage(image) ? "visible" : "hidden";
+
         if (this.is3DImage(image)) {
           return this.update3DViewer(image)
         }
@@ -169,7 +181,7 @@ CruseViewer.prototype = {
         this.viewer3dElement.style.display = "block";
     
         if (this.scanViewerWidget == undefined) {
-          this.scanViewerWidget = new ScanViewerWidget(this.viewer3dElement, this.containerElement);                  
+          this.scanViewerWidget = new ScanViewerWidget(this.viewer3dElement, this.lightSettingsOverlay.contentElement);                  
         }
         else {
           this.scanViewerWidget.stop();
@@ -228,6 +240,7 @@ CruseViewer.prototype = {
             });
         button.element.id = id;
         parentElement.appendChild(button.element);
+        return button;
       },
       
       createButtons: function(toolbarElement)
@@ -239,6 +252,9 @@ CruseViewer.prototype = {
         this.createButton(toolbarElement, "fullpage", "Toogle Fullscreen", this.toggleFullScreen.bind(this));
         this.createButton(toolbarElement, "info", "Show/Hide Info",  function() {
           that.captionOverlay.toggleCollapsed();
+        });
+        this.showLightsButton = this.createButton(toolbarElement, "lights", "Show/Hide Lighting Settings",  function() {
+          that.lightSettingsOverlay.toggleCollapsed();
         });
       },
 
