@@ -15,7 +15,7 @@ var osg = OSG.osg;
 * @constructor
 * 
 */
-var ScanViewerWidget = function(elementOrElementId) {
+var ScanViewerWidget = function(elementOrElementId, sideBarElement) {
     this.gui = undefined;       
     this._config = {
         lodScale: 0.01,
@@ -32,6 +32,11 @@ var ScanViewerWidget = function(elementOrElementId) {
     else
     {
         this._viewDivElement = elementOrElementId;
+    }
+
+    if (defined(sideBarElement))
+    {
+        this._sideBar = sideBarElement;
     }
 };
 
@@ -248,7 +253,12 @@ ScanViewerWidget.prototype = {
         var scanViewer = new ScanViewer(canvas, options);
         
         // Creating page with sidebar open is extremly slow (takes >1 sec for initial startup/layouting), WHY?
-        this._sideBar = this.createSideBar(this._viewDivElement);
+        
+        if (!defined(this._sideBar))
+        {
+            this._sideBar = this.createSideBar(this._viewDivElement);
+        }
+
         if (!defined(this._lightSourceDialog)) {
             this._lightSourceDialog = new LightSourceDialog(scanViewer, this._sideBar); 
         }
