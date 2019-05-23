@@ -10,7 +10,7 @@ var Drag = function (element, activeClassName) {
     var startX;
     var scrollLeft;
 
-    const onMouseUp = (e) => {
+    const onMouseUp = function(e) {
         e.preventDefault();
 
         if (activeClassName != undefined)
@@ -20,14 +20,14 @@ var Drag = function (element, activeClassName) {
         window.removeEventListener('mousemove', onMouseMove);  
     };
   
-    const onMouseMove = (e) => {
+    const onMouseMove = function(e) {
         e.preventDefault();
         const x = e.pageX - this.element.offsetLeft;
         const walk = (x - startX) * 3; //scroll-fast
         element.scrollLeft = scrollLeft - walk;
     };
 
-    this.element.addEventListener('mousedown', (e) => {
+    this.element.addEventListener('mousedown', function (e) {
  
         if(activeClassName != undefined)
             element.classList.add(activeClassName);

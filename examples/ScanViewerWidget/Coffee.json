@@ -9,7 +9,7 @@
         "LightSources": 
         [{
             "Diffuse" :  0.8,
-            "Specular" : 0.8,
+            "Specular" : 0.1,
             "LightPosition" : {
                 "Elevation": 1.570796326794897,
                 "Azimuth": 0.0
@@ -17,7 +17,7 @@
         },
         {
             "Diffuse" : 0.8,
-            "Specular" : 0.8,
+            "Specular" : 0.1,
             "LightPosition" : {
                 "Elevation": 0.0,
                 "Azimuth": 0.7853981633974485
