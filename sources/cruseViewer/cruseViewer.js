@@ -116,25 +116,33 @@ CruseViewer.prototype = {
       buttonElement.innerText = title;
       captionElement.appendChild(buttonElement);
       
-      buttonElement.addEventListener('click', function () {
-        captionElement.classList.toggle("cruse-scanviewer-overlay-active");
-      });
+     
       var captionContentElement = document.createElement('div');
       captionContentElement.classList.add('cruse-scanviewer-overlay-content');
       captionElement.appendChild(captionContentElement);
     
       this.containerElement.appendChild(captionElement);
 
-      return {
+      var overlayWindow = {
         element: captionElement,
         contentElement: captionContentElement,
+        _visible: true,
         setVisible: function(visible) {
-          captionElement.style.visibility = visible ? "visible" : "hidden";
+          this._visible = visible;
         },
-        toggleCollapsed: function() {
+
+        toggleCollapsed: function() {          
           captionElement.classList.toggle("cruse-scanviewer-overlay-active")
+        
+          captionElement.style.visibility = (this._visible && captionElement.classList.contains("cruse-scanviewer-overlay-active"))? "visible" : "hidden";          
         }
       }
+
+      buttonElement.addEventListener('click', function () {
+        overlayWindow.toggleCollapsed();
+      });
+
+      return overlayWindow;
     },
 
     open: function (image) {
