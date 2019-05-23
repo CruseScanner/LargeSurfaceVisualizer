@@ -9,6 +9,7 @@ var Drag = function (element, activeClassName) {
     this.element = element || alert('No element given to Gallery constructor');
     var startX;
     var scrollLeft;
+    var that = this;
 
     const onMouseUp = function(e) {
         e.preventDefault();
@@ -20,9 +21,11 @@ var Drag = function (element, activeClassName) {
         window.removeEventListener('mousemove', onMouseMove);  
     };
   
+
+
     const onMouseMove = function(e) {
         e.preventDefault();
-        const x = e.pageX - this.element.offsetLeft;
+        const x = e.pageX - that.element.offsetLeft;
         const walk = (x - startX) * 3; //scroll-fast
         element.scrollLeft = scrollLeft - walk;
     };
@@ -32,11 +35,13 @@ var Drag = function (element, activeClassName) {
         if(activeClassName != undefined)
             element.classList.add(activeClassName);
 
-        startX = e.pageX - this.element.offsetLeft;
-        scrollLeft = this.element.scrollLeft;
+        startX = e.pageX - that.element.offsetLeft;
+        scrollLeft = that.element.scrollLeft;
 
         window.addEventListener('mouseup', onMouseUp);  
         window.addEventListener('mousemove', onMouseMove);  
+        
+        e.preventDefault();
     });
 }
 
