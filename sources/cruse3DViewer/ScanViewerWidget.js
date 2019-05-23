@@ -222,7 +222,7 @@ ScanViewerWidget.prototype = {
 
         this._shadingProject = shadingProject;
 
-        var options = {};
+        var options = JSON.parse(JSON.stringify(shadingProject));
         
         options.textureMapTileSource = new IIPImageTileSource(url, this._shadingProject.DiffuseColor, { pixelScale : shadingProject.pixelSize });
         
@@ -237,9 +237,6 @@ ScanViewerWidget.prototype = {
         if (defined(this._shadingProject.ElevationMap)) {
             options.elevationTileSource = new IIPImageTileSource(url, this._shadingProject.ElevationMap, { tileSize : 64, border : 1, pixelScale : shadingProject.pixelSize });
         }
-
-        options.elevationMin = shadingProject.elevationMin; 
-        options.elevationMax = shadingProject.elevationMax;
         
         // Get 3D canvas.
         var canvas = this.createCanvas();

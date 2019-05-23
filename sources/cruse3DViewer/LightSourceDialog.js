@@ -111,7 +111,7 @@ var LightSourceDialog = function(scanViewer, parentElement) {
 };
 
 LightSourceDialog.prototype = {
-    update(scanViewer, activeLightIndex) {
+    update: function(scanViewer, activeLightIndex) {
         this._scanViewer = scanViewer;
         if (activeLightIndex !== undefined) {
             this.activateLight(activeLightIndex);
@@ -128,7 +128,7 @@ LightSourceDialog.prototype = {
         }
     },
     
-    activateLight(index) {
+    activateLight: function(index) {
         if (index !== this._activeLightIndex) {
             var oldElement = this._lightSourcePointerElement[this._activeLightIndex]; 
             if (oldElement !== undefined) {

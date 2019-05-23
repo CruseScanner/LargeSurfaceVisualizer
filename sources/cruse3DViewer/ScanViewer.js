@@ -148,6 +148,19 @@ var ScanViewer = function(canvasElement, options) {
     this._light = [];
     this._light[0] = light;
        
+
+    // read light params from options:
+    if(defined(options.Shading) && defined(options.Shading.LightSources))
+    {
+        var index = 0;
+        var that = this;
+        options.Shading.LightSources.forEach(function(light)
+        {
+            that.setLightParameters(index, options.Shading.Ambient || 0.2, light.Diffuse || 1.0, light.Specular || 0.1, options.Shading.PhongExponent || 10)
+            index++;
+        });
+    }
+
     var shaderProcessor = this._shaderProcessor;
     shaderProcessor.addShaders(shaderLib);
     
