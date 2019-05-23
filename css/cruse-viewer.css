@@ -45,10 +45,12 @@
     z-index:100;
     transition: opacity 0.2s ease-out;
     opacity: 0;
+    visibility: hidden;
   }
 
   .cruse-scanviewer-overlay-active {
     opacity: 0.5;
+    visibility: visible;
   }
 
   .cruse-scanviewer-overlay-button {

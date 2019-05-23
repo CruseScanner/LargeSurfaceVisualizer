@@ -190,8 +190,8 @@ LightSourceDialog.prototype = {
     _mouseToSpherical: function(ex, ey) {
         var rect = this._lightSourceHemisphereElement.getBoundingClientRect();
         var radius = rect.width/2; 
-        var centerx = rect.x + radius;
-        var centery = rect.y + radius;
+        var centerx = rect.left + radius;
+        var centery = rect.top + radius;
 
         var x = ex - centerx;
         var y = ey - centery;
