@@ -1,6 +1,7 @@
 'use strict';
 
 import OSG from 'external/osg';
+import Hammer from 'hammer';
 
 var osg = OSG.osg;
 
@@ -107,7 +108,7 @@ var LightSourceDialog = function(scanViewer, parentElement) {
         var spherical = that._mouseToSpherical(e.x, e.y);
         that._scanViewer.setDirectionalLight(that._activeLightIndex, spherical.elevation, spherical.azimuth);
         that._updateLightPosition(that._activeLightIndex, spherical.azimuth, spherical.elevation);
-    }
+    }    
 };
 
 LightSourceDialog.prototype = {
@@ -256,6 +257,15 @@ LightSourceDialog.prototype = {
                 that._dragging = false;
             //}
         }
+
+        var hammertime = new Hammer(lightSourcePointerElement);
+        hammertime.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+        hammertime.on('panmove', function(e){
+            var spherical = that._mouseToSpherical(e.center.x, e.center.y);
+            that._scanViewer.setDirectionalLight(that._activeLightIndex, spherical.elevation, spherical.azimuth);
+            that._updateLightPosition(that._activeLightIndex, spherical.azimuth, spherical.elevation);
+        });
+
         return index;
     },
     
