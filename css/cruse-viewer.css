@@ -79,14 +79,18 @@
 
   .cruse-scanviewer-captionoverlay {
     position: absolute;
-    bottom: 0;
+    bottom: 20px;
     right: 0;
+    max-width: 90%;
   }
 
   .cruse-scanviewer-lightoverlay {
     position:absolute;
     left:0;
     top:50px;
+    width:20%;
+    min-width: 100px;
+    max-width: 250px;
   }
 
 #ViewContainer {
@@ -124,14 +128,15 @@
 }
 
 .cruse-scanviewer-lightsource-dialog {
-  width: 250px;    
+  width: 100%;
 }
 
 .cruse-scanviewer-lightsource-hemisphere {
-/*  position: absolute;*/
-  width: 250px;
-  height: 250px;
-  border-radius: 250px;
+  position: relative;
+  width: 100%;
+  padding-top: 100%;
+  margin-top: 5px;
+  border-radius: 100%;
   background: #999;
 }
 
