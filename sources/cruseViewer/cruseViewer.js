@@ -129,11 +129,16 @@ CruseViewer.prototype = {
         _visible: true,
         setVisible: function(visible) {
           this._visible = visible;
+          this._updateVisibility();
         },
 
         toggleCollapsed: function() {          
           captionElement.classList.toggle("cruse-scanviewer-overlay-active")
-        
+          this._updateVisibility();
+         },
+
+        _updateVisibility: function()
+        {
           captionElement.style.visibility = (this._visible && captionElement.classList.contains("cruse-scanviewer-overlay-active"))? "visible" : "hidden";          
         }
       }

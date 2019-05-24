@@ -29,6 +29,9 @@ var LightSourceDialog = function(scanViewer, parentElement) {
     // Create absolutely positioned element so that pointer coordinates can be specified relative to the hemisphere div 
     var lightSourceHemisphereWrapElement = document.createElement('div');
     lightSourceHemisphereWrapElement.style = 'position: absolute';
+    lightSourceHemisphereWrapElement.style.left = 0;
+    lightSourceHemisphereWrapElement.style.top = 0;
+    
     this._lightSourceHemisphereWrapElement = lightSourceHemisphereWrapElement;
     
     var lightSourceFieldSetElement = document.createElement('fieldset');
