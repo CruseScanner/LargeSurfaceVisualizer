@@ -252,6 +252,8 @@ CruseViewer.prototype = {
             onClick: onClick,
             });
         button.element.id = id;
+        button.element.classList.add('cruse-scanviewer-toolbar-button');
+        button.element.style.padding = '';
         parentElement.appendChild(button.element);
         return button;
       },
