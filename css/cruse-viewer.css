@@ -26,6 +26,10 @@
     z-index:100;
   }
 
+  .cruse-scanviewer-toolbar-button {
+    padding: 1px;
+  }
+
   .cruse-scanviewer-description 
   {
     font-size: 14px;      
