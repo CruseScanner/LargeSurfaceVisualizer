@@ -134,7 +134,7 @@ Gallery.prototype = {
       var thumbnail = document.createElement('img');
       thumbnail.id = 'thumbnail_' + index;
       thumbnail.src = src;
-      thumbnail.title = i.title || null;  
+      thumbnail.title = i.title || i.Title || "";  
       thumbnails.appendChild(thumbnail);
       
       if (index == 0) thumbnail.className = 'selected';
