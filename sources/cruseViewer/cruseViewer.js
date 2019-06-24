@@ -36,7 +36,7 @@ var CruseViewer = function(parentElement)
 
 CruseViewer.prototype = {
 
-    prefixUrl:              "/images/",
+    prefixUrl:              "images/",
     navImages: {
         zoomIn: {
             REST:   'zoomin_rest.png',

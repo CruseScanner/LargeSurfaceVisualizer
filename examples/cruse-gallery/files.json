@@ -1,6 +1,6 @@
 [
     {
-        "Name" : "Brown Leather",
+        "Title" : "Brown Leather",
         "NormalMap" : "/var/www/3dviewer_dev_sample/data_new/jpx/BrownLeather_1400dpi_normals_flatness4_0.05_-0.10.jpx",
         "DiffuseColor" : "/var/www/3dviewer_dev_sample/data_new/jpx/BrownLeather_1400dpi_diffuse_color_flatness4.jpx",
         "Shading" : {
@@ -19,7 +19,7 @@
         "server": "/iipsrv/iipsrv.fcgi"
     },
     {
-        "Name" : "Coffee",
+        "Title" : "Coffee",
         "NormalMap" : "/var/www/3dviewer_dev_sample/data_new/jpx/Coffee_Factory_normals_flatness4_0.48_-0.42.jpx",
         "DiffuseColor" : "/var/www/3dviewer_dev_sample/data_new/jpx/Coffee_Factory_diffuse_color_flatness4.jpx",
         "ElevationMap" : "/var/www/3dviewer_dev_sample/data_new/jpx/Coffee_Factory_depth_flatness4_0.48_-0.42.jpx",
@@ -42,7 +42,7 @@
         "server" : "/iipsrv/iipsrv.fcgi"
     },
     {
-        "Name" : "Golden Shiny Furnier",
+        "Title" : "Golden Shiny Furnier",
         "NormalMap" : "/var/www/3dviewer_dev_sample/data_new/jpx/GoldenShinyFunier_normals_flatness3_0.3_-0.5.jpx",
         "DiffuseColor" : "/var/www/3dviewer_dev_sample/data_new/jpx/GoldenShinyFunier_diffuse_color_flatness3.jpx",
         "ElevationMap" : "/var/www/3dviewer_dev_sample/data_new/jpx/GoldenShinyFunier_depth_flatness3_0.3_-0.5.jpx",
@@ -67,7 +67,7 @@
         "caption": "Resolution 1000ppi <br> 8bit/Channel <br>12432 x 10510 Pixel <br> 31.58cm x 26.70cm<br>109M"
     },
     {
-        "Name" : "Golden Textile Wallpaper",
+        "Title" : "Golden Textile Wallpaper",
         "NormalMap" : "/var/www/3dviewer_dev_sample/data_new/jpx/GoldenTextileWallpaper_normals_flatness4_0.1_-0.1.jpx",
         "DiffuseColor" : "/var/www/3dviewer_dev_sample/data_new/jpx/GoldenTextileWallpaper_diffuse_color_flatness5.jpx",
         "ElevationMap" : "/var/www/3dviewer_dev_sample/data_new/jpx/GoldenTextileWallpaper_depth_flatness4_0.1_-0.1.jpx",
@@ -92,7 +92,7 @@
         "caption": "Resolution 1000ppi <br> 8bit/Channel <br>12432 x 10510 Pixel <br> 31.58cm x 26.70cm<br>109M"
     },
     {
-        "Name" : "Gold Heart",
+        "Title" : "Gold Heart",
         "NormalMap" : "/var/www/3dviewer_dev_sample/data_new/jpx/GoldHeart_normals_flatness3_1.2.jpx",
         "DiffuseColor" : "/var/www/3dviewer_dev_sample/data_new/jpx/GoldHeart_diffuse_color_flatness3.jpx",
         "ElevationMap" : "/var/www/3dviewer_dev_sample/data_new/jpx/GoldHeart_depth_flatness3_1.2.jpx",
