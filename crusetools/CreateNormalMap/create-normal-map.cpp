@@ -272,7 +272,7 @@ GDALDataset* createDataset(GDALDataType outputDataType, unsigned int resX, unsig
 
 int main(int argc, char** argv)
 {
-	if (argc != 4)
+	if (argc != 5)
 	{
 		std::cout<<"Usage: create-normal-map <depthrange> <resolution> <elev.tif> <normal-map.tif>"<<std::endl;
 		std::cout<<std::endl;
