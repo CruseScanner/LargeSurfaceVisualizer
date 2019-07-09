@@ -53,6 +53,7 @@ var Gallery = function (id, options) {
   }
   else alert("No recognizable list of images or URL provided");
 
+  this._showAdvancedControls = options.showAdvancedControls;
 };
 
 Gallery.prototype = {
@@ -66,7 +67,7 @@ Gallery.prototype = {
     var viewerElement = document.createElement('div');
     viewerElement.className = "viewer";
     containerElement.appendChild(viewerElement);
-    this.viewer = new CruseViewer(viewerElement);
+    this.viewer = new CruseViewer(viewerElement, this._showAdvancedControls);
 
 
     // Create the main thumbnail container

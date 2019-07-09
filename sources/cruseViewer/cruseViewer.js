@@ -5,7 +5,7 @@ import screenfull from 'tools/UI/fullscreen';
 
 'use strict';
 
-var CruseViewer = function(parentElement)
+var CruseViewer = function(parentElement, showAdvancedControls)
 {
     this.containerElement = parentElement;
 
@@ -32,6 +32,7 @@ var CruseViewer = function(parentElement)
     this.containerElement.appendChild(toolbarElement);
     this.createButtons(toolbarElement);
     this.currentViewer = undefined;
+    this._showAdvancedControls = showAdvancedControls;
 };
 
 CruseViewer.prototype = {
@@ -202,7 +203,7 @@ CruseViewer.prototype = {
 
         this.currentViewer = this.scanViewerWidget;
 
-        return this.scanViewerWidget.run(image);
+        return this.scanViewerWidget.run(image, this._showAdvancedControls);
       },
 
       is3DImage: function (image) {
