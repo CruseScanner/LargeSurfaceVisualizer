@@ -217,7 +217,7 @@ ScanViewerWidget.prototype = {
         this._progressElement.style.width = percent + "px";
     },
 
-    run: function(shadingProject) {
+    run: function(shadingProject, showAdvancedControls) {
         var url = shadingProject.server || '/iipsrv/iipsrv.fcgi';
 
         this._shadingProject = shadingProject;
@@ -274,12 +274,16 @@ ScanViewerWidget.prototype = {
 
         this._config.lodScale = 0.1;
         this._config.phongExponent = scanViewer.getLightParameters(0).phongExponent;       
-        this.initGui();
-        // Cheat dat gui to show at least two decimals and start at 1.0
-        this._config.lodScale = 1.0;
         
-        that.gui.__controllers.forEach(function(c) { c.updateDisplay(); });
-
+        if(showAdvancedControls)
+        {
+            this.initGui();
+        
+            // Cheat dat gui to show at least two decimals and start at 1.0
+            this._config.lodScale = 1.0;
+        
+            that.gui.__controllers.forEach(function(c) { c.updateDisplay(); });
+        }
         return scanViewer.run();
     },
 
@@ -292,7 +296,11 @@ ScanViewerWidget.prototype = {
 
         this._scanviewer.destroy();
         this._scanviewer = undefined;
-        this.gui.destroy();        
+
+        if(this.gui != undefined)
+        {
+            this.gui.destroy();        
+        }
     },
 
     destroy: function()
