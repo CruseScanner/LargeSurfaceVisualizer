@@ -4,6 +4,7 @@ var files = {
     Examples: [
         'ScanViewerWidget',
         'cruse-gallery',
-        'cruse2DViewer'        
+        'cruse2DViewer',
+        'cruseViewer'        
     ],   
 };
