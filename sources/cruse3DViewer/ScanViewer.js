@@ -46,7 +46,8 @@ function initializeRootNode(scanViewer) {
         manipulator.setCage(cage);
         
         manipulator.setAutoPushTarget(false);
-        manipulator.setLimitZoomIn(boundingSphere.radius() * 0.3);
+        var screenSizeInPixels = 0.5 *(scanViewer.viewer.getCanvasClientWidth() + scanViewer.viewer.getCanvasClientHeight());
+        manipulator.setLimitZoomIn(0.5*screenSizeInPixels * scanViewer.getPixelScale());
         manipulator.setLimitZoomOut(boundingSphere.radius() * 3.0);
         manipulator.setMinSpeed(256*10*scanViewer.getPixelScale());
         manipulator.setDistance(boundingSphere.radius() * 1.5);
