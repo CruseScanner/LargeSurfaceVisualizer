@@ -20,6 +20,7 @@ function initializeRootNode(scanViewer) {
         0
     ).then(function(rootTile) {
         var rootNode = new osg.MatrixTransform();
+        scanViewer._lightAndShadowScene.addChild(rootNode);
 
         var tileExtent = scanViewer._textureMapTileSource.getTileExtent(0, 0, 0);
         var w = tileExtent.x1 - tileExtent.x0;
@@ -27,7 +28,7 @@ function initializeRootNode(scanViewer) {
 
         rootNode.setMatrix(osg.mat4.fromTranslation(osg.mat4.create(), osg.vec3.fromValues(-w/2, h/2, 0)));            
         rootNode.addChild(rootTile);
-        scanViewer.viewer.setSceneData(rootNode);
+        scanViewer.viewer.setSceneData(scanViewer._lightAndShadowScene);
         var stateSet = rootNode.getOrCreateStateSet();
         
         scanViewer.setupLights(rootNode);
@@ -77,6 +78,16 @@ var ScanViewer = function(canvasElement, options) {
     this._enableLODDebugging = false;
     
     this._zoomFactor = 0.25;
+
+    this._castsShadowDrawTraversalMask = 0x2;
+    this._castsShadowBoundsTraversalMask = 0x2;
+    this._shadowConfiguration = {
+        textureSize: 2048,
+        textureType: 'UNSIGNED_BYTE',
+        bias: 0.005,
+        normalBias: 0.075,
+        kernelSizePCF: '16Tap(64texFetch)',     
+    };
 
     this._input = new osgDB.Input();
     this.projectedTilePixels = Math.PI/4.0*256*256;
@@ -160,6 +171,26 @@ var ScanViewer = function(canvasElement, options) {
             that.setLightParameters(index, options.Shading.Ambient || 0.2, light.Diffuse || 1.0, light.Specular || 0.1, options.Shading.PhongExponent || 10)
             index++;
         });
+    }
+    
+    // create shadow maps for each lightsource
+    var sceneShadowSettings = new osgShadow.ShadowSettings(this._shadowConfiguration);        
+    sceneShadowSettings.setCastsShadowDrawTraversalMask(this._castsShadowDrawTraversalMask);
+    sceneShadowSettings.setCastsShadowBoundsTraversalMask(this._castsShadowBoundsTraversalMask);
+    this._lightAndShadowScene = new osgShadow.ShadowedScene(sceneShadowSettings);
+
+    for(var i=0; i<this._light.length;i++) 
+    {
+        var shadowSettings = new osgShadow.ShadowSettings(this._shadowConfiguration);        
+        shadowSettings.setCastsShadowDrawTraversalMask(this._castsShadowDrawTraversalMask);
+        shadowSettings.setCastsShadowBoundsTraversalMask(
+            this._castsShadowBoundsTraversalMask
+        );
+        shadowSettings.setLight(this._light[i]);
+        
+        var shadowMap = new osgShadow.ShadowMap(shadowSettings);
+        this._lightAndShadowScene.addShadowTechnique(shadowMap);
+        shadowMap.setShadowSettings(shadowSettings);
     }
 
     var shaderProcessor = this._shaderProcessor;
