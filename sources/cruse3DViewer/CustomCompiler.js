@@ -39,7 +39,7 @@ CustomCompiler.prototype = osg.objectInherit(osgShader.Compiler.prototype, {
             var uDisplacementOffsetScale = displacementAttribute.getOrCreateUniforms().displacementOffsetScale;
             var uOffsetScale = displacementAttribute.getOrCreateUniforms().offsetScale;
             var uDisplacementRange = displacementAttribute.getOrCreateUniforms().displacementRange;
-            
+            var tUnit = 
             
             this.getNode('DisplaceVertex')
                 .inputs({
@@ -49,7 +49,7 @@ CustomCompiler.prototype = osg.objectInherit(osgShader.Compiler.prototype, {
                     diffuseMapOffsetScale: this.getOrCreateUniform(uDiffuseMapOffsetScale),
                     displacementOffsetScale: this.getOrCreateUniform(uDisplacementOffsetScale),
                     displacementRange: this.getOrCreateUniform(uDisplacementRange),
-                    displacementMap,              
+                    displacementMap: this.getOrCreateSampler('sampler2D', 'Texture' + tUnit),            
                 })
                 .outputs({
                     vertexOutput: displacementResult
