@@ -16,7 +16,7 @@ void TileDomainTransform( const in vec3 Vertex,
     vertex = min(vec3(1.0), max(vec3(0.0), vertex));
 
     // apply tile transform
-    vertex = vec3(vertex.xy*offsetScale.zw + offsetScale.xy, 0.0);     
+    vertexOutput = vec3(vertex.xy*offsetScale.zw + offsetScale.xy, 0.0);     
 }
 
 

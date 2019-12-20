@@ -2,6 +2,7 @@ import OSG from 'external/osg';
 
 
 import ArrayLight from 'cruse3DViewer/ArrayLight';
+import ScanRenderingCompiler from 'cruse3DViewer/ScanRenderingCompiler';
 import TileDomainTransformAttribute from 'cruse3DViewer/TileDomainTransformAttribute';
 
 var osg = OSG.osg;
@@ -12,6 +13,8 @@ var osgViewer = OSG.osgViewer;
 import defined from 'tools/defined';
 import shaderLib from 'cruse3DViewer/shaderLib';
 
+var nodeFactory = osgShader.nodeFactory;
+
 'use strict';
 
 function initializeRootNode(scanViewer) {
@@ -20,6 +23,8 @@ function initializeRootNode(scanViewer) {
         0,
         0
     ).then(function(rootTile) {
+        scanViewer.installCustomShaders();
+
         var rootNode = new osg.MatrixTransform();
 
         var tileExtent = scanViewer._textureMapTileSource.getTileExtent(0, 0, 0);
@@ -165,6 +170,7 @@ var ScanViewer = function(canvasElement, options) {
 
     var shaderProcessor = this._shaderProcessor;
     shaderProcessor.addShaders(shaderLib);
+    nodeFactory.extractFunctions(shaderLib, 'scanRenderingFunctions.glsl');
     
     this._initializationPromise = Promise.all(promises).then(function() {
         return initializeRootNode(that);
@@ -424,6 +430,18 @@ ScanViewer.prototype = {
         }
     },
     
+    installCustomShaders: function() {
+        // create a new shader generator with our own compiler
+        var shaderGenerator = new osgShader.ShaderGenerator();
+        shaderGenerator.setShaderCompiler(ScanRenderingCompiler);
+
+        // get or create instance of ShaderGeneratorProxy
+        var shaderGeneratorProxy = this.viewer.getState().getShaderGeneratorProxy();
+        shaderGeneratorProxy.addShaderGenerator('custom', shaderGenerator);
+
+        // now we can use 'custom' in StateSet to access our shader generator
+    },
+
     setupShader : function(stateSet) {
         var material = this._material;
         stateSet.setAttributeAndModes(material);
@@ -459,7 +477,8 @@ ScanViewer.prototype = {
         
         stateSet.addUniform(osg.Uniform.createFloat4(osg.vec4.fromValues(0.0, 0.0, 1.0, 1.0), 'uDiffuseMapOffsetScale'));
                 
-        stateSet.setAttributeAndModes(this._program);        
+        //stateSet.setAttributeAndModes(this._program);
+        stateSet.setShaderGeneratorName('custom');
     },
     
     createGridGeometry :function(samplesX, samplesY, skirtSize) {
