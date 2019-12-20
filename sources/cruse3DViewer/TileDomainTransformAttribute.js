@@ -26,7 +26,7 @@ osg.createPrototypeStateAttribute(
             if (obj.uniforms) return obj.uniforms;
 
             obj.uniforms = {
-                offsetAndScale: osg.Uniform.createFloat4(0, 'uOffsetScale')
+                offsetAndScale: osg.Uniform.createFloat4(osg.vec4.fromValues(0,0,1.0, 1.0), 'uOffsetScale')
             };
 
             return obj.uniforms;

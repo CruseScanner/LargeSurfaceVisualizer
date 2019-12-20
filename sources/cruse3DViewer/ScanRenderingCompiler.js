@@ -7,35 +7,35 @@ var osg = OSG.osg;
 
 // this compiler use basic lighting and add a node to demonstrate how to
 // customize the shader compiler
-var CustomCompiler = function() {
+var ScanRenderingCompiler = function() {
     osgShader.Compiler.apply(this, arguments);
 };
 
 // we use same attributes than the default compiler
 var config = osgShader.Compiler.cloneStateAttributeConfig(osgShader.Compiler);
-config.attribute.push('Displacement');
-osgShader.Compiler.setStateAttributeConfig(CustomCompiler, config);
+config.attribute.push('TileDomainTransform');
+osgShader.Compiler.setStateAttributeConfig(ScanRenderingCompiler, config);
 
-CustomCompiler.prototype = osg.objectInherit(osgShader.Compiler.prototype, {
+ScanRenderingCompiler.prototype = osg.objectInherit(osgShader.Compiler.prototype, {
   
     getCompilerName: function() {
-        return 'DisplacementCompiler';
+        return 'ScanRenderingCompiler';
     },
 
     getOrCreateLocalVertex: function() {
-        var localVertex = osgShader.Compiler.prototype.getOrCreateLocalVertex(this);
+        var localVertex = osgShader.Compiler.prototype.getOrCreateLocalVertex.call(this);
 
         // ======================================================
         // custom attribute tileDomainTransform
         // ======================================================
         var tileDomainTransformAttribute = this.getAttributeType('TileDomainTransform');
 
-        if (tileDomainTransformAttribute && tileDomainTransformAttribute.getAttributeEnable()) {
+        if (tileDomainTransformAttribute) {
             var tileDomainTransformResult = this.createVariable('vec3');
 
-            var uOffsetScale = tileDomainTransformAttribute.getOrCreateUniforms().offsetScale;
+            var uOffsetScale = tileDomainTransformAttribute.getOrCreateUniforms().offsetAndScale;
             
-            this.getNode('DisplaceVertex')
+            this.getNode('TileDomainTransform')
                 .inputs({
                     Vertex: localVertex,
                     offsetScale: this.getOrCreateUniform(uOffsetScale),
@@ -52,5 +52,5 @@ CustomCompiler.prototype = osg.objectInherit(osgShader.Compiler.prototype, {
 
 });
 
-export default CustomCompiler;
+export default ScanRenderingCompiler;
 
