@@ -6,7 +6,7 @@
 
 #define SHADER_NAME ScanViewerVertex
 
-attribute vec2 Vertex;
+attribute vec3 Vertex;
 
 uniform vec4 uOffsetScale;
 
@@ -32,15 +32,9 @@ varying vec4 vViewVertex;
 
 void main() 
 {
-    vec3 vertex = vec3(Vertex, 0.0);
+    vec3 vertex = Vertex;
   
-#ifdef WITH_DISPLACEMENT_MAP
-    // We encode skirts by placing them outside the [0..1]^2 domain
-    // We then reproject onto the boundary (by clamping), and use the distance 
-    // between original and clamped vertex as skirt displacement
-    vec2 d = max(-vertex.xy, vertex.xy - vec2(1.0));
-    float displace = max(0.0, max(d.x, d.y));
-#endif
+     // We encode skirts by placing them outside the [0..1]^2 domain  
     // Clip vertex to [0..1] domain   
     vertex = min(vec3(1.0), max(vec3(0.0), vertex));
 
@@ -50,7 +44,12 @@ void main()
     vertex = vec3(vertex.xy*uOffsetScale.zw + uOffsetScale.xy, 0.0);
     
 #ifdef WITH_DISPLACEMENT_MAP
-    vec2 displacementUV = Vertex*uDisplacementOffsetScale.zw + uDisplacementOffsetScale.xy;  
+     // We encode skirts by placing them outside the [0..1]^2 domain
+    // We then reproject onto the boundary (by clamping), and use the distance 
+    // between original and clamped vertex as skirt displacement
+    vec2 d = max(-Vertex.xy, Vertex.xy - vec2(1.0));
+    float displace = max(0.0, max(d.x, d.y));
+    vec2 displacementUV = Vertex.xy*uDisplacementOffsetScale.zw + uDisplacementOffsetScale.xy;  
     vertex.z+= (texture2D(Texture3, displacementUV).r-displace)*uDisplacementRange;
 #endif 
         

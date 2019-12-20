@@ -23,39 +23,28 @@ CustomCompiler.prototype = osg.objectInherit(osgShader.Compiler.prototype, {
     },
 
     getOrCreateLocalVertex: function() {
-        var localVertex = osgShader.Compiler.prototype.getLighting.getOrCreateLocalVertex(this);
+        var localVertex = osgShader.Compiler.prototype.getOrCreateLocalVertex(this);
 
         // ======================================================
-        // custom attribute displacement
-        // it's here I connect ouput of light result with my ramp
+        // custom attribute tileDomainTransform
         // ======================================================
-        var displacementAttribute = this.getAttributeType('Displacement');
+        var tileDomainTransformAttribute = this.getAttributeType('TileDomainTransform');
 
-        if (displacementAttribute && displacementAttribute.getAttributeEnable()) {
-            var displacementResult = this.createVariable('vec3');
+        if (tileDomainTransformAttribute && tileDomainTransformAttribute.getAttributeEnable()) {
+            var tileDomainTransformResult = this.createVariable('vec3');
 
-            var uEnableDisplacement = displacementAttribute.getOrCreateUniforms().enableDisplacement;
-            var uDiffuseMapOffsetScale = displacementAttribute.getOrCreateUniforms().diffuseMapOffsetScale;
-            var uDisplacementOffsetScale = displacementAttribute.getOrCreateUniforms().displacementOffsetScale;
-            var uOffsetScale = displacementAttribute.getOrCreateUniforms().offsetScale;
-            var uDisplacementRange = displacementAttribute.getOrCreateUniforms().displacementRange;
-            var tUnit = 
+            var uOffsetScale = tileDomainTransformAttribute.getOrCreateUniforms().offsetScale;
             
             this.getNode('DisplaceVertex')
                 .inputs({
-                    enableDisplacement: this.getOrCreateUniform(uEnableDisplacement),
-                    Vertex: this.getOrCreateAttribute('vec2', 'Vertex'),
+                    Vertex: localVertex,
                     offsetScale: this.getOrCreateUniform(uOffsetScale),
-                    diffuseMapOffsetScale: this.getOrCreateUniform(uDiffuseMapOffsetScale),
-                    displacementOffsetScale: this.getOrCreateUniform(uDisplacementOffsetScale),
-                    displacementRange: this.getOrCreateUniform(uDisplacementRange),
-                    displacementMap: this.getOrCreateSampler('sampler2D', 'Texture' + tUnit),            
                 })
                 .outputs({
-                    vertexOutput: displacementResult
+                    vertexOutput: tileDomainTransformResult
                 });
 
-            localVertex = displacementResult;
+            localVertex = tileDomainTransformResult;
         }
 
         return localVertex;

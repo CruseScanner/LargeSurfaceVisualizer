@@ -2,6 +2,7 @@ import OSG from 'external/osg';
 
 
 import ArrayLight from 'cruse3DViewer/ArrayLight';
+import TileDomainTransformAttribute from 'cruse3DViewer/TileDomainTransformAttribute';
 
 var osg = OSG.osg;
 import PlanarOrbitManipulator from 'cruse3DViewer/PlanarOrbitManipulator';
@@ -618,6 +619,12 @@ ScanViewer.prototype = {
         var tileGeometry = this.createGridGeometry(65, 65, 0.2);
         var stateSet = tileGeometry.getOrCreateStateSet();
         
+        // add tiledomaintransform attribute: this will clamp, scale and translate vertex.xy 
+        // coordinates:
+        var tileDomainTransformAttribute = new TileDomainTransformAttribute();
+        tileDomainTransformAttribute.setOffsetAndScale(osg.vec4.fromValues(x0, y0, width, height));
+        stateSet.setAttributeAndModes(tileDomainTransformAttribute);
+
         // Set geometry offset and scale, used to scale and offset the [0..1]^2
         // grid geometry for placement in model space
         var offsetScaleUniform = osg.Uniform.createFloat4(osg.vec4.fromValues(x0, y0, width, height), 'uOffsetScale');
