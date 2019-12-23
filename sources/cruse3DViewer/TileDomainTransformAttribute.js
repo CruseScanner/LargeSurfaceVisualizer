@@ -9,7 +9,7 @@ var osg = OSG.osg;
 var TileDomainTransformAttribute = function() {
     osg.StateAttribute.call(this);
     this._offsetAndScale = osg.vec4.fromValues(0,0,1.0, 1.0);
-    this._textureOffsetAndScale = osg.vec4.fromValues(0,0,1.0, 1.0);
+    this._textureOffsetAndScale = osg.vec4.fromValues(0,0,1.0,1.0);
 };
 
 osg.createPrototypeStateAttribute(
@@ -28,7 +28,7 @@ osg.createPrototypeStateAttribute(
 
             obj.uniforms = {
                 offsetAndScale: osg.Uniform.createFloat4(osg.vec4.fromValues(0,0,1.0, 1.0), 'uOffsetScale'),
-                textureOffsetAndScale: osg.Uniform.createFloat4(osg.vec4.fromValues(0,0,1.0, 1.0), 'uTextureOffsetScale')
+                textureOffsetAndScale: osg.Uniform.createFloat4(osg.vec4.fromValues(0,0,1.0,1.0), 'uTextureOffsetScale')
             };
 
             return obj.uniforms;

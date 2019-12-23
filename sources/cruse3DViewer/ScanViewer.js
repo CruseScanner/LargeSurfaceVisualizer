@@ -223,7 +223,7 @@ ScanViewer.prototype = {
                 
                 var offsetScale = osg.vec4.create();
                 if (defined(parentTileDomainTransformAttribute)) {
-                    offsetScale = parentTileDomainTransformAttribute.getTextureOffsetAndScale();                    
+                    offsetScale = osg.vec4.clone(parentTileDomainTransformAttribute.getTextureOffsetAndScale());                    
                 }
                 else {
                     offsetScale[0] = 0.0; // offset x
