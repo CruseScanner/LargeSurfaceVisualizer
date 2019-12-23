@@ -7,7 +7,7 @@
 #pragma DECLARE_FUNCTION
 void TileDomainTransform( const in vec3 Vertex, 
                           const in vec4 offsetScale, 
-                          out vec3 vertexOutput ) 
+                          out vec3 vertexOutput) 
 {
      vec3 vertex = Vertex;
   
@@ -17,6 +17,21 @@ void TileDomainTransform( const in vec3 Vertex,
 
     // apply tile transform
     vertexOutput = vec3(vertex.xy*offsetScale.zw + offsetScale.xy, 0.0);     
+}
+
+#pragma DECLARE_FUNCTION
+void TexcoordFromTileDomain( const in vec3 Vertex, 
+                             const in vec4 textureOffsetScale, 
+                             out vec2 texcoordOutput ) 
+{
+     vec3 vertex = Vertex;
+  
+    // We encode skirts by placing them outside the [0..1]^2 domain  
+    // so we have to clip vertex to [0..1] domain here   
+    vertex = min(vec3(1.0), max(vec3(0.0), vertex));
+
+    // Derive texture coordinates
+    texcoordOutput = vertex.xy*textureOffsetScale.zw + textureOffsetScale.xy;
 }
 
 
