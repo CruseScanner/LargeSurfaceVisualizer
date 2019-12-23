@@ -219,12 +219,11 @@ ScanViewer.prototype = {
                 var parentTexture = parentStateSet.getTextureAttribute(textureUnit, 'Texture');
                 stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);
                 
-                var parentOffsetScaleUniform = parentStateSet.getUniform('uDiffuseMapOffsetScale');
+                var parentTileDomainTransformAttribute = parentStateSet.getAttribute('TileDomainTransform');
+                
                 var offsetScale = osg.vec4.create();
-                if (defined(parentOffsetScaleUniform)) {
-                    for (var i = 0; i < 4; i++) {
-                        offsetScale[i] = parentOffsetScaleUniform.getInternalArray()[i];
-                    }
+                if (defined(parentTileDomainTransformAttribute)) {
+                    offsetScale = parentTileDomainTransformAttribute.getTextureOffsetAndScale();                    
                 }
                 else {
                     offsetScale[0] = 0.0; // offset x
@@ -241,57 +240,56 @@ ScanViewer.prototype = {
                 offsetScale[0] = offsetScale[0] + dx*offsetScale[2]; 
                 offsetScale[1] = offsetScale[1] + dy*offsetScale[3]; 
                 
-                var offsetScaleUniform = osg.Uniform.createFloat4(offsetScale, 'uDiffuseMapOffsetScale');
-                stateSet.addUniform(offsetScaleUniform);
+                stateSet.getAttribute('TileDomainTransform').setTextureOffsetAndScale(offsetScale);
             }
         }
         
-        if (this._renderNormalMaps) {
-            if (this._normalMapTileSource.hasTile(x, y, level))
-            {
-                promises.push(this.fetchAndApplyTileImagery(x, y, level, stateSet, 1, this._normalMapTileSource));
-            }
-            else
-            {
-                // Reuse parent texture
-                // TODO: use separate tex. coords to allow for resolution differences in diffuse / normal maps
-                var textureUnit = 1;
-                var parentTexture = parentStateSet.getTextureAttribute(textureUnit, 'Texture');
-                stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);               
-            }
-        }
+        // if (this._renderNormalMaps) {
+        //     if (this._normalMapTileSource.hasTile(x, y, level))
+        //     {
+        //         promises.push(this.fetchAndApplyTileImagery(x, y, level, stateSet, 1, this._normalMapTileSource));
+        //     }
+        //     else
+        //     {
+        //         // Reuse parent texture
+        //         // TODO: use separate tex. coords to allow for resolution differences in diffuse / normal maps
+        //         var textureUnit = 1;
+        //         var parentTexture = parentStateSet.getTextureAttribute(textureUnit, 'Texture');
+        //         stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);               
+        //     }
+        // }
         
-        if (this._renderGlossMaps) {
-            if (this._glossMapTileSource.hasTile(x, y, level))
-            {
-                promises.push(this.fetchAndApplyTileImagery(x, y, level, stateSet, 2, this._glossMapTileSource));
-            }
-            else
-            {
-                // Reuse parent texture
-                // TODO: use separate tex. coords to allow for resolution differences in diffuse / normal maps
-                var textureUnit = 2;
-                var parentTexture  = parentStateSet.getTextureAttribute(textureUnit, 'Texture');
-                stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);
-            }
-        }
+        // if (this._renderGlossMaps) {
+        //     if (this._glossMapTileSource.hasTile(x, y, level))
+        //     {
+        //         promises.push(this.fetchAndApplyTileImagery(x, y, level, stateSet, 2, this._glossMapTileSource));
+        //     }
+        //     else
+        //     {
+        //         // Reuse parent texture
+        //         // TODO: use separate tex. coords to allow for resolution differences in diffuse / normal maps
+        //         var textureUnit = 2;
+        //         var parentTexture  = parentStateSet.getTextureAttribute(textureUnit, 'Texture');
+        //         stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);
+        //     }
+        // }
         
-        if (this._renderDisplacementMaps)
-        {
-            var promise = this.fetchAndApplyTileImagery(x, y, level, stateSet, 3, this._elevationTileSource);
-            var ts = this._elevationTileSource;
-            promise.then(function() {
-                var e = ts.getRasterExtent(x, y, level);
+        // if (this._renderDisplacementMaps)
+        // {
+        //     var promise = this.fetchAndApplyTileImagery(x, y, level, stateSet, 3, this._elevationTileSource);
+        //     var ts = this._elevationTileSource;
+        //     promise.then(function() {
+        //         var e = ts.getRasterExtent(x, y, level);
                 
-                // Set scaling and offset for displacement mapping for exact
-                // sampling (we want to sample on the
-                // pixel corners, and assume the heightmap to be center-sampled
-                // and have a border of one sample)
-                var offsetScaleUniform = osg.Uniform.createFloat4(osg.vec4.fromValues(1.0/e.w, 1.0/e.h, 1.0 - 2.0/e.w, 1.0 - 2.0/e.h), 'uDisplacementOffsetScale');
-                stateSet.addUniform(offsetScaleUniform);
-            });
-            promises.push(promise);
-        }
+        //         // Set scaling and offset for displacement mapping for exact
+        //         // sampling (we want to sample on the
+        //         // pixel corners, and assume the heightmap to be center-sampled
+        //         // and have a border of one sample)
+        //         var offsetScaleUniform = osg.Uniform.createFloat4(osg.vec4.fromValues(1.0/e.w, 1.0/e.h, 1.0 - 2.0/e.w, 1.0 - 2.0/e.h), 'uDisplacementOffsetScale');
+        //         stateSet.addUniform(offsetScaleUniform);
+        //     });
+        //     promises.push(promise);
+        // }
         
         return Promise.all(promises);
     },
@@ -474,8 +472,6 @@ ScanViewer.prototype = {
         
         var displacementRangeUniform = osg.Uniform.createFloat1(this._elevationMax - this._elevationMin, 'uDisplacementRange');
         stateSet.addUniform(displacementRangeUniform);
-        
-        stateSet.addUniform(osg.Uniform.createFloat4(osg.vec4.fromValues(0.0, 0.0, 1.0, 1.0), 'uDiffuseMapOffsetScale'));
                 
         //stateSet.setAttributeAndModes(this._program);
         stateSet.setShaderGeneratorName('custom');
