@@ -2,6 +2,7 @@ import OSG from 'external/osg';
 
 
 import ArrayLight from 'cruse3DViewer/ArrayLight';
+import DisplacementTexture from 'cruse3DViewer/DisplacementTexture';
 import ScanRenderingCompiler from 'cruse3DViewer/ScanRenderingCompiler';
 import TileDomainTransformAttribute from 'cruse3DViewer/TileDomainTransformAttribute';
 
@@ -12,6 +13,7 @@ var osgDB = OSG.osgDB;
 var osgViewer = OSG.osgViewer;
 import defined from 'tools/defined';
 import shaderLib from 'cruse3DViewer/shaderLib';
+import DisplacementTexture from './DisplacementTexture';
 
 var nodeFactory = osgShader.nodeFactory;
 
@@ -197,6 +199,39 @@ ScanViewer.prototype = {
             stateSet.setTextureAttributeAndModes(textureIndex, texture);
         });        
     },
+
+     /**
+     * Will fetch an image from the given tile source and and apply it to the
+     * given stateset as texture.
+     */
+    fetchAndApplyDisplacementMap: function(x, y, level, stateSet) {        
+        var image = new osg.Image();
+        var options = {
+                imageCrossOrigin : true            
+        };
+        
+        var ts = this._elevationTileSource;
+        var url = ts.getTileURL(x, y, level);  
+        var that = this;     
+        return this._input.fetchImage(image, url, options).then(function(img) {
+            var texture = new DisplacementTexture();
+            texture.setImage(img);
+            
+            var e = ts.getRasterExtent(x, y, level);
+                
+            // Set scaling and offset for displacement mapping for exact
+            // sampling (we want to sample on the
+            // pixel corners, and assume the heightmap to be center-sampled
+            // and have a border of one sample)
+            texture.setTextureOffsetAndScale(osg.vec4.fromValues(1.0/e.w, 1.0/e.h, 1.0 - 2.0/e.w, 1.0 - 2.0/e.h));
+
+            texture.setDisplacementRange(that._elevationMax - that._elevationMin);
+            
+            return texture;
+        }).then(function(texture) {
+            stateSet.setTextureAttributeAndModes(3, texture);
+        });        
+    },
         
     fetchAndApplyAllTileImagery: function(x, y, level, node, parentGeometry) {
         var promises = [];
@@ -274,22 +309,11 @@ ScanViewer.prototype = {
         //     }
         // }
         
-        // if (this._renderDisplacementMaps)
-        // {
-        //     var promise = this.fetchAndApplyTileImagery(x, y, level, stateSet, 3, this._elevationTileSource);
-        //     var ts = this._elevationTileSource;
-        //     promise.then(function() {
-        //         var e = ts.getRasterExtent(x, y, level);
-                
-        //         // Set scaling and offset for displacement mapping for exact
-        //         // sampling (we want to sample on the
-        //         // pixel corners, and assume the heightmap to be center-sampled
-        //         // and have a border of one sample)
-        //         var offsetScaleUniform = osg.Uniform.createFloat4(osg.vec4.fromValues(1.0/e.w, 1.0/e.h, 1.0 - 2.0/e.w, 1.0 - 2.0/e.h), 'uDisplacementOffsetScale');
-        //         stateSet.addUniform(offsetScaleUniform);
-        //     });
-        //     promises.push(promise);
-        // }
+        if (this._renderDisplacementMaps)
+        {
+            var promise = this.fetchAndApplyDisplacementMap(x, y, level, stateSet);
+            promises.push(promise);
+        }
         
         return Promise.all(promises);
     },
@@ -469,9 +493,6 @@ ScanViewer.prototype = {
             attributeKeys : attributeKeys,  
             textureAttributeKeys : [ [ 'Texture' ], [ 'Texture' ], ['Texture'], ['Texture'] ]
         });
-        
-        var displacementRangeUniform = osg.Uniform.createFloat1(this._elevationMax - this._elevationMin, 'uDisplacementRange');
-        stateSet.addUniform(displacementRangeUniform);
                 
         //stateSet.setAttributeAndModes(this._program);
         stateSet.setShaderGeneratorName('custom');
