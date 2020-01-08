@@ -3,6 +3,7 @@ import OSG from 'external/osg';
 
 import ArrayLight from 'cruse3DViewer/ArrayLight';
 import DisplacementTexture from 'cruse3DViewer/DisplacementTexture';
+import NormalTexture from 'cruse3DViewer/NormalTexture';
 import ScanRenderingCompiler from 'cruse3DViewer/ScanRenderingCompiler';
 import TileDomainTransformAttribute from 'cruse3DViewer/TileDomainTransformAttribute';
 
@@ -172,7 +173,8 @@ var ScanViewer = function(canvasElement, options) {
 
     var shaderProcessor = this._shaderProcessor;
     shaderProcessor.addShaders(shaderLib);
-    nodeFactory.extractFunctions(shaderLib, 'scanRenderingFunctions.glsl');
+    nodeFactory.extractFunctions(shaderLib, 'scanRenderingFunctions_vert.glsl');
+    nodeFactory.extractFunctions(shaderLib, 'scanRenderingFunctions_frag.glsl');
     
     this._initializationPromise = Promise.all(promises).then(function() {
         return initializeRootNode(that);
@@ -232,6 +234,24 @@ ScanViewer.prototype = {
             stateSet.setTextureAttributeAndModes(3, texture);
         });        
     },
+
+    fetchAndApplyNormalMap: function(x, y, level, stateSet) {        
+        var image = new osg.Image();
+        var options = {
+                imageCrossOrigin : true            
+        };
+        
+        var ts = this._normalMapTileSource;
+        var url = ts.getTileURL(x, y, level);  
+        var that = this;     
+        return this._input.fetchImage(image, url, options).then(function(img) {
+            var texture = new NormalTexture();
+            texture.setImage(img);         
+            return texture;
+        }).then(function(texture) {
+            stateSet.setTextureAttributeAndModes(1, texture);
+        });     
+    },   
         
     fetchAndApplyAllTileImagery: function(x, y, level, node, parentGeometry) {
         var promises = [];
@@ -279,20 +299,20 @@ ScanViewer.prototype = {
             }
         }
         
-        // if (this._renderNormalMaps) {
-        //     if (this._normalMapTileSource.hasTile(x, y, level))
-        //     {
-        //         promises.push(this.fetchAndApplyTileImagery(x, y, level, stateSet, 1, this._normalMapTileSource));
-        //     }
-        //     else
-        //     {
-        //         // Reuse parent texture
-        //         // TODO: use separate tex. coords to allow for resolution differences in diffuse / normal maps
-        //         var textureUnit = 1;
-        //         var parentTexture = parentStateSet.getTextureAttribute(textureUnit, 'Texture');
-        //         stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);               
-        //     }
-        // }
+        if (this._renderNormalMaps) {
+            if (this._normalMapTileSource.hasTile(x, y, level))
+            {
+                promises.push(this.fetchAndApplyNormalMap(x, y, level, stateSet));
+            }
+            else
+            {
+                // Reuse parent texture
+                // TODO: use separate tex. coords to allow for resolution differences in diffuse / normal maps
+                var textureUnit = 1;
+                var parentTexture = parentStateSet.getTextureAttribute(textureUnit, 'NormalTexture');
+                stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);               
+            }
+        }
         
         // if (this._renderGlossMaps) {
         //     if (this._glossMapTileSource.hasTile(x, y, level))
