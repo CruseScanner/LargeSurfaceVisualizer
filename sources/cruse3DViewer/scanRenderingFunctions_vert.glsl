@@ -1,8 +1,3 @@
-#ifdef GL_FRAGMENT_PRECISION_HIGH
-    precision highp float;
-#else
-    precision mediump float;
-#endif
 
 #pragma DECLARE_FUNCTION
 void TileDomainTransform( const in vec3 Vertex, 

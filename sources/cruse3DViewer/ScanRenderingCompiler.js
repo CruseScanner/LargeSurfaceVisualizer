@@ -10,6 +10,8 @@ var osg = OSG.osg;
 var ScanRenderingCompiler = function() {
 
     this._displacementTextureName = undefined;
+    this._normalTextureName = undefined;
+
     osgShader.Compiler.apply(this, arguments);
 };
 
@@ -17,6 +19,8 @@ var ScanRenderingCompiler = function() {
 var config = osgShader.Compiler.cloneStateAttributeConfig(osgShader.Compiler);
 config.attribute.push('TileDomainTransform');
 config.textureAttribute.push('DisplacementTexture');
+config.textureAttribute.push('NormalTexture');
+
 osgShader.Compiler.setStateAttributeConfig(ScanRenderingCompiler, config);
 
 ScanRenderingCompiler.prototype = osg.objectInherit(osgShader.Compiler.prototype, {
@@ -31,6 +35,8 @@ ScanRenderingCompiler.prototype = osg.objectInherit(osgShader.Compiler.prototype
         var tType = tuTarget.className();
         if (tType.indexOf('DisplacementTexture') !== -1)
             return this.registerDisplacementTexture(tuTarget, tunit);
+        if (tType.indexOf('NormalTexture') !== -1)
+            return this.registerNormalTexture(tuTarget, tunit);
     },
 
     registerDisplacementTexture: function(tuTarget, texUnit) {
@@ -48,6 +54,23 @@ ScanRenderingCompiler.prototype = osg.objectInherit(osgShader.Compiler.prototype
             shadow: true // setting shadow to true to avoid using it in diffuse color
         };
     },
+
+    registerNormalTexture: function(tuTarget, texUnit) {
+        var tName = tuTarget.getName();
+        if (!tName) {
+            tName = 'Texture' + texUnit;
+            tuTarget.setName(tName);
+        }
+        this._normalTextureName = tName;
+
+        this._texturesByName[tName] = {
+            texture: tuTarget,
+            variable: undefined,
+            textureUnit: texUnit,
+            shadow: true // setting shadow to true to avoid using it in diffuse color
+        };
+    },
+
 
     getOrCreateLocalVertex: function() {
         var untransformedVertex = osgShader.Compiler.prototype.getOrCreateLocalVertex.call(this);
@@ -95,7 +118,7 @@ ScanRenderingCompiler.prototype = osg.objectInherit(osgShader.Compiler.prototype
                     tileTransformedVertex: localVertex,
                     displacementOffsetScale: this.getOrCreateUniform(uTextureOffsetScale),
                     displacementRange: this.getOrCreateUniform(uDisplacementRange),
-                    displacementMap: this.getOrCreateSampler('sampler2D', 'Texture' + texUnit),
+                    displacementMap: this.getOrCreateSampler('sampler2D', 'DisplacementTexture' + texUnit),
                 })
                 .outputs({
                     vertexOutput: displacementResult,
@@ -107,6 +130,76 @@ ScanRenderingCompiler.prototype = osg.objectInherit(osgShader.Compiler.prototype
         return localVertex;
     },
 
+    getOrCreateMaterialNormal: function() 
+    {
+        if (this._normalTextureName && this._fragmentShaderMode) {
+            return this.getOrCreateNormalizedFrontViewNormalFromNormalMap();
+        }
+
+        return osgShader.Compiler.prototype.getOrCreateMaterialNormal.call(this);
+    },
+
+    getOrCreateNormalizedFrontViewNormalFromNormalMap: function() {
+        var out = this._variables.nFrontViewNormalFromNormalMap;
+        if (out) return out;
+        out = this.createVariable('vec3', 'nFrontViewNormalFromNormalMap');
+
+        this.getNode('Normalize')
+            .inputs({ vec: this.getOrCreateFrontViewNormalFromNormalMap() })
+            .outputs({ result: out });
+
+        return out;
+    },
+
+    getOrCreateFrontViewNormalFromNormalMap: function() {
+        var out = this._variables.frontViewNormalFromNormalMap;
+        if (out) return out;
+        out = this.createVariable('vec3', 'frontViewNormalFromNormalMap');
+
+        this.getNode('FrontNormal')
+            .inputs({ normal: this.getOrCreateViewNormalFromNormalMap() })
+            .outputs({ result: out });
+
+        return out;
+    },
+
+    getOrCreateViewNormalFromNormalMap: function() {
+       
+        var out = this._variables.viewNormalFromNormalMap;
+        if (out) return out;
+        out = this.createVariable('vec3', 'viewNormalFromNormalMap');
+
+        this.getNode('MatrixMultDirection')
+            .inputs({
+                matrix: this.getOrCreateUniform('mat3', 'uModelViewNormalMatrix'),
+                vec: this.getOrCreateLocalNormalFromNormalMap()
+            })
+            .outputs({ vec: out });
+
+        return out;
+    },
+
+    getOrCreateLocalNormalFromNormalMap: function() {
+
+            var normalTextureObj = this._texturesByName[this._normalTextureName];
+            var texUnit = normalTextureObj.textureUnit;
+            var texCoordUnit = 0; // reuse texcoords for diffuse texture (HACK)
+            var normalMapResult = this.createVariable('vec3');     
+
+            var texCoord = this.getOrCreateVarying('vec2', 'vTexCoord' + texCoordUnit);
+            
+            this.getNode('NormalFromTexture')
+            .inputs({
+                normalTexture: this.getOrCreateSampler('sampler2D', 'NormalTexture' + texUnit),
+                texcoord: texCoord
+            })
+            .outputs({
+                normalOutput: normalMapResult,
+            });
+
+            return normalMapResult;
+    },
+
     declareVertexVaryings: function(roots){
         osgShader.Compiler.prototype.declareVertexVaryings.call(this, roots);
 
@@ -116,7 +209,7 @@ ScanRenderingCompiler.prototype = osg.objectInherit(osgShader.Compiler.prototype
             var name = varying.getVariable();
             if (name.indexOf('vTexCoord0') !== -1) {
                 this.transfromVertexTexcoord(varying);
-            }        
+            }     
         }
     },
 
