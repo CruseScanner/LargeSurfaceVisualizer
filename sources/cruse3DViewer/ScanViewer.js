@@ -15,6 +15,7 @@ var osgViewer = OSG.osgViewer;
 import defined from 'tools/defined';
 import shaderLib from 'cruse3DViewer/shaderLib';
 import DisplacementTexture from './DisplacementTexture';
+import GlossTexture from './GlossTexture';
 
 var nodeFactory = osgShader.nodeFactory;
 
@@ -252,6 +253,24 @@ ScanViewer.prototype = {
             stateSet.setTextureAttributeAndModes(1, texture);
         });     
     },   
+
+    fetchAndApplyGlossMap: function(x, y, level, stateSet) {        
+        var image = new osg.Image();
+        var options = {
+                imageCrossOrigin : true            
+        };
+        
+        var ts = this._glossMapTileSource;
+        var url = ts.getTileURL(x, y, level);  
+        var that = this;     
+        return this._input.fetchImage(image, url, options).then(function(img) {
+            var texture = new GlossTexture();
+            texture.setImage(img);         
+            return texture;
+        }).then(function(texture) {
+            stateSet.setTextureAttributeAndModes(2, texture);
+        });     
+    },   
         
     fetchAndApplyAllTileImagery: function(x, y, level, node, parentGeometry) {
         var promises = [];
@@ -314,20 +333,20 @@ ScanViewer.prototype = {
             }
         }
         
-        // if (this._renderGlossMaps) {
-        //     if (this._glossMapTileSource.hasTile(x, y, level))
-        //     {
-        //         promises.push(this.fetchAndApplyTileImagery(x, y, level, stateSet, 2, this._glossMapTileSource));
-        //     }
-        //     else
-        //     {
-        //         // Reuse parent texture
-        //         // TODO: use separate tex. coords to allow for resolution differences in diffuse / normal maps
-        //         var textureUnit = 2;
-        //         var parentTexture  = parentStateSet.getTextureAttribute(textureUnit, 'Texture');
-        //         stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);
-        //     }
-        // }
+        if (this._renderGlossMaps) {
+            if (this._glossMapTileSource.hasTile(x, y, level))
+            {
+                promises.push(this.fetchAndApplyGlossMap(x, y, level, stateSet));
+            }
+            else
+            {
+                // Reuse parent texture
+                // TODO: use separate tex. coords to allow for resolution differences in diffuse / normal maps
+                var textureUnit = 2;
+                var parentTexture  = parentStateSet.getTextureAttribute(textureUnit, 'GlossTexture');
+                stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);
+            }
+        }
         
         if (this._renderDisplacementMaps)
         {
