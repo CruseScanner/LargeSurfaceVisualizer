@@ -19,6 +19,7 @@ var ScanRenderingCompiler = function() {
 // we use same attributes than the default compiler
 var config = osgShader.Compiler.cloneStateAttributeConfig(osgShader.Compiler);
 config.attribute.push('TileDomainTransform');
+config.attribute.push('FactoryShading');
 config.textureAttribute.push('DisplacementTexture');
 config.textureAttribute.push('NormalTexture');
 config.textureAttribute.push('GlossTexture');
@@ -268,6 +269,43 @@ ScanRenderingCompiler.prototype = osg.objectInherit(osgShader.Compiler.prototype
         return output;
     },
 
+
+    //
+    // Overides to Handle FactoryShadingAttribute
+    //
+
+    getLightWithPrecompute: function(light, precompute) {
+
+        var factoryShadingAttribute = this.getAttributeType('FactoryShading');
+
+        if (!factoryShadingAttribute || !this._fragmentShaderMode) {
+            return osgShader.Compiler.prototype.getLightWithPrecompute.call(this, light, precompute);            
+        }
+
+        var lightUniforms = light.getOrCreateUniforms();
+
+        var inputs = {
+            normal: this.getOrCreateMaterialNormal(),
+            eyeVector: this.getOrCreateNormalizedViewEyeDirection(),
+            dotNL: precompute.dotNL,
+            attenuation: precompute.attenuation,
+
+            materialDiffuse: this.getOrCreateMaterialDiffuseColor(),
+            materialSpecular: this.getOrCreateMaterialSpecularColor(),
+            materialShininess: this.getOrCreateMaterialSpecularHardness(),
+
+            lightDiffuse: this.getOrCreateUniform(lightUniforms.diffuse),
+            lightSpecular: this.getOrCreateUniform(lightUniforms.specular),
+            eyeLightDir: precompute.eyeLightDir
+        };
+
+        var outputs = this.getOutputsFromLight();
+        this.getNode('FactoryShading')
+            .inputs(inputs)
+            .outputs(outputs);
+
+        return outputs;
+    },
 
     //
     // Overides to Use XY Coords as Texture coords
