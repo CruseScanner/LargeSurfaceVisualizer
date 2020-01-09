@@ -11,6 +11,7 @@ var ScanRenderingCompiler = function() {
 
     this._displacementTextureName = undefined;
     this._normalTextureName = undefined;
+    this._glossTextureName = undefined;
 
     osgShader.Compiler.apply(this, arguments);
 };
@@ -20,6 +21,7 @@ var config = osgShader.Compiler.cloneStateAttributeConfig(osgShader.Compiler);
 config.attribute.push('TileDomainTransform');
 config.textureAttribute.push('DisplacementTexture');
 config.textureAttribute.push('NormalTexture');
+config.textureAttribute.push('GlossTexture');
 
 osgShader.Compiler.setStateAttributeConfig(ScanRenderingCompiler, config);
 
@@ -37,6 +39,8 @@ ScanRenderingCompiler.prototype = osg.objectInherit(osgShader.Compiler.prototype
             return this.registerDisplacementTexture(tuTarget, tunit);
         if (tType.indexOf('NormalTexture') !== -1)
             return this.registerNormalTexture(tuTarget, tunit);
+        if (tType.indexOf('GlossTexture') !== -1)
+            return this.registerGlossTexture(tuTarget, tunit);
     },
 
     registerDisplacementTexture: function(tuTarget, texUnit) {
@@ -62,6 +66,22 @@ ScanRenderingCompiler.prototype = osg.objectInherit(osgShader.Compiler.prototype
             tuTarget.setName(tName);
         }
         this._normalTextureName = tName;
+
+        this._texturesByName[tName] = {
+            texture: tuTarget,
+            variable: undefined,
+            textureUnit: texUnit,
+            shadow: true // setting shadow to true to avoid using it in diffuse color
+        };
+    },
+
+    registerGlossTexture: function(tuTarget, texUnit) {
+        var tName = tuTarget.getName();
+        if (!tName) {
+            tName = 'Texture' + texUnit;
+            tuTarget.setName(tName);
+        }
+        this._glossTextureName = tName;
 
         this._texturesByName[tName] = {
             texture: tuTarget,
@@ -129,6 +149,10 @@ ScanRenderingCompiler.prototype = osg.objectInherit(osgShader.Compiler.prototype
 
         return localVertex;
     },
+
+    //
+    // Overides to Handle NormalTexture
+    //
 
     getOrCreateMaterialNormal: function() 
     {
@@ -200,6 +224,55 @@ ScanRenderingCompiler.prototype = osg.objectInherit(osgShader.Compiler.prototype
             return normalMapResult;
     },
 
+
+    //
+    // Overides to Handle GlossTexture
+    //
+    
+    getLighting: function() {
+
+        if (!this._glossTextureName || !this._fragmentShaderMode) {
+            return osgShader.Compiler.prototype.getLighting.call(this);            
+        }
+
+        if (this._lights.length === 0) return undefined;
+
+        var res = this.getLightingSeparate();
+
+        var glossTextureObj = this._texturesByName[this._glossTextureName];
+        var texUnit = glossTextureObj.textureUnit;
+        var texCoordUnit = 0; // reuse texcoords for diffuse texture (HACK)
+        var samplerName = 'GlossTexture' + texUnit;
+        
+        var glossOutput = this.createVariable('float');
+
+        this.getNode('GlossFromTexture')
+        .inputs({
+            glossTexture: this.getOrCreateSampler('sampler2D', samplerName),
+            texcoord: this.getOrCreateVarying('vec2', 'vTexCoord' + texCoordUnit),
+        })
+        .outputs({
+            glossOutput: glossOutput,
+        });
+
+        var specular = this.createVariable('vec3');
+        this.getNode('Mult')
+            .inputs(res.specular, glossOutput)
+            .outputs(specular);
+
+        var output = this.createVariable('vec3');
+        this.getNode('Add')
+            .inputs(res.diffuse, specular)
+            .outputs(output);
+
+        return output;
+    },
+
+
+    //
+    // Overides to Use XY Coords as Texture coords
+    //
+    
     declareVertexVaryings: function(roots){
         osgShader.Compiler.prototype.declareVertexVaryings.call(this, roots);
 
