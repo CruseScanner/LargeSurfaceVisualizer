@@ -6,6 +6,7 @@ import DisplacementTexture from 'cruse3DViewer/DisplacementTexture';
 import NormalTexture from 'cruse3DViewer/NormalTexture';
 import ScanRenderingCompiler from 'cruse3DViewer/ScanRenderingCompiler';
 import TileDomainTransformAttribute from 'cruse3DViewer/TileDomainTransformAttribute';
+import FactoryShadingAttribute from  'cruse3DViewer/FactoryShadingAttribute';
 
 var osg = OSG.osg;
 import PlanarOrbitManipulator from 'cruse3DViewer/PlanarOrbitManipulator';
@@ -699,12 +700,11 @@ ScanViewer.prototype = {
         var tileDomainTransformAttribute = new TileDomainTransformAttribute();
         tileDomainTransformAttribute.setOffsetAndScale(osg.vec4.fromValues(x0, y0, width, height));
         stateSet.setAttributeAndModes(tileDomainTransformAttribute);
-
-        // Set geometry offset and scale, used to scale and offset the [0..1]^2
-        // grid geometry for placement in model space
-        var offsetScaleUniform = osg.Uniform.createFloat4(osg.vec4.fromValues(x0, y0, width, height), 'uOffsetScale');
-        stateSet.addUniform(offsetScaleUniform);
        
+        // replace standard lighting by Factory's specular phong shading:
+        var factoryShadingAttribute = new FactoryShadingAttribute();
+        stateSet.setAttributeAndModes(factoryShadingAttribute);
+
         var levelUniform = osg.Uniform.createFloat1(level, 'uLODLevel');
         stateSet.addUniform(levelUniform);
         
