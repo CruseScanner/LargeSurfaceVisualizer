@@ -1,7 +1,5 @@
 import OSG from 'external/osg';
 
-
-import ArrayLight from 'cruse3DViewer/ArrayLight';
 import DisplacementTexture from 'cruse3DViewer/DisplacementTexture';
 import NormalTexture from 'cruse3DViewer/NormalTexture';
 import ScanRenderingCompiler from 'cruse3DViewer/ScanRenderingCompiler';
@@ -99,6 +97,7 @@ var ScanViewer = function(canvasElement, options) {
     this.viewer = new osgViewer.Viewer(canvasElement, {
         enableFrustumCulling: true
     });
+    this.viewer.setLightingMode(osgViewer.View.LightingMode.NO_LIGHT);
     this.viewer.init();
     
     var promises = [];    
@@ -149,7 +148,7 @@ var ScanViewer = function(canvasElement, options) {
     material.setShininess(40.0);
     this._material = material;
     
-    var light = new ArrayLight(0);
+    var light = new osg.Light(0);
     light.setDiffuse([1.0, 1.0, 1.0, 1.0]);
     light.setSpecular([1.0, 1.0, 1.0, 1.0]);
     light.setAmbient([0.2, 0.2, 0.2, 1.0]);
@@ -419,7 +418,7 @@ ScanViewer.prototype = {
         }
         if (lightIndex == this._light.length) {
             // Create light
-            this._light[lightIndex] = new ArrayLight(lightIndex);
+            this._light[lightIndex] = new osg.Light();
 
             // If root node exists, we can add a corresponding lightsource
             if (defined(this._rootNode)) {
@@ -507,34 +506,6 @@ ScanViewer.prototype = {
     setupShader : function(stateSet) {
         var material = this._material;
         stateSet.setAttributeAndModes(material);
-        
-        var defines = [];
-        if (this._renderNormalMaps) defines.push('#define WITH_NORMAL_MAP');
-        if (this._renderGlossMaps) defines.push('#define WITH_GLOSS_MAP');
-        if (this._enableLODDebugging) defines.push('#define WITH_DEBUG_LOD');
-        if (this._renderDisplacementMaps) defines.push('#define WITH_DISPLACEMENT_MAP');
-
-        defines.push('#define LIGHT_COUNT ' + this.getLightCount());
-
-        var vertexshader = this._shaderProcessor.getShader('scanviewer.vert.glsl', defines);
-        var fragmentshader = this._shaderProcessor.getShader('scanviewer.frag.glsl', defines);
-
-        this._program = new osg.Program(
-            new osg.Shader('VERTEX_SHADER', vertexshader),
-            new osg.Shader('FRAGMENT_SHADER', fragmentshader)
-        );
-        
-        var attributeKeys = [ 'Material' ];
-        for (var i = 0; i  < this.getLightCount(); i++) {
-            attributeKeys.push('ArrayLight' + i);
-        }
-        
-        this._program.setTrackAttributes({ 
-            attributeKeys : attributeKeys,  
-            textureAttributeKeys : [ [ 'Texture' ], [ 'Texture' ], ['Texture'], ['Texture'] ]
-        });
-                
-        //stateSet.setAttributeAndModes(this._program);
         stateSet.setShaderGeneratorName('custom');
     },
     
