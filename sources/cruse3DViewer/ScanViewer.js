@@ -369,9 +369,8 @@ ScanViewer.prototype = {
         }        
         
         var d = this.transformSphericalToWorld(elevation, azimuth, distance);        
-        // The shader assumes implicit direction atm
+        
         light.setPosition([d[0], d[1], d[2], 1.0]);
-        // this._light.setDirection(...);
     },
 
     /**
@@ -397,6 +396,7 @@ ScanViewer.prototype = {
         }        
         var d = this.transformSphericalToWorld(elevation, azimuth, 1.0);
         light.setPosition([d[0], d[1], d[2], 0.0]);
+        light.setDirection([-d[0], -d[1], -d[2]]);
     },
     
     getDirectionalLight: function(lightIndex) {
