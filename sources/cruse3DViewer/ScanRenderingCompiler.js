@@ -307,6 +307,36 @@ ScanRenderingCompiler.prototype = osg.objectInherit(osgShader.Compiler.prototype
         return outputs;
     },
 
+    getPremultAlpha: function(finalColor, alpha) {
+
+        var outColor = finalColor;
+
+        var factoryShadingAttribute = this.getAttributeType('FactoryShading');
+        var tileDomainTransformAttribute = this.getAttributeType('TileDomainTransform');
+
+        if (this._fragmentShaderMode &&
+            tileDomainTransformAttribute &&
+            factoryShadingAttribute && 
+            factoryShadingAttribute.isLODColoringEnabled()
+            ) 
+        {
+            var outputLODColored = this.createVariable('vec4');
+            var uLodLevel = tileDomainTransformAttribute.getOrCreateUniforms().lodLevel;
+           
+            this.getNode('ColorByLODLevel')
+                .inputs({
+                    inputColor: finalColor,
+                    lodLevel: this.getOrCreateUniform(uLodLevel),                           
+                })
+                .outputs({
+                    colorOutput: outputLODColored,
+                });
+            outColor = outputLODColored;
+        }
+       
+        return osgShader.Compiler.prototype.getPremultAlpha.call(this, outColor, alpha);  
+    },
+
     //
     // Overides to Use XY Coords as Texture coords
     //

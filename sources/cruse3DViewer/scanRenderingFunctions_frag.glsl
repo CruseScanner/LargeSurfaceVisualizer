@@ -55,3 +55,19 @@ void FactoryShading(const in vec3 normal,
     
         specularOut = specularPhong(dotNL, normal, L, eyeVector, materialShininess, materialSpecular.rgb, lightSpecular);          
 }
+
+// All components are in the range [0…1], including hue.
+vec3 hsv2rgb(vec3 c)
+{
+    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
+
+#pragma DECLARE_FUNCTION
+void ColorByLODLevel(const in vec3 inputColor, 
+                    const in int lodLevel, 
+                    out vec4 colorOutput)
+{
+     colorOutput = vec4(hsv2rgb(vec3(float(lodLevel) / 5.0, 0.5, 0.2)) * (inputColor.r + inputColor.g + inputColor.b), 1.0); 
+}
