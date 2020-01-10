@@ -425,10 +425,7 @@ ScanViewer.prototype = {
                 var lightSource = new osg.LightSource();
                 lightSource.setLight(this._light[lightIndex]);               
                 this._rootNode.addChild(lightSource);
-                // Update shader
-                this.setupShader(this._rootNode.getOrCreateStateSet());
             }
-
         }
         return this._light[lightIndex];
     },
@@ -477,8 +474,12 @@ ScanViewer.prototype = {
     setEnableLODVisualization: function(value)
     {
         this._enableLODDebugging = value;
-        var stateSet = this._rootNode.getOrCreateStateSet();        
-        this.setupShader(stateSet);
+        var stateSet = this._rootNode.getOrCreateStateSet(); 
+        
+        var factoryShadingAttribute = stateSet.getAttribute('FactoryShading');
+        if(factoryShadingAttribute){
+            factoryShadingAttribute.setLODColoringEnabled(this._enableLODDebugging);
+        }
     },
      
     setupLights : function(node) {
@@ -507,6 +508,11 @@ ScanViewer.prototype = {
         var material = this._material;
         stateSet.setAttributeAndModes(material);
         stateSet.setShaderGeneratorName('custom');
+       
+        // replace standard lighting by Factory's specular phong shading:
+        var factoryShadingAttribute = new FactoryShadingAttribute();
+        factoryShadingAttribute.setLODColoringEnabled(this._enableLODDebugging);
+        stateSet.setAttributeAndModes(factoryShadingAttribute);
     },
     
     createGridGeometry :function(samplesX, samplesY, skirtSize) {
@@ -670,15 +676,9 @@ ScanViewer.prototype = {
         // coordinates:
         var tileDomainTransformAttribute = new TileDomainTransformAttribute();
         tileDomainTransformAttribute.setOffsetAndScale(osg.vec4.fromValues(x0, y0, width, height));
+        tileDomainTransformAttribute.setLODLevel(level);
         stateSet.setAttributeAndModes(tileDomainTransformAttribute);
        
-        // replace standard lighting by Factory's specular phong shading:
-        var factoryShadingAttribute = new FactoryShadingAttribute();
-        stateSet.setAttributeAndModes(factoryShadingAttribute);
-
-        var levelUniform = osg.Uniform.createFloat1(level, 'uLODLevel');
-        stateSet.addUniform(levelUniform);
-        
         // Sets a fairly conservative bounding box (due to global min/max
         // height), shouldn't be an issue for
         // the typical dynamic range

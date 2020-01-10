@@ -11,7 +11,8 @@ var osg = OSG.osg;
 
 var FactoryShadingAttribute = function() {
     osg.StateAttribute.call(this);
-    this._isLODColoringEnabled = false;
+    this._offsetAndScale = osg.vec4.fromValues(0,0,1.0, 1.0);
+    this._textureOffsetAndScale = osg.vec4.fromValues(0,0,1.0,1.0);
 };
 
 osg.createPrototypeStateAttribute(
@@ -22,20 +23,6 @@ osg.createPrototypeStateAttribute(
         cloneType: function() {
             return new FactoryShadingAttribute();
         },
-
-        isLODColoringEnabled: function()
-        { 
-            return this._isLODColoringEnabled; 
-        },
-
-        setLODColoringEnabled: function(value)
-        {
-             this._isLODColoringEnabled = value; 
-        },
-
-        getHash: function() {
-            return this.getType() + this._isLODColoringEnabled.toString();
-        }
     }),
     'osg',
     'FactoryShading'
