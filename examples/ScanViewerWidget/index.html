@@ -33,10 +33,11 @@
         'load',
         function() {
             var shadingProjectUrl = urlParam('ShadingProject');
+            var showControls = urlParam('showControls');
 
             if(shadingProjectUrl == "")
             {
-              shadingProjectUrl = "Coffee.json";
+              shadingProjectUrl = "Tiles.json";
             }
 
             var that = this;
@@ -44,7 +45,7 @@
                 function (shadingProject) 
                 { 
                     var scanViewerWidget = new cruse.ScanViewerWidget("ViewContainer");
-                    scanViewerWidget.run(shadingProject);
+                    scanViewerWidget.run(shadingProject, showControls);
                 });
         },
         true
