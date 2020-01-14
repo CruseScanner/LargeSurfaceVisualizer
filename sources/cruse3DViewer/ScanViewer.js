@@ -1,7 +1,10 @@
 import OSG from 'external/osg';
 
-
-import ArrayLight from 'cruse3DViewer/ArrayLight';
+import DisplacementTexture from 'cruse3DViewer/DisplacementTexture';
+import NormalTexture from 'cruse3DViewer/NormalTexture';
+import ScanRenderingCompiler from 'cruse3DViewer/ScanRenderingCompiler';
+import TileDomainTransformAttribute from 'cruse3DViewer/TileDomainTransformAttribute';
+import FactoryShadingAttribute from  'cruse3DViewer/FactoryShadingAttribute';
 
 var osg = OSG.osg;
 import PlanarOrbitManipulator from 'cruse3DViewer/PlanarOrbitManipulator';
@@ -10,6 +13,10 @@ var osgDB = OSG.osgDB;
 var osgViewer = OSG.osgViewer;
 import defined from 'tools/defined';
 import shaderLib from 'cruse3DViewer/shaderLib';
+import DisplacementTexture from './DisplacementTexture';
+import GlossTexture from './GlossTexture';
+
+var nodeFactory = osgShader.nodeFactory;
 
 'use strict';
 
@@ -19,6 +26,8 @@ function initializeRootNode(scanViewer) {
         0,
         0
     ).then(function(rootTile) {
+        scanViewer.installCustomShaders();
+
         var rootNode = new osg.MatrixTransform();
 
         var tileExtent = scanViewer._textureMapTileSource.getTileExtent(0, 0, 0);
@@ -88,6 +97,7 @@ var ScanViewer = function(canvasElement, options) {
     this.viewer = new osgViewer.Viewer(canvasElement, {
         enableFrustumCulling: true
     });
+    this.viewer.setLightingMode(osgViewer.View.LightingMode.NO_LIGHT);
     this.viewer.init();
     
     var promises = [];    
@@ -138,7 +148,7 @@ var ScanViewer = function(canvasElement, options) {
     material.setShininess(40.0);
     this._material = material;
     
-    var light = new ArrayLight(0);
+    var light = new osg.Light(0);
     light.setDiffuse([1.0, 1.0, 1.0, 1.0]);
     light.setSpecular([1.0, 1.0, 1.0, 1.0]);
     light.setAmbient([0.2, 0.2, 0.2, 1.0]);
@@ -164,6 +174,8 @@ var ScanViewer = function(canvasElement, options) {
 
     var shaderProcessor = this._shaderProcessor;
     shaderProcessor.addShaders(shaderLib);
+    nodeFactory.extractFunctions(shaderLib, 'scanRenderingFunctions_vert.glsl');
+    nodeFactory.extractFunctions(shaderLib, 'scanRenderingFunctions_frag.glsl');
     
     this._initializationPromise = Promise.all(promises).then(function() {
         return initializeRootNode(that);
@@ -190,6 +202,75 @@ ScanViewer.prototype = {
             stateSet.setTextureAttributeAndModes(textureIndex, texture);
         });        
     },
+
+     /**
+     * Will fetch an image from the given tile source and and apply it to the
+     * given stateset as texture.
+     */
+    fetchAndApplyDisplacementMap: function(x, y, level, stateSet) {        
+        var image = new osg.Image();
+        var options = {
+                imageCrossOrigin : true            
+        };
+        
+        var ts = this._elevationTileSource;
+        var url = ts.getTileURL(x, y, level);  
+        var that = this;     
+        return this._input.fetchImage(image, url, options).then(function(img) {
+            var texture = new DisplacementTexture();
+            texture.setImage(img);
+            
+            var e = ts.getRasterExtent(x, y, level);
+                
+            // Set scaling and offset for displacement mapping for exact
+            // sampling (we want to sample on the
+            // pixel corners, and assume the heightmap to be center-sampled
+            // and have a border of one sample)
+            texture.setTextureOffsetAndScale(osg.vec4.fromValues(1.0/e.w, 1.0/e.h, 1.0 - 2.0/e.w, 1.0 - 2.0/e.h));
+
+            texture.setDisplacementRange(that._elevationMax - that._elevationMin);
+            
+            return texture;
+        }).then(function(texture) {
+            stateSet.setTextureAttributeAndModes(3, texture);
+        });        
+    },
+
+    fetchAndApplyNormalMap: function(x, y, level, stateSet) {        
+        var image = new osg.Image();
+        var options = {
+                imageCrossOrigin : true            
+        };
+        
+        var ts = this._normalMapTileSource;
+        var url = ts.getTileURL(x, y, level);  
+        var that = this;     
+        return this._input.fetchImage(image, url, options).then(function(img) {
+            var texture = new NormalTexture();
+            texture.setImage(img);         
+            return texture;
+        }).then(function(texture) {
+            stateSet.setTextureAttributeAndModes(1, texture);
+        });     
+    },   
+
+    fetchAndApplyGlossMap: function(x, y, level, stateSet) {        
+        var image = new osg.Image();
+        var options = {
+                imageCrossOrigin : true            
+        };
+        
+        var ts = this._glossMapTileSource;
+        var url = ts.getTileURL(x, y, level);  
+        var that = this;     
+        return this._input.fetchImage(image, url, options).then(function(img) {
+            var texture = new GlossTexture();
+            texture.setImage(img);         
+            return texture;
+        }).then(function(texture) {
+            stateSet.setTextureAttributeAndModes(2, texture);
+        });     
+    },   
         
     fetchAndApplyAllTileImagery: function(x, y, level, node, parentGeometry) {
         var promises = [];
@@ -212,12 +293,11 @@ ScanViewer.prototype = {
                 var parentTexture = parentStateSet.getTextureAttribute(textureUnit, 'Texture');
                 stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);
                 
-                var parentOffsetScaleUniform = parentStateSet.getUniform('uDiffuseMapOffsetScale');
+                var parentTileDomainTransformAttribute = parentStateSet.getAttribute('TileDomainTransform');
+                
                 var offsetScale = osg.vec4.create();
-                if (defined(parentOffsetScaleUniform)) {
-                    for (var i = 0; i < 4; i++) {
-                        offsetScale[i] = parentOffsetScaleUniform.getInternalArray()[i];
-                    }
+                if (defined(parentTileDomainTransformAttribute)) {
+                    offsetScale = osg.vec4.clone(parentTileDomainTransformAttribute.getTextureOffsetAndScale());                    
                 }
                 else {
                     offsetScale[0] = 0.0; // offset x
@@ -234,22 +314,21 @@ ScanViewer.prototype = {
                 offsetScale[0] = offsetScale[0] + dx*offsetScale[2]; 
                 offsetScale[1] = offsetScale[1] + dy*offsetScale[3]; 
                 
-                var offsetScaleUniform = osg.Uniform.createFloat4(offsetScale, 'uDiffuseMapOffsetScale');
-                stateSet.addUniform(offsetScaleUniform);
+                stateSet.getAttribute('TileDomainTransform').setTextureOffsetAndScale(offsetScale);
             }
         }
         
         if (this._renderNormalMaps) {
             if (this._normalMapTileSource.hasTile(x, y, level))
             {
-                promises.push(this.fetchAndApplyTileImagery(x, y, level, stateSet, 1, this._normalMapTileSource));
+                promises.push(this.fetchAndApplyNormalMap(x, y, level, stateSet));
             }
             else
             {
                 // Reuse parent texture
                 // TODO: use separate tex. coords to allow for resolution differences in diffuse / normal maps
                 var textureUnit = 1;
-                var parentTexture = parentStateSet.getTextureAttribute(textureUnit, 'Texture');
+                var parentTexture = parentStateSet.getTextureAttribute(textureUnit, 'NormalTexture');
                 stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);               
             }
         }
@@ -257,32 +336,21 @@ ScanViewer.prototype = {
         if (this._renderGlossMaps) {
             if (this._glossMapTileSource.hasTile(x, y, level))
             {
-                promises.push(this.fetchAndApplyTileImagery(x, y, level, stateSet, 2, this._glossMapTileSource));
+                promises.push(this.fetchAndApplyGlossMap(x, y, level, stateSet));
             }
             else
             {
                 // Reuse parent texture
                 // TODO: use separate tex. coords to allow for resolution differences in diffuse / normal maps
                 var textureUnit = 2;
-                var parentTexture  = parentStateSet.getTextureAttribute(textureUnit, 'Texture');
+                var parentTexture  = parentStateSet.getTextureAttribute(textureUnit, 'GlossTexture');
                 stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);
             }
         }
         
         if (this._renderDisplacementMaps)
         {
-            var promise = this.fetchAndApplyTileImagery(x, y, level, stateSet, 3, this._elevationTileSource);
-            var ts = this._elevationTileSource;
-            promise.then(function() {
-                var e = ts.getRasterExtent(x, y, level);
-                
-                // Set scaling and offset for displacement mapping for exact
-                // sampling (we want to sample on the
-                // pixel corners, and assume the heightmap to be center-sampled
-                // and have a border of one sample)
-                var offsetScaleUniform = osg.Uniform.createFloat4(osg.vec4.fromValues(1.0/e.w, 1.0/e.h, 1.0 - 2.0/e.w, 1.0 - 2.0/e.h), 'uDisplacementOffsetScale');
-                stateSet.addUniform(offsetScaleUniform);
-            });
+            var promise = this.fetchAndApplyDisplacementMap(x, y, level, stateSet);
             promises.push(promise);
         }
         
@@ -301,9 +369,8 @@ ScanViewer.prototype = {
         }        
         
         var d = this.transformSphericalToWorld(elevation, azimuth, distance);        
-        // The shader assumes implicit direction atm
+        
         light.setPosition([d[0], d[1], d[2], 1.0]);
-        // this._light.setDirection(...);
     },
 
     /**
@@ -329,6 +396,7 @@ ScanViewer.prototype = {
         }        
         var d = this.transformSphericalToWorld(elevation, azimuth, 1.0);
         light.setPosition([d[0], d[1], d[2], 0.0]);
+        light.setDirection([-d[0], -d[1], -d[2]]);
     },
     
     getDirectionalLight: function(lightIndex) {
@@ -350,17 +418,14 @@ ScanViewer.prototype = {
         }
         if (lightIndex == this._light.length) {
             // Create light
-            this._light[lightIndex] = new ArrayLight(lightIndex);
+            this._light[lightIndex] = new osg.Light();
 
             // If root node exists, we can add a corresponding lightsource
             if (defined(this._rootNode)) {
                 var lightSource = new osg.LightSource();
                 lightSource.setLight(this._light[lightIndex]);               
                 this._rootNode.addChild(lightSource);
-                // Update shader
-                this.setupShader(this._rootNode.getOrCreateStateSet());
             }
-
         }
         return this._light[lightIndex];
     },
@@ -409,8 +474,12 @@ ScanViewer.prototype = {
     setEnableLODVisualization: function(value)
     {
         this._enableLODDebugging = value;
-        var stateSet = this._rootNode.getOrCreateStateSet();        
-        this.setupShader(stateSet);
+        var stateSet = this._rootNode.getOrCreateStateSet(); 
+        
+        var factoryShadingAttribute = stateSet.getAttribute('FactoryShading');
+        if(factoryShadingAttribute){
+            factoryShadingAttribute.setLODColoringEnabled(this._enableLODDebugging);
+        }
     },
      
     setupLights : function(node) {
@@ -423,42 +492,27 @@ ScanViewer.prototype = {
         }
     },
     
+    installCustomShaders: function() {
+        // create a new shader generator with our own compiler
+        var shaderGenerator = new osgShader.ShaderGenerator();
+        shaderGenerator.setShaderCompiler(ScanRenderingCompiler);
+
+        // get or create instance of ShaderGeneratorProxy
+        var shaderGeneratorProxy = this.viewer.getState().getShaderGeneratorProxy();
+        shaderGeneratorProxy.addShaderGenerator('custom', shaderGenerator);
+
+        // now we can use 'custom' in StateSet to access our shader generator
+    },
+
     setupShader : function(stateSet) {
         var material = this._material;
         stateSet.setAttributeAndModes(material);
-        
-        var defines = [];
-        if (this._renderNormalMaps) defines.push('#define WITH_NORMAL_MAP');
-        if (this._renderGlossMaps) defines.push('#define WITH_GLOSS_MAP');
-        if (this._enableLODDebugging) defines.push('#define WITH_DEBUG_LOD');
-        if (this._renderDisplacementMaps) defines.push('#define WITH_DISPLACEMENT_MAP');
-
-        defines.push('#define LIGHT_COUNT ' + this.getLightCount());
-
-        var vertexshader = this._shaderProcessor.getShader('scanviewer.vert.glsl', defines);
-        var fragmentshader = this._shaderProcessor.getShader('scanviewer.frag.glsl', defines);
-
-        this._program = new osg.Program(
-            new osg.Shader('VERTEX_SHADER', vertexshader),
-            new osg.Shader('FRAGMENT_SHADER', fragmentshader)
-        );
-        
-        var attributeKeys = [ 'Material' ];
-        for (var i = 0; i  < this.getLightCount(); i++) {
-            attributeKeys.push('ArrayLight' + i);
-        }
-        
-        this._program.setTrackAttributes({ 
-            attributeKeys : attributeKeys,  
-            textureAttributeKeys : [ [ 'Texture' ], [ 'Texture' ], ['Texture'], ['Texture'] ]
-        });
-        
-        var displacementRangeUniform = osg.Uniform.createFloat1(this._elevationMax - this._elevationMin, 'uDisplacementRange');
-        stateSet.addUniform(displacementRangeUniform);
-        
-        stateSet.addUniform(osg.Uniform.createFloat4(osg.vec4.fromValues(0.0, 0.0, 1.0, 1.0), 'uDiffuseMapOffsetScale'));
-                
-        stateSet.setAttributeAndModes(this._program);        
+        stateSet.setShaderGeneratorName('custom');
+       
+        // replace standard lighting by Factory's specular phong shading:
+        var factoryShadingAttribute = new FactoryShadingAttribute();
+        factoryShadingAttribute.setLODColoringEnabled(this._enableLODDebugging);
+        stateSet.setAttributeAndModes(factoryShadingAttribute);
     },
     
     createGridGeometry :function(samplesX, samplesY, skirtSize) {
@@ -618,14 +672,13 @@ ScanViewer.prototype = {
         var tileGeometry = this.createGridGeometry(65, 65, 0.2);
         var stateSet = tileGeometry.getOrCreateStateSet();
         
-        // Set geometry offset and scale, used to scale and offset the [0..1]^2
-        // grid geometry for placement in model space
-        var offsetScaleUniform = osg.Uniform.createFloat4(osg.vec4.fromValues(x0, y0, width, height), 'uOffsetScale');
-        stateSet.addUniform(offsetScaleUniform);
+        // add tiledomaintransform attribute: this will clamp, scale and translate vertex.xy 
+        // coordinates:
+        var tileDomainTransformAttribute = new TileDomainTransformAttribute();
+        tileDomainTransformAttribute.setOffsetAndScale(osg.vec4.fromValues(x0, y0, width, height));
+        tileDomainTransformAttribute.setLODLevel(level);
+        stateSet.setAttributeAndModes(tileDomainTransformAttribute);
        
-        var levelUniform = osg.Uniform.createFloat1(level, 'uLODLevel');
-        stateSet.addUniform(levelUniform);
-        
         // Sets a fairly conservative bounding box (due to global min/max
         // height), shouldn't be an issue for
         // the typical dynamic range
