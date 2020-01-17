@@ -1,6 +1,7 @@
 import OSG from 'external/osg';
 
 import DisplacementTexture from 'cruse3DViewer/DisplacementTexture';
+import DebugTextureNodeFactory from 'cruse3DViewer/DebugTextureNodeFactory';
 import NormalTexture from 'cruse3DViewer/NormalTexture';
 import ScanRenderingCompiler from 'cruse3DViewer/ScanRenderingCompiler';
 import TileDomainTransformAttribute from 'cruse3DViewer/TileDomainTransformAttribute';
@@ -44,7 +45,7 @@ function initializeRootNode(scanViewer) {
         var h = tileExtent.y1 - tileExtent.y0;
 
         geometryRoot.setMatrix(osg.mat4.fromTranslation(osg.mat4.create(), osg.vec3.fromValues(-w/2, h/2, 0)));            
-        geometryRoot.addChild(rootTile);        
+        geometryRoot.addChild(rootTile);   
         scanViewer.viewer.setSceneData(rootNode);
         
         scanViewer.setupLights(lightAndShadowScene);
@@ -54,6 +55,46 @@ function initializeRootNode(scanViewer) {
         geometryRoot.setNodeMask(
             scanViewer._castsShadowBoundsTraversalMask | scanViewer._castsShadowDrawTraversalMask
         );
+
+        var debugNode = new osg.MatrixTransform();
+        debugNode.setMatrix(osg.mat4.fromTranslation(osg.mat4.create(), osg.vec3.fromValues(-w/2, h/2, 0)));      
+
+        var size = 0;
+        var cube = osg.createTexturedBoxGeometry(0, 0, 0, size, size, size * 10);
+        //debugNode.addChild(cube);
+
+        var axis = osg.createAxisGeometry(20);
+        debugNode.addChild(axis);
+
+        cube = osg.createTexturedBoxGeometry(w, 0, 0, size, size, size * 10);
+        debugNode.addChild(cube);
+        var stateSet = cube.getOrCreateStateSet();
+
+        cube = osg.createTexturedBoxGeometry(w, -h, 0, size, size, size * 10);
+        debugNode.addChild(cube);
+        var stateSet = cube.getOrCreateStateSet();
+
+        var subnode = new osg.Node();
+        cube = osg.createTexturedBoxGeometry(0, -h, 0, size, size, size * 10);
+        debugNode.addChild(subnode);
+        subnode.addChild(cube);
+
+
+        var stateSet = cube.getOrCreateStateSet();
+        
+        // add tiledomaintransform attribute: this will clamp, scale and translate vertex.xy 
+        // coordinates:
+        var tileDomainTransformAttribute = new TileDomainTransformAttribute();
+        tileDomainTransformAttribute.setOffsetAndScale(osg.vec4.fromValues(0, 0, 10, 12));
+        tileDomainTransformAttribute.setLODLevel(2);
+        stateSet.setAttributeAndModes(tileDomainTransformAttribute);
+
+
+        debugNode.setNodeMask(
+            scanViewer._castsShadowBoundsTraversalMask | scanViewer._castsShadowDrawTraversalMask
+        );
+        lightAndShadowScene.addChild(debugNode);
+        
 
         scanViewer._rootNode = rootNode;
         scanViewer._lightAndShadowScene = lightAndShadowScene;
@@ -78,6 +119,7 @@ function initializeRootNode(scanViewer) {
 
         scanViewer._homePose = manipulator.getCurrentPose();
  
+        rootNode.addChild(scanViewer._debugTextureFactory.getNode());
     });
 };
 
@@ -125,6 +167,9 @@ var ScanViewer = function(canvasElement, options) {
     this.viewer.setLightingMode(osgViewer.View.LightingMode.NO_LIGHT);
     this.viewer.init();
     
+    this._debugTextures = [];
+    this._debugTextureFactory = new DebugTextureNodeFactory(this.viewer._canvas);
+
     var promises = [];    
     var that = this;
     if (defined(textureMapTileSource)) {
@@ -419,7 +464,9 @@ ScanViewer.prototype = {
             return;
         }        
         var d = this.transformSphericalToWorld(elevation, azimuth, 1.0);
-        light.setPosition([d[0], d[1], d[2], 0.0]);
+
+        light.setLightAsDirection();
+        light.setPosition([d[0], d[1], d[2], 0]);
         light.setDirection([-d[0], -d[1], -d[2]]);
     },
     
@@ -579,11 +626,15 @@ ScanViewer.prototype = {
             shadowSettings.setLight(this._light[i]);
             
             var shadowMap = new osgShadow.ShadowMap(shadowSettings);
+            lightAndShadowScene.addShadowTechnique(shadowMap);
             shadowMap.setShadowSettings(shadowSettings);
-
-            lightAndShadowScene.addShadowTechnique(shadowMap);            
+           
+            this._debugTextures.push(shadowMap.getTexture());        
         }
 
+        
+        this._debugTextureFactory.addTextures(this._debugTextures);
+        this._debugTextureFactory.show();        
     },
 
     createGridGeometry :function(samplesX, samplesY, skirtSize) {
