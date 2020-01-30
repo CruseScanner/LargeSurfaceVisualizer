@@ -272,14 +272,15 @@ ScanViewerWidget.prototype = {
             this._lightSourceDialog.update(scanViewer, 0);
         }
 
-        this._config.lodScale = 0.1;
         this._config.phongExponent = scanViewer.getLightParameters(0).phongExponent;       
         
         if(showAdvancedControls)
         {
+            // Cheat dat gui to show at least two decimals and start at 1.0
+            this._config.lodScale = 0.1;
+
             this.initGui();
         
-            // Cheat dat gui to show at least two decimals and start at 1.0
             this._config.lodScale = 1.0;
         
             that.gui.__controllers.forEach(function(c) { c.updateDisplay(); });

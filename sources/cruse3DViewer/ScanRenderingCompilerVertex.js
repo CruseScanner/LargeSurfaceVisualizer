@@ -8,9 +8,12 @@ var osg = OSG.osg;
 
 var ScanRenderingCompilerVertex = {
   
+    getOrCreateUntransformedLocalVertex: function() {
+        return osgShader.Compiler.prototype.getOrCreateLocalVertex.call(this);
+    },
 
     getOrCreateLocalVertex: function() {
-        var untransformedVertex = osgShader.Compiler.prototype.getOrCreateLocalVertex.call(this);
+        var untransformedVertex = this.getOrCreateUntransformedLocalVertex();
         var localVertex = untransformedVertex;
 
         // ======================================================
@@ -18,7 +21,7 @@ var ScanRenderingCompilerVertex = {
         // ======================================================
         var tileDomainTransformAttribute = this.getAttributeType('TileDomainTransform');
 
-        if (tileDomainTransformAttribute) {
+        if (tileDomainTransformAttribute && tileDomainTransformAttribute.getEnabled()) {
             var tileDomainTransformResult = this.createVariable('vec3');        
             var uOffsetScale = tileDomainTransformAttribute.getOrCreateUniforms().offsetAndScale;
            
