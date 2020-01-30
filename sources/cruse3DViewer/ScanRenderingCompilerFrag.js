@@ -84,6 +84,29 @@ var ScanRenderingCompilerFrag = {
             return normalMapResult;
     },
 
+    //
+    // Overides to provide correct model normal with displacement mapping to fragment shader
+    //
+    getOrCreateModelNormal: function() {
+        if (this._fragmentShaderMode && this._displacementTextureName) {
+
+            var result = this.createVariable('vec3', 'perFaceModelNormal');     
+            var position = this.getOrCreateModelVertex();
+            
+            this.getNode('NormalFromPosition')
+            .inputs({
+                pos: position,
+            })
+            .outputs({
+                normalOutput: result,
+            });
+
+            return result;
+        }
+
+        return osgShader.Compiler.prototype.getOrCreateModelNormal.call(this);;
+    },
+
 
     //
     // Overides to Handle GlossTexture
@@ -128,6 +151,39 @@ var ScanRenderingCompilerFrag = {
         return output;
     },
 
+
+    //
+    // overrides shadow casting to avoid shadow akne and undersampling artifacts 
+    // that appear with light directions close to the z axis: since we dont expect 
+    // a lot of shadows in this situations anyway, we blend out shadows for light directions
+    // close to the z axis: clamp(shadow + shadowViewLook.z,0.0, 1.0);
+    //
+    createShadowingLight: function(light, lighted) {
+        var lightNum = light.getLightNumber();
+        var shadowTexture = this._getShadowTextureFromLightNum(this._shadowsTextures, lightNum);
+        var shadowReceive = this._getShadowReceiveAttributeFromLightNum(this._shadows, lightNum);
+        if (!shadowTexture || !shadowReceive) return undefined;
+
+        var inputs = this.getInputsFromShadow(shadowReceive, shadowTexture, lighted, lightNum);
+
+        var shadowedOutput = osgShader.Compiler.prototype.createShadowingLight.call(this, light, lighted);
+
+        var shadowViewLook = inputs.shadowViewLook;
+
+        var blendedShadow = this.createVariable('float');
+
+        this.getNode('InlineCode')
+            .code('%blendedShadow = clamp(%shadow + %lightdir.z,0.0, 1.0);')
+            .inputs({
+                shadow: shadowedOutput,
+                lightdir: shadowViewLook,
+            })
+            .outputs({
+                blendedShadow: blendedShadow
+            });
+
+        return blendedShadow;
+    },
 
     //
     // Overides to Handle FactoryShadingAttribute

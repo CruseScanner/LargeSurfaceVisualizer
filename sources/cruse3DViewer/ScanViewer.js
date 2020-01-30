@@ -4,6 +4,7 @@ import DisplacementTexture from 'cruse3DViewer/DisplacementTexture';
 import DebugTextureNodeFactory from 'cruse3DViewer/DebugTextureNodeFactory';
 import NormalTexture from 'cruse3DViewer/NormalTexture';
 import ScanRenderingCompiler from 'cruse3DViewer/ScanRenderingCompiler';
+import ShadowCastScanRenderingCompiler from 'cruse3DViewer/ShadowCastScanRenderingCompiler';
 import TileDomainTransformAttribute from 'cruse3DViewer/TileDomainTransformAttribute';
 import FactoryShadingAttribute from  'cruse3DViewer/FactoryShadingAttribute';
 
@@ -56,44 +57,7 @@ function initializeRootNode(scanViewer) {
             scanViewer._castsShadowBoundsTraversalMask | scanViewer._castsShadowDrawTraversalMask
         );
 
-        var debugNode = new osg.MatrixTransform();
-        debugNode.setMatrix(osg.mat4.fromTranslation(osg.mat4.create(), osg.vec3.fromValues(-w/2, h/2, 0)));      
-
-        var size = 0;
-        var cube = osg.createTexturedBoxGeometry(0, 0, 0, size, size, size * 10);
-        //debugNode.addChild(cube);
-
-        var axis = osg.createAxisGeometry(20);
-        debugNode.addChild(axis);
-
-        cube = osg.createTexturedBoxGeometry(w, 0, 0, size, size, size * 10);
-        debugNode.addChild(cube);
-        var stateSet = cube.getOrCreateStateSet();
-
-        cube = osg.createTexturedBoxGeometry(w, -h, 0, size, size, size * 10);
-        debugNode.addChild(cube);
-        var stateSet = cube.getOrCreateStateSet();
-
-        var subnode = new osg.Node();
-        cube = osg.createTexturedBoxGeometry(0, -h, 0, size, size, size * 10);
-        debugNode.addChild(subnode);
-        subnode.addChild(cube);
-
-
-        var stateSet = cube.getOrCreateStateSet();
-        
-        // add tiledomaintransform attribute: this will clamp, scale and translate vertex.xy 
-        // coordinates:
-        var tileDomainTransformAttribute = new TileDomainTransformAttribute();
-        tileDomainTransformAttribute.setOffsetAndScale(osg.vec4.fromValues(0, 0, 10, 12));
-        tileDomainTransformAttribute.setLODLevel(2);
-        stateSet.setAttributeAndModes(tileDomainTransformAttribute);
-
-
-        debugNode.setNodeMask(
-            scanViewer._castsShadowBoundsTraversalMask | scanViewer._castsShadowDrawTraversalMask
-        );
-        lightAndShadowScene.addChild(debugNode);
+      
         
 
         scanViewer._rootNode = rootNode;
@@ -150,8 +114,9 @@ var ScanViewer = function(canvasElement, options) {
         textureSize: 2048,
         textureType: 'UNSIGNED_BYTE',
         bias: 0.005,
-        normalBias: 0.075,
-        kernelSizePCF: '16Tap(64texFetch)',     
+        normalBias: 0,
+        kernelSizePCF: '16Tap(64texFetch)',  
+        shadowCastShaderGeneratorName: 'customShadow',   
     };
 
     this._input = new osgDB.Input();
@@ -590,9 +555,14 @@ ScanViewer.prototype = {
         var shaderGenerator = new osgShader.ShaderGenerator();
         shaderGenerator.setShaderCompiler(ScanRenderingCompiler);
 
+        // create a new shader generator with our own compiler
+        var shaderGeneratorShadow = new osgShader.ShaderGenerator();
+        shaderGeneratorShadow.setShaderCompiler(ShadowCastScanRenderingCompiler);
+
         // get or create instance of ShaderGeneratorProxy
         var shaderGeneratorProxy = this.viewer.getState().getShaderGeneratorProxy();
         shaderGeneratorProxy.addShaderGenerator('custom', shaderGenerator);
+        shaderGeneratorProxy.addShaderGenerator('customShadow', shaderGeneratorShadow);
 
         // now we can use 'custom' in StateSet to access our shader generator
     },
@@ -610,7 +580,7 @@ ScanViewer.prototype = {
     
     setupShadowMaps : function(lightAndShadowScene) {
         // create shadow maps for each lightsource
-        var sceneShadowSettings = new osgShadow.ShadowSettings(this._shadowConfiguration);        
+        var sceneShadowSettings = new osgShadow.ShadowSettings(this._shadowConfiguration);       
         sceneShadowSettings.setCastsShadowDrawTraversalMask(this._castsShadowDrawTraversalMask);
         sceneShadowSettings.setCastsShadowBoundsTraversalMask(this._castsShadowBoundsTraversalMask);
         
@@ -822,6 +792,7 @@ ScanViewer.prototype = {
                 tile.addChild(tileGeometry, 0, that.projectedTilePixels);
                 tile.setFunction(1, createPagedLODGroup);
                 tile.setRange(1, that.projectedTilePixels, Number.MAX_VALUE);
+                tile.setCameraForLODSelection(that.viewer.getCamera());
             }
             else {
                 // Leaf node

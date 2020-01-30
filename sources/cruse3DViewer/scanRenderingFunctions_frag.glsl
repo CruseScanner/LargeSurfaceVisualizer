@@ -9,6 +9,14 @@ void NormalFromTexture( const in sampler2D normalTexture,
     normalOutput = vec3((t.xy - vec2(0.5))*2.0, t.z);
 }
 
+#pragma DECLARE_FUNCTION
+void NormalFromPosition(const in vec3 pos,
+                        out vec3 normalOutput ) 
+{
+  vec3 fdx = dFdx(pos);
+  vec3 fdy = dFdy(pos);
+  normalOutput = normalize(cross(fdx, fdy));
+}
 
 #pragma DECLARE_FUNCTION
 void GlossFromTexture( const in sampler2D glossTexture,
