@@ -106,7 +106,8 @@ var ScanViewer = function(canvasElement, options) {
     this._renderDisplacementMaps = false;
     this._enableLODDebugging = false;
     this._enableShadowMapDebugging = false;
-    
+    this._enableShadowMaps = defined(options.enableShadows) && options.enableShadows;
+
     this._zoomFactor = 0.25;
 
     this._castsShadowDrawTraversalMask = 0x2;
@@ -211,6 +212,7 @@ var ScanViewer = function(canvasElement, options) {
     shaderProcessor.addShaders(shaderLib);
     nodeFactory.extractFunctions(shaderLib, 'scanRenderingFunctions_vert.glsl');
     nodeFactory.extractFunctions(shaderLib, 'scanRenderingFunctions_frag.glsl');
+    nodeFactory.extractFunctions(shaderLib, 'normalsFromPosition.glsl');
     
     this._initializationPromise = Promise.all(promises).then(function() {
         return initializeRootNode(that);
@@ -580,6 +582,12 @@ ScanViewer.prototype = {
     },
     
     setupShadowMaps : function(lightAndShadowScene) {
+
+        if(!this._enableShadowMaps)
+        {
+            return;
+        }
+
         // create shadow maps for each lightsource
         var sceneShadowSettings = new osgShadow.ShadowSettings(this._shadowConfiguration);       
         sceneShadowSettings.setCastsShadowDrawTraversalMask(this._castsShadowDrawTraversalMask);
