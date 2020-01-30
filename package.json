@@ -53,7 +53,7 @@
     "webpack-strip-block": "^0.2.0",
     "zlibjs": "^0.3.1"
   },
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "Cruse Spezialmaschienen GmbH",
   "license": "UNLICENSED",
   "description": "Cruse Web Scanviewer",
