@@ -105,6 +105,7 @@ var ScanViewer = function(canvasElement, options) {
     this._renderNormalMaps = false;
     this._renderDisplacementMaps = false;
     this._enableLODDebugging = false;
+    this._enableShadowMapDebugging = false;
     
     this._zoomFactor = 0.25;
 
@@ -603,8 +604,11 @@ ScanViewer.prototype = {
         }
 
         
-        this._debugTextureFactory.addTextures(this._debugTextures);
-        this._debugTextureFactory.show();        
+        if(this._enableShadowMapDebugging)
+        {
+            this._debugTextureFactory.addTextures(this._debugTextures);
+            this._debugTextureFactory.show();        
+        }
     },
 
     createGridGeometry :function(samplesX, samplesY, skirtSize) {
