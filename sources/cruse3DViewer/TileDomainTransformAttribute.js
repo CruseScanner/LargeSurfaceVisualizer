@@ -11,6 +11,7 @@ var TileDomainTransformAttribute = function() {
     this._offsetAndScale = osg.vec4.fromValues(0,0,1.0, 1.0);
     this._textureOffsetAndScale = osg.vec4.fromValues(0,0,1.0,1.0);
     this._lodLevel = 0;
+    this._enabled = true;
 };
 
 osg.createPrototypeStateAttribute(
@@ -36,12 +37,24 @@ osg.createPrototypeStateAttribute(
             return obj.uniforms;
         },
 
+        getHash: function() {
+            return this.getType() + this._enabled.toString();
+        },
+
         setOffsetAndScale: function(offsetAndScale) {
             this._offsetAndScale = offsetAndScale;
         },
 
         getOffsetAndScale: function() {
             return this._offsetAndScale;
+        },
+
+        setEnabled: function(value) {
+            this._enabled = value;
+        },
+
+        getEnabled: function() {
+            return this._enabled;
         },
 
         setTextureOffsetAndScale: function(textureOffsetAndScale) {
