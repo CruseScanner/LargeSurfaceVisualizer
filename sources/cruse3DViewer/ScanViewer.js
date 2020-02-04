@@ -1,8 +1,10 @@
 import OSG from 'external/osg';
 
 import DisplacementTexture from 'cruse3DViewer/DisplacementTexture';
+import DebugTextureNodeFactory from 'cruse3DViewer/DebugTextureNodeFactory';
 import NormalTexture from 'cruse3DViewer/NormalTexture';
 import ScanRenderingCompiler from 'cruse3DViewer/ScanRenderingCompiler';
+import ShadowCastScanRenderingCompiler from 'cruse3DViewer/ShadowCastScanRenderingCompiler';
 import TileDomainTransformAttribute from 'cruse3DViewer/TileDomainTransformAttribute';
 import FactoryShadingAttribute from  'cruse3DViewer/FactoryShadingAttribute';
 
@@ -11,6 +13,8 @@ import PlanarOrbitManipulator from 'cruse3DViewer/PlanarOrbitManipulator';
 var osgShader = OSG.osgShader;
 var osgDB = OSG.osgDB;
 var osgViewer = OSG.osgViewer;
+var osgShadow = OSG.osgShadow;
+
 import defined from 'tools/defined';
 import shaderLib from 'cruse3DViewer/shaderLib';
 import DisplacementTexture from './DisplacementTexture';
@@ -26,23 +30,38 @@ function initializeRootNode(scanViewer) {
         0,
         0
     ).then(function(rootTile) {
-        scanViewer.installCustomShaders();
 
-        var rootNode = new osg.MatrixTransform();
+        var rootNode = new osg.Node();
+        
+        var lightAndShadowScene = new osgShadow.ShadowedScene();
+        var geometryRoot = new osg.MatrixTransform();
+
+        lightAndShadowScene.addChild(geometryRoot);
+        rootNode.addChild(lightAndShadowScene);
+
+        scanViewer.installCustomShaders();
 
         var tileExtent = scanViewer._textureMapTileSource.getTileExtent(0, 0, 0);
         var w = tileExtent.x1 - tileExtent.x0;
         var h = tileExtent.y1 - tileExtent.y0;
 
-        rootNode.setMatrix(osg.mat4.fromTranslation(osg.mat4.create(), osg.vec3.fromValues(-w/2, h/2, 0)));            
-        rootNode.addChild(rootTile);
+        geometryRoot.setMatrix(osg.mat4.fromTranslation(osg.mat4.create(), osg.vec3.fromValues(-w/2, h/2, 0)));            
+        geometryRoot.addChild(rootTile);   
         scanViewer.viewer.setSceneData(rootNode);
-        var stateSet = rootNode.getOrCreateStateSet();
         
-        scanViewer.setupLights(rootNode);
-        scanViewer.setupShader(stateSet);
+        scanViewer.setupLights(lightAndShadowScene);
+        scanViewer.setupShader(rootNode.getOrCreateStateSet());
+        scanViewer.setupShadowMaps(lightAndShadowScene);
+
+        geometryRoot.setNodeMask(
+            scanViewer._castsShadowBoundsTraversalMask | scanViewer._castsShadowDrawTraversalMask
+        );
+
+      
+        
 
         scanViewer._rootNode = rootNode;
+        scanViewer._lightAndShadowScene = lightAndShadowScene;
         
         var boundingSphere = rootTile.getBound();
         var manipulator = new PlanarOrbitManipulator({ inputManager: scanViewer.viewer.getInputManager() })
@@ -63,6 +82,8 @@ function initializeRootNode(scanViewer) {
         manipulator.setLimitPitchDown(15.0*Math.PI/180.0);
 
         scanViewer._homePose = manipulator.getCurrentPose();
+ 
+        rootNode.addChild(scanViewer._debugTextureFactory.getNode());
     });
 };
 
@@ -84,8 +105,21 @@ var ScanViewer = function(canvasElement, options) {
     this._renderNormalMaps = false;
     this._renderDisplacementMaps = false;
     this._enableLODDebugging = false;
-    
+    this._enableShadowMapDebugging = false;
+    this._enableShadowMaps = defined(options.enableShadows) && options.enableShadows;
+
     this._zoomFactor = 0.25;
+
+    this._castsShadowDrawTraversalMask = 0x2;
+    this._castsShadowBoundsTraversalMask = 0x2;
+    this._shadowConfiguration = {
+        textureSize: 2048,
+        textureType: 'UNSIGNED_BYTE',
+        bias: 0.005,
+        normalBias: 0,
+        kernelSizePCF: '16Tap(64texFetch)',  
+        shadowCastShaderGeneratorName: 'customShadow',   
+    };
 
     this._input = new osgDB.Input();
     this.projectedTilePixels = Math.PI/4.0*256*256;
@@ -100,6 +134,9 @@ var ScanViewer = function(canvasElement, options) {
     this.viewer.setLightingMode(osgViewer.View.LightingMode.NO_LIGHT);
     this.viewer.init();
     
+    this._debugTextures = [];
+    this._debugTextureFactory = new DebugTextureNodeFactory(this.viewer._canvas);
+
     var promises = [];    
     var that = this;
     if (defined(textureMapTileSource)) {
@@ -158,8 +195,7 @@ var ScanViewer = function(canvasElement, options) {
     light.setPosition([0.0, 0.0, 1.0, 0.0]);
     this._light = [];
     this._light[0] = light;
-       
-
+        
     // read light params from options:
     if(defined(options.Shading) && defined(options.Shading.LightSources))
     {
@@ -171,11 +207,12 @@ var ScanViewer = function(canvasElement, options) {
             index++;
         });
     }
-
+        
     var shaderProcessor = this._shaderProcessor;
     shaderProcessor.addShaders(shaderLib);
     nodeFactory.extractFunctions(shaderLib, 'scanRenderingFunctions_vert.glsl');
     nodeFactory.extractFunctions(shaderLib, 'scanRenderingFunctions_frag.glsl');
+    nodeFactory.extractFunctions(shaderLib, 'normalsFromPosition.glsl');
     
     this._initializationPromise = Promise.all(promises).then(function() {
         return initializeRootNode(that);
@@ -395,7 +432,9 @@ ScanViewer.prototype = {
             return;
         }        
         var d = this.transformSphericalToWorld(elevation, azimuth, 1.0);
-        light.setPosition([d[0], d[1], d[2], 0.0]);
+
+        light.setLightAsDirection();
+        light.setPosition([d[0], d[1], d[2], 0]);
         light.setDirection([-d[0], -d[1], -d[2]]);
     },
     
@@ -421,10 +460,10 @@ ScanViewer.prototype = {
             this._light[lightIndex] = new osg.Light();
 
             // If root node exists, we can add a corresponding lightsource
-            if (defined(this._rootNode)) {
+            if (defined(this._lightAndShadowScene)) {
                 var lightSource = new osg.LightSource();
                 lightSource.setLight(this._light[lightIndex]);               
-                this._rootNode.addChild(lightSource);
+                this._lightAndShadowScene.addChild(lightSource);
             }
         }
         return this._light[lightIndex];
@@ -440,9 +479,31 @@ ScanViewer.prototype = {
         if (!defined(light)) {
             return;
         }
-        light.setDiffuse(diffuse);
-        light.setSpecular(specular);
-        light.setAmbient(ambient);
+        
+        if(typeof(diffuse) == 'number') 
+        {
+            light.setDiffuse([diffuse, diffuse, diffuse, 1]);
+        }
+        else {
+            light.setDiffuse(diffuse);
+        }
+
+        if(typeof(specular) == 'number') 
+        {
+            light.setSpecular([specular, specular, specular, 1]);
+        }
+        else {
+            light.setSpecular(specular);
+        }
+
+        if(typeof(ambient) == 'number') 
+        {
+            light.setAmbient([ambient, ambient, ambient, 1]);
+        }
+        else {
+            light.setAmbient(ambient);
+        }
+
         this._material.setShininess(phongExponent);
     },
     
@@ -497,9 +558,14 @@ ScanViewer.prototype = {
         var shaderGenerator = new osgShader.ShaderGenerator();
         shaderGenerator.setShaderCompiler(ScanRenderingCompiler);
 
+        // create a new shader generator with our own compiler
+        var shaderGeneratorShadow = new osgShader.ShaderGenerator();
+        shaderGeneratorShadow.setShaderCompiler(ShadowCastScanRenderingCompiler);
+
         // get or create instance of ShaderGeneratorProxy
         var shaderGeneratorProxy = this.viewer.getState().getShaderGeneratorProxy();
         shaderGeneratorProxy.addShaderGenerator('custom', shaderGenerator);
+        shaderGeneratorProxy.addShaderGenerator('customShadow', shaderGeneratorShadow);
 
         // now we can use 'custom' in StateSet to access our shader generator
     },
@@ -515,6 +581,44 @@ ScanViewer.prototype = {
         stateSet.setAttributeAndModes(factoryShadingAttribute);
     },
     
+    setupShadowMaps : function(lightAndShadowScene) {
+
+        if(!this._enableShadowMaps)
+        {
+            return;
+        }
+
+        // create shadow maps for each lightsource
+        var sceneShadowSettings = new osgShadow.ShadowSettings(this._shadowConfiguration);       
+        sceneShadowSettings.setCastsShadowDrawTraversalMask(this._castsShadowDrawTraversalMask);
+        sceneShadowSettings.setCastsShadowBoundsTraversalMask(this._castsShadowBoundsTraversalMask);
+        
+        lightAndShadowScene.setShadowSettings(sceneShadowSettings);
+
+        for(var i=0; i<this._light.length;i++) 
+        {
+            var shadowSettings = new osgShadow.ShadowSettings(this._shadowConfiguration);        
+            shadowSettings.setCastsShadowDrawTraversalMask(this._castsShadowDrawTraversalMask);
+            shadowSettings.setCastsShadowBoundsTraversalMask(
+                this._castsShadowBoundsTraversalMask
+            );
+            shadowSettings.setLight(this._light[i]);
+            
+            var shadowMap = new osgShadow.ShadowMap(shadowSettings);
+            lightAndShadowScene.addShadowTechnique(shadowMap);
+            shadowMap.setShadowSettings(shadowSettings);
+           
+            this._debugTextures.push(shadowMap.getTexture());        
+        }
+
+        
+        if(this._enableShadowMapDebugging)
+        {
+            this._debugTextureFactory.addTextures(this._debugTextures);
+            this._debugTextureFactory.show();        
+        }
+    },
+
     createGridGeometry :function(samplesX, samplesY, skirtSize) {
         if (!defined(this._gridGeometryCache)) {
             this._gridGeometryCache = {};
@@ -700,6 +804,7 @@ ScanViewer.prototype = {
                 tile.addChild(tileGeometry, 0, that.projectedTilePixels);
                 tile.setFunction(1, createPagedLODGroup);
                 tile.setRange(1, that.projectedTilePixels, Number.MAX_VALUE);
+                tile.setCameraForLODSelection(that.viewer.getCamera());
             }
             else {
                 // Leaf node
