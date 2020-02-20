@@ -8,6 +8,8 @@ import ShadowCastScanRenderingCompiler from 'cruse3DViewer/ShadowCastScanRenderi
 import TileDomainTransformAttribute from 'cruse3DViewer/TileDomainTransformAttribute';
 import FactoryShadingAttribute from  'cruse3DViewer/FactoryShadingAttribute';
 
+import systemcheck from 'tools/systemcheck.js'
+
 var osg = OSG.osg;
 import PlanarOrbitManipulator from 'cruse3DViewer/PlanarOrbitManipulator';
 var osgShader = OSG.osgShader;
@@ -95,6 +97,8 @@ function initializeRootNode(scanViewer) {
  */
 var ScanViewer = function(canvasElement, options) {
       
+    var decentWebGL = systemcheck.HasDecentWebGL(canvasElement);
+
     var textureMapTileSource = options.textureMapTileSource;
     var normalMapTileSource = options.normalMapTileSource;
     var glossMapTileSource = options.glossMapTileSource;
@@ -106,7 +110,7 @@ var ScanViewer = function(canvasElement, options) {
     this._renderDisplacementMaps = false;
     this._enableLODDebugging = false;
     this._enableShadowMapDebugging = false;
-    this._enableShadowMaps = defined(options.enableShadows) && options.enableShadows;
+    this._enableShadowMaps = defined(options.enableShadows) && options.enableShadows && decentWebGL;
 
     this._zoomFactor = 0.25;
 
