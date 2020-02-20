@@ -8,8 +8,6 @@ import ShadowCastScanRenderingCompiler from 'cruse3DViewer/ShadowCastScanRenderi
 import TileDomainTransformAttribute from 'cruse3DViewer/TileDomainTransformAttribute';
 import FactoryShadingAttribute from  'cruse3DViewer/FactoryShadingAttribute';
 
-import systemcheck from 'tools/systemcheck.js'
-
 var osg = OSG.osg;
 import PlanarOrbitManipulator from 'cruse3DViewer/PlanarOrbitManipulator';
 var osgShader = OSG.osgShader;
@@ -34,7 +32,7 @@ function initializeRootNode(scanViewer) {
     ).then(function(rootTile) {
 
         var rootNode = new osg.Node();
-
+        
         var lightAndShadowScene = new osgShadow.ShadowedScene();
         var geometryRoot = new osg.MatrixTransform();
 
@@ -47,10 +45,10 @@ function initializeRootNode(scanViewer) {
         var w = tileExtent.x1 - tileExtent.x0;
         var h = tileExtent.y1 - tileExtent.y0;
 
-        geometryRoot.setMatrix(osg.mat4.fromTranslation(osg.mat4.create(), osg.vec3.fromValues(-w/2, h/2, 0)));
-        geometryRoot.addChild(rootTile);
+        geometryRoot.setMatrix(osg.mat4.fromTranslation(osg.mat4.create(), osg.vec3.fromValues(-w/2, h/2, 0)));            
+        geometryRoot.addChild(rootTile);   
         scanViewer.viewer.setSceneData(rootNode);
-
+        
         scanViewer.setupLights(lightAndShadowScene);
         scanViewer.setupShader(rootNode.getOrCreateStateSet());
         scanViewer.setupShadowMaps(lightAndShadowScene);
@@ -59,22 +57,22 @@ function initializeRootNode(scanViewer) {
             scanViewer._castsShadowBoundsTraversalMask | scanViewer._castsShadowDrawTraversalMask
         );
 
-
-
+      
+        
 
         scanViewer._rootNode = rootNode;
         scanViewer._lightAndShadowScene = lightAndShadowScene;
-
+        
         var boundingSphere = rootTile.getBound();
         var manipulator = new PlanarOrbitManipulator({ inputManager: scanViewer.viewer.getInputManager() })
-
+       
         scanViewer.viewer.setupManipulator(manipulator);
-
+        
         var cage = new osg.BoundingBox();
         cage.setMin(osg.vec3.fromValues(-w/2, -h/2, 0.0));
         cage.setMax(osg.vec3.fromValues( w/2,  h/2, 0.0));
         manipulator.setCage(cage);
-
+        
         manipulator.setAutoPushTarget(false);
         var screenSizeInPixels = 0.5 *(scanViewer.viewer.getCanvasClientWidth() + scanViewer.viewer.getCanvasClientHeight());
         manipulator.setLimitZoomIn(0.5*screenSizeInPixels * scanViewer.getPixelScale());
@@ -84,7 +82,7 @@ function initializeRootNode(scanViewer) {
         manipulator.setLimitPitchDown(15.0*Math.PI/180.0);
 
         scanViewer._homePose = manipulator.getCurrentPose();
-
+ 
         rootNode.addChild(scanViewer._debugTextureFactory.getNode());
     });
 };
@@ -93,24 +91,22 @@ function initializeRootNode(scanViewer) {
 /**
  * @class ScanViewer
  * @constructor
- *
+ * 
  */
 var ScanViewer = function(canvasElement, options) {
-
-    var decentWebGL = systemcheck.HasDecentWebGL();
-
+      
     var textureMapTileSource = options.textureMapTileSource;
     var normalMapTileSource = options.normalMapTileSource;
     var glossMapTileSource = options.glossMapTileSource;
     var elevationTileSource = options.elevationTileSource;
-
-
+   
+    
     this._renderTextureMaps = false;
     this._renderNormalMaps = false;
     this._renderDisplacementMaps = false;
     this._enableLODDebugging = false;
     this._enableShadowMapDebugging = false;
-    this._enableShadowMaps = defined(options.enableShadows) && options.enableShadows && decentWebGL;
+    this._enableShadowMaps = defined(options.enableShadows) && options.enableShadows;
 
     this._zoomFactor = 0.25;
 
@@ -121,27 +117,27 @@ var ScanViewer = function(canvasElement, options) {
         textureType: 'UNSIGNED_BYTE',
         bias: 0.005,
         normalBias: 0,
-        kernelSizePCF: '16Tap(64texFetch)',
-        shadowCastShaderGeneratorName: 'customShadow',
+        kernelSizePCF: '16Tap(64texFetch)',  
+        shadowCastShaderGeneratorName: 'customShadow',   
     };
 
     this._input = new osgDB.Input();
     this.projectedTilePixels = Math.PI/4.0*256*256;
     // force slightly lower detail
     this.projectedTilePixels*= 2;
-
+    
     this._shaderProcessor = new osgShader.ShaderProcessor;
-
+    
     this.viewer = new osgViewer.Viewer(canvasElement, {
         enableFrustumCulling: true
     });
     this.viewer.setLightingMode(osgViewer.View.LightingMode.NO_LIGHT);
     this.viewer.init();
-
+    
     this._debugTextures = [];
     this._debugTextureFactory = new DebugTextureNodeFactory(this.viewer._canvas);
 
-    var promises = [];
+    var promises = [];    
     var that = this;
     if (defined(textureMapTileSource)) {
         this._textureMapTileSource = textureMapTileSource;
@@ -155,7 +151,7 @@ var ScanViewer = function(canvasElement, options) {
         promises.push(normalMapTileSource.initializationPromise.then(function(){
             that._renderNormalMaps = true;
         }));
-    }
+    }  
     if (defined(glossMapTileSource)) {
         this._glossMapTileSource = glossMapTileSource;
         promises.push(glossMapTileSource.initializationPromise.then(function(){
@@ -167,7 +163,7 @@ var ScanViewer = function(canvasElement, options) {
         promises.push(elevationTileSource.initializationPromise.then(function(){
             that._renderDisplacementMaps = true;
         }));
-
+        
         this._elevationMin = 0.0;
         if (defined(options.elevationMax) && defined(options.elevationMin)) {
             this._elevationMax = Math.abs(options.elevationMax - options.elevationMin);
@@ -180,15 +176,15 @@ var ScanViewer = function(canvasElement, options) {
         this._elevationMin = 0.0;
         this._elevationMax = 0.0;
     }
-
+    
     var material = new osg.Material();
-    material.setDiffuse ([1.0, 1.0, 1.0, 1.0]);
+    material.setDiffuse ([1.0, 1.0, 1.0, 1.0]);           
     material.setAmbient ([1.0, 1.0, 1.0, 1.0]);
     material.setEmission([0.0, 0.0, 0.0, 1.0]);
     material.setSpecular([1.0, 1.0, 1.0, 1.0]);
     material.setShininess(40.0);
     this._material = material;
-
+    
     var light = new osg.Light(0);
     light.setDiffuse([1.0, 1.0, 1.0, 1.0]);
     light.setSpecular([1.0, 1.0, 1.0, 1.0]);
@@ -199,7 +195,7 @@ var ScanViewer = function(canvasElement, options) {
     light.setPosition([0.0, 0.0, 1.0, 0.0]);
     this._light = [];
     this._light[0] = light;
-
+        
     // read light params from options:
     if(defined(options.Shading) && defined(options.Shading.LightSources))
     {
@@ -211,13 +207,13 @@ var ScanViewer = function(canvasElement, options) {
             index++;
         });
     }
-
+        
     var shaderProcessor = this._shaderProcessor;
     shaderProcessor.addShaders(shaderLib);
     nodeFactory.extractFunctions(shaderLib, 'scanRenderingFunctions_vert.glsl');
     nodeFactory.extractFunctions(shaderLib, 'scanRenderingFunctions_frag.glsl');
     nodeFactory.extractFunctions(shaderLib, 'normalsFromPosition.glsl');
-
+    
     this._initializationPromise = Promise.all(promises).then(function() {
         return initializeRootNode(that);
     });
@@ -228,41 +224,41 @@ ScanViewer.prototype = {
      * Will fetch an image from the given tile source and and apply it to the
      * given stateset as texture.
      */
-    fetchAndApplyTileImagery: function(x, y, level, stateSet, textureIndex, tileSource) {
+    fetchAndApplyTileImagery: function(x, y, level, stateSet, textureIndex, tileSource) {        
         var image = new osg.Image();
         var options = {
-                imageCrossOrigin : true
+                imageCrossOrigin : true            
         };
-
-        var url = tileSource.getTileURL(x, y, level);
+        
+        var url = tileSource.getTileURL(x, y, level);       
         return this._input.fetchImage(image, url, options).then(function(img) {
             var texture = new osg.Texture();
             texture.setImage(img);
             return texture;
         }).then(function(texture) {
             stateSet.setTextureAttributeAndModes(textureIndex, texture);
-        });
+        });        
     },
 
      /**
      * Will fetch an image from the given tile source and and apply it to the
      * given stateset as texture.
      */
-    fetchAndApplyDisplacementMap: function(x, y, level, stateSet) {
+    fetchAndApplyDisplacementMap: function(x, y, level, stateSet) {        
         var image = new osg.Image();
         var options = {
-                imageCrossOrigin : true
+                imageCrossOrigin : true            
         };
-
+        
         var ts = this._elevationTileSource;
-        var url = ts.getTileURL(x, y, level);
-        var that = this;
+        var url = ts.getTileURL(x, y, level);  
+        var that = this;     
         return this._input.fetchImage(image, url, options).then(function(img) {
             var texture = new DisplacementTexture();
             texture.setImage(img);
-
+            
             var e = ts.getRasterExtent(x, y, level);
-
+                
             // Set scaling and offset for displacement mapping for exact
             // sampling (we want to sample on the
             // pixel corners, and assume the heightmap to be center-sampled
@@ -270,58 +266,58 @@ ScanViewer.prototype = {
             texture.setTextureOffsetAndScale(osg.vec4.fromValues(1.0/e.w, 1.0/e.h, 1.0 - 2.0/e.w, 1.0 - 2.0/e.h));
 
             texture.setDisplacementRange(that._elevationMax - that._elevationMin);
-
+            
             return texture;
         }).then(function(texture) {
             stateSet.setTextureAttributeAndModes(3, texture);
-        });
+        });        
     },
 
-    fetchAndApplyNormalMap: function(x, y, level, stateSet) {
+    fetchAndApplyNormalMap: function(x, y, level, stateSet) {        
         var image = new osg.Image();
         var options = {
-                imageCrossOrigin : true
+                imageCrossOrigin : true            
         };
-
+        
         var ts = this._normalMapTileSource;
-        var url = ts.getTileURL(x, y, level);
-        var that = this;
+        var url = ts.getTileURL(x, y, level);  
+        var that = this;     
         return this._input.fetchImage(image, url, options).then(function(img) {
             var texture = new NormalTexture();
-            texture.setImage(img);
+            texture.setImage(img);         
             return texture;
         }).then(function(texture) {
             stateSet.setTextureAttributeAndModes(1, texture);
-        });
-    },
+        });     
+    },   
 
-    fetchAndApplyGlossMap: function(x, y, level, stateSet) {
+    fetchAndApplyGlossMap: function(x, y, level, stateSet) {        
         var image = new osg.Image();
         var options = {
-                imageCrossOrigin : true
+                imageCrossOrigin : true            
         };
-
+        
         var ts = this._glossMapTileSource;
-        var url = ts.getTileURL(x, y, level);
-        var that = this;
+        var url = ts.getTileURL(x, y, level);  
+        var that = this;     
         return this._input.fetchImage(image, url, options).then(function(img) {
             var texture = new GlossTexture();
-            texture.setImage(img);
+            texture.setImage(img);         
             return texture;
         }).then(function(texture) {
             stateSet.setTextureAttributeAndModes(2, texture);
-        });
-    },
-
+        });     
+    },   
+        
     fetchAndApplyAllTileImagery: function(x, y, level, node, parentGeometry) {
         var promises = [];
-
+        
         var stateSet = node.getOrCreateStateSet();
         var parentStateSet;
         if (parentGeometry) {
             parentStateSet = parentGeometry.getOrCreateStateSet();
         }
-
+        
         if (this._renderTextureMaps) {
             if (this._textureMapTileSource.hasTile(x, y, level))
             {
@@ -333,32 +329,32 @@ ScanViewer.prototype = {
                 var textureUnit = 0;
                 var parentTexture = parentStateSet.getTextureAttribute(textureUnit, 'Texture');
                 stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);
-
+                
                 var parentTileDomainTransformAttribute = parentStateSet.getAttribute('TileDomainTransform');
-
+                
                 var offsetScale = osg.vec4.create();
                 if (defined(parentTileDomainTransformAttribute)) {
-                    offsetScale = osg.vec4.clone(parentTileDomainTransformAttribute.getTextureOffsetAndScale());
+                    offsetScale = osg.vec4.clone(parentTileDomainTransformAttribute.getTextureOffsetAndScale());                    
                 }
                 else {
                     offsetScale[0] = 0.0; // offset x
                     offsetScale[1] = 0.0; // offset y
-                    offsetScale[2] = 1.0; // scale x
-                    offsetScale[3] = 1.0; // scale y
+                    offsetScale[2] = 1.0; // scale x                  
+                    offsetScale[3] = 1.0; // scale y                 
                 }
-
-                var dx = x - Math.trunc(x/2)*2;
+                
+                var dx = x - Math.trunc(x/2)*2; 
                 var dy = 1 - (y - Math.trunc(y/2)*2);
-
+                
                 offsetScale[2]*= 0.5;
                 offsetScale[3]*= 0.5;
-                offsetScale[0] = offsetScale[0] + dx*offsetScale[2];
-                offsetScale[1] = offsetScale[1] + dy*offsetScale[3];
-
+                offsetScale[0] = offsetScale[0] + dx*offsetScale[2]; 
+                offsetScale[1] = offsetScale[1] + dy*offsetScale[3]; 
+                
                 stateSet.getAttribute('TileDomainTransform').setTextureOffsetAndScale(offsetScale);
             }
         }
-
+        
         if (this._renderNormalMaps) {
             if (this._normalMapTileSource.hasTile(x, y, level))
             {
@@ -370,10 +366,10 @@ ScanViewer.prototype = {
                 // TODO: use separate tex. coords to allow for resolution differences in diffuse / normal maps
                 var textureUnit = 1;
                 var parentTexture = parentStateSet.getTextureAttribute(textureUnit, 'NormalTexture');
-                stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);
+                stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);               
             }
         }
-
+        
         if (this._renderGlossMaps) {
             if (this._glossMapTileSource.hasTile(x, y, level))
             {
@@ -388,16 +384,16 @@ ScanViewer.prototype = {
                 stateSet.setTextureAttributeAndModes(textureUnit, parentTexture);
             }
         }
-
+        
         if (this._renderDisplacementMaps)
         {
             var promise = this.fetchAndApplyDisplacementMap(x, y, level, stateSet);
             promises.push(promise);
         }
-
+        
         return Promise.all(promises);
     },
-
+    
     /**
      * Sets the light source type to point light with the given position \param
      * elevation Number Elevation angle in radians \param azimuth Number Azimuth
@@ -407,10 +403,10 @@ ScanViewer.prototype = {
         var light = this._getOrCreateLight(lightIndex);
         if (!defined(light)) {
             return;
-        }
-
-        var d = this.transformSphericalToWorld(elevation, azimuth, distance);
-
+        }        
+        
+        var d = this.transformSphericalToWorld(elevation, azimuth, distance);        
+        
         light.setPosition([d[0], d[1], d[2], 1.0]);
     },
 
@@ -424,7 +420,7 @@ ScanViewer.prototype = {
         result.directional = (p[3] === 0.0);
         return result;
     },
-
+    
     /**
      * Sets the light source type to point light with the given position \param
      * elevation Elevation angle in radians \param azimuth Azimuth angle in
@@ -434,14 +430,14 @@ ScanViewer.prototype = {
         var light = this._getOrCreateLight(lightIndex);
         if (!defined(light)) {
             return;
-        }
+        }        
         var d = this.transformSphericalToWorld(elevation, azimuth, 1.0);
 
         light.setLightAsDirection();
         light.setPosition([d[0], d[1], d[2], 0]);
         light.setDirection([-d[0], -d[1], -d[2]]);
     },
-
+    
     getDirectionalLight: function(lightIndex) {
         if (lightIndex <= this._light.length) {
             return undefined;
@@ -450,10 +446,10 @@ ScanViewer.prototype = {
         if (p[3] != 0.0) {
             return undefined;
         }
-
+        
         return this.transformWorldToSpherical(p);
     },
-
+    
     _getOrCreateLight: function(lightIndex) {
         console.assert((lightIndex <= this._light.length), 'Light source array must be populated consecutively.');
         if (lightIndex > this._light.length) {
@@ -466,7 +462,7 @@ ScanViewer.prototype = {
             // If root node exists, we can add a corresponding lightsource
             if (defined(this._lightAndShadowScene)) {
                 var lightSource = new osg.LightSource();
-                lightSource.setLight(this._light[lightIndex]);
+                lightSource.setLight(this._light[lightIndex]);               
                 this._lightAndShadowScene.addChild(lightSource);
             }
         }
@@ -483,8 +479,8 @@ ScanViewer.prototype = {
         if (!defined(light)) {
             return;
         }
-
-        if(typeof(diffuse) == 'number')
+        
+        if(typeof(diffuse) == 'number') 
         {
             light.setDiffuse([diffuse, diffuse, diffuse, 1]);
         }
@@ -492,7 +488,7 @@ ScanViewer.prototype = {
             light.setDiffuse(diffuse);
         }
 
-        if(typeof(specular) == 'number')
+        if(typeof(specular) == 'number') 
         {
             light.setSpecular([specular, specular, specular, 1]);
         }
@@ -500,7 +496,7 @@ ScanViewer.prototype = {
             light.setSpecular(specular);
         }
 
-        if(typeof(ambient) == 'number')
+        if(typeof(ambient) == 'number') 
         {
             light.setAmbient([ambient, ambient, ambient, 1]);
         }
@@ -510,14 +506,14 @@ ScanViewer.prototype = {
 
         this._material.setShininess(phongExponent);
     },
-
+    
     /**
      * Gets lighting parameters.
      */
     getLightParameters: function(lightIndex) {
         if (this._light.length <= lightIndex) {
             throw 'out of bounds';
-        }
+        }     
         return {
             diffuse  : osg.vec4.clone(this._light[lightIndex].getDiffuse()),
             specular : osg.vec4.clone(this._light[lightIndex].getSpecular()),
@@ -525,38 +521,38 @@ ScanViewer.prototype = {
             phongExponent : this._material.getShininess()
         };
     },
-
+    
     getLightCount: function() {
         return this._light.length;
     },
-
+    
     getPixelScale: function() {
         if (defined(this._textureMapTileSource)) {
             return this._textureMapTileSource.getPixelScale();
         }
     },
-
+                
     setEnableLODVisualization: function(value)
     {
         this._enableLODDebugging = value;
-        var stateSet = this._rootNode.getOrCreateStateSet();
-
+        var stateSet = this._rootNode.getOrCreateStateSet(); 
+        
         var factoryShadingAttribute = stateSet.getAttribute('FactoryShading');
         if(factoryShadingAttribute){
             factoryShadingAttribute.setLODColoringEnabled(this._enableLODDebugging);
         }
     },
-
+     
     setupLights : function(node) {
         var stateSet = node.getOrCreateStateSet();
 
         for (var i = 0; i < this._light.length; i++) {
             var lightSource = new osg.LightSource();
             lightSource.setLight(this._light[i]);
-            node.addChild(lightSource);
+            node.addChild(lightSource);            
         }
     },
-
+    
     installCustomShaders: function() {
         // create a new shader generator with our own compiler
         var shaderGenerator = new osgShader.ShaderGenerator();
@@ -578,13 +574,13 @@ ScanViewer.prototype = {
         var material = this._material;
         stateSet.setAttributeAndModes(material);
         stateSet.setShaderGeneratorName('custom');
-
+       
         // replace standard lighting by Factory's specular phong shading:
         var factoryShadingAttribute = new FactoryShadingAttribute();
         factoryShadingAttribute.setLODColoringEnabled(this._enableLODDebugging);
         stateSet.setAttributeAndModes(factoryShadingAttribute);
     },
-
+    
     setupShadowMaps : function(lightAndShadowScene) {
 
         if(!this._enableShadowMaps)
@@ -593,33 +589,33 @@ ScanViewer.prototype = {
         }
 
         // create shadow maps for each lightsource
-        var sceneShadowSettings = new osgShadow.ShadowSettings(this._shadowConfiguration);
+        var sceneShadowSettings = new osgShadow.ShadowSettings(this._shadowConfiguration);       
         sceneShadowSettings.setCastsShadowDrawTraversalMask(this._castsShadowDrawTraversalMask);
         sceneShadowSettings.setCastsShadowBoundsTraversalMask(this._castsShadowBoundsTraversalMask);
-
+        
         lightAndShadowScene.setShadowSettings(sceneShadowSettings);
 
-        for(var i=0; i<this._light.length;i++)
+        for(var i=0; i<this._light.length;i++) 
         {
-            var shadowSettings = new osgShadow.ShadowSettings(this._shadowConfiguration);
+            var shadowSettings = new osgShadow.ShadowSettings(this._shadowConfiguration);        
             shadowSettings.setCastsShadowDrawTraversalMask(this._castsShadowDrawTraversalMask);
             shadowSettings.setCastsShadowBoundsTraversalMask(
                 this._castsShadowBoundsTraversalMask
             );
             shadowSettings.setLight(this._light[i]);
-
+            
             var shadowMap = new osgShadow.ShadowMap(shadowSettings);
             lightAndShadowScene.addShadowTechnique(shadowMap);
             shadowMap.setShadowSettings(shadowSettings);
-
-            this._debugTextures.push(shadowMap.getTexture());
+           
+            this._debugTextures.push(shadowMap.getTexture());        
         }
 
-
+        
         if(this._enableShadowMapDebugging)
         {
             this._debugTextureFactory.addTextures(this._debugTextures);
-            this._debugTextureFactory.show();
+            this._debugTextureFactory.show();        
         }
     },
 
@@ -628,19 +624,19 @@ ScanViewer.prototype = {
             this._gridGeometryCache = {};
         }
         var cache = this._gridGeometryCache;
-
+        
         var skirt = defined(skirtSize) ? 1 : 0;
-
+    
         var gridID = samplesX.toString() + "_" + samplesY.toString() + "_" + skirtSize.toString();
         var cacheEntry = cache[gridID];
-
+       
         if (!defined(cacheEntry)) {
             //console.log("Got cache miss for " + gridID);
             cacheEntry = /*cache[gridID] =*/ {};
-
+            
             var vX = samplesX + 2*skirt;
             var vY = samplesY + 2*skirt;
-
+            
             var vertex = new osg.Float32Array(vX*vY*2);
             var vi = 0;
             for (var y = -skirt; y < samplesY + skirt; y++) {
@@ -654,14 +650,14 @@ ScanViewer.prototype = {
                 else {
                     yCoord = Math.max(0.0, y/(samplesY-1));
                 }
-
-
+                
+                
                 // Set leftmost skirt vertex
                 if (skirt) {
-                    vertex[vi*2    ] = -skirtSize;
-                    vertex[vi*2 + 1] = yCoord;
+                    vertex[vi*2    ] = -skirtSize;   
+                    vertex[vi*2 + 1] = yCoord;   
                     vi++;
-                }
+                }               
                 for (var x = 0; x < samplesX; x++) {
                     vertex[vi*2    ] = x/(samplesX-1);
                     vertex[vi*2 + 1] = yCoord;
@@ -669,19 +665,19 @@ ScanViewer.prototype = {
                 }
                 // Set rightmost skirt vertex
                 if (skirt) {
-                    vertex[vi*2]     = 1.0 + skirtSize;
-                    vertex[vi*2 + 1] = yCoord;
+                    vertex[vi*2]     = 1.0 + skirtSize;   
+                    vertex[vi*2 + 1] = yCoord;   
                     vi++;
-                }
+                }                
             }
-
+               
             var quadsX = vX - 1;
             var quadsY = vY - 1;
-
+            
             var indices = new osg.Uint16Array(quadsX*quadsY*6);
             var q = 0;
             for (var y = 0; y < quadsY; y++) {
-                vi = y*vX;
+                vi = y*vX;                
                 for (var x = 0; x < quadsX; x++) {
                     indices[q*6 + 0] = vi;
                     indices[q*6 + 1] = vi + 1;
@@ -693,7 +689,7 @@ ScanViewer.prototype = {
                     q++;
                 }
             }
-
+            
             cacheEntry.primitives = new osg.DrawElements(
                 osg.primitiveSet.TRIANGLES,
                 new osg.BufferArray(osg.BufferArray.ELEMENT_ARRAY_BUFFER, indices, 1)
@@ -704,54 +700,54 @@ ScanViewer.prototype = {
             //console.log("Got cache hit for " + gridID);
         }
 
-        var g = new osg.Geometry();
-        g.getAttributes().Vertex = cacheEntry.vertexBuffer;
+        var g = new osg.Geometry();        
+        g.getAttributes().Vertex = cacheEntry.vertexBuffer; 
         g.getPrimitives().push(cacheEntry.primitives);
-
-
+        
+        
         return g;
     },
-
+    
     _hasTile: function(x, y, level) {
         if (this._elevationTileSource) {
             return this._elevationTileSource.hasTile(x, y, level);
         }
         return this._textureMapTileSource.hasTile(x, y, level);
     },
-
+    
     _getTileExtent: function(x, y, level) {
         if (this._elevationTileSource) {
             return this._elevationTileSource.getTileExtent(x, y, level);
         }
         return this._textureMapTileSource.getTileExtent(x, y, level);
     },
-
+    
     _hasChildren: function(x, y, level) {
-        return (this._elevationTileSource && this._elevationTileSource.hasChildren(x, y, level)) ||
+        return (this._elevationTileSource && this._elevationTileSource.hasChildren(x, y, level)) || 
                (this._textureMapTileSource && this._textureMapTileSource.hasChildren(x, y, level));
     },
 
     /**
      * Fetches normal and texture maps for the given tile, and returns a promise
      * to an osg geometry rendering the tile with textures and normals.
-     *
+     * 
      * @param {Number}
      *            x,y,level Quadtree tile address
-     *
+     * 
      */
     createTileForGeometry: function(x, y, level, parentNode) {
-
+        
         var tileExtent = this._getTileExtent(x, y, level);
-
+       
         var x0 = tileExtent.x0;
         var y0 = tileExtent.y0;
         var width =  (tileExtent.x1-tileExtent.x0);
         var height = (tileExtent.y1-tileExtent.y0);
-
+        
         var that = this;
         var createPagedLODGroup = function(parentNode) {
             var childPromises = [];
-
+            
             for (var i = 0; i < 4; i++) {
                 var addr = that.childAddress(i, parentNode.x, parentNode.y, parentNode.level);
                 (function(child) {
@@ -774,19 +770,19 @@ ScanViewer.prototype = {
                     }
                 }
                 return group;
-            });
+            });                
         };
-
+        
         var tileGeometry = this.createGridGeometry(65, 65, 0.2);
         var stateSet = tileGeometry.getOrCreateStateSet();
-
-        // add tiledomaintransform attribute: this will clamp, scale and translate vertex.xy
+        
+        // add tiledomaintransform attribute: this will clamp, scale and translate vertex.xy 
         // coordinates:
         var tileDomainTransformAttribute = new TileDomainTransformAttribute();
         tileDomainTransformAttribute.setOffsetAndScale(osg.vec4.fromValues(x0, y0, width, height));
         tileDomainTransformAttribute.setLODLevel(level);
         stateSet.setAttributeAndModes(tileDomainTransformAttribute);
-
+       
         // Sets a fairly conservative bounding box (due to global min/max
         // height), shouldn't be an issue for
         // the typical dynamic range
@@ -795,14 +791,14 @@ ScanViewer.prototype = {
         boundingBox.expandByVec3(osg.vec3.fromValues(x0 + width, y0 + height, this._elevationMax));
         tileGeometry.setBound(boundingBox);
 
-        var parentTileGeometry;
+        var parentTileGeometry; 
         if (parentNode) {
             parentTileGeometry = parentNode.getChild(0);
         }
-
+        
         return this.fetchAndApplyAllTileImagery(x, y, level, tileGeometry, parentTileGeometry).then(function() {
             var tile;
-            if (that._hasChildren(x, y, level)) {
+            if (that._hasChildren(x, y, level)) {    
                 tile = new osg.PagedLOD();
                 tile.setRangeMode(osg.PagedLOD.PIXEL_SIZE_ON_SCREEN);
                 tile.addChild(tileGeometry, 0, that.projectedTilePixels);
@@ -813,7 +809,7 @@ ScanViewer.prototype = {
             else {
                 // Leaf node
                 tile = tileGeometry;
-            }
+            }                                       
             tile.x = x;
             tile.y = y;
             tile.level = level;
@@ -824,7 +820,7 @@ ScanViewer.prototype = {
 
     /**
      * Utility function which returns quadtree address for the given child.
-     *
+     * 
      * @param {Number}
      *            childIndex
      * @param {Number}
@@ -839,22 +835,22 @@ ScanViewer.prototype = {
             level: level + 1
         };
     },
-
+    
     transformSphericalToWorld: function(elevation, azimuth, distance) {
         var direction = osg.vec3.fromValues(Math.cos(azimuth)*Math.cos(elevation), -Math.sin(azimuth)*Math.cos(elevation), Math.sin(elevation));
         osg.vec3.scale(direction, direction, distance);
-        return direction;
+        return direction;        
     },
-
+    
     transformWorldToSpherical: function(world) {
         var spherical = {};
         spherical.distance = osg.vec3.length(world);
         if (spherical.distance === 0.0) {
             return undefined;
         }
-
+        
         var n = osg.vec3.scale(osg.vec3.create(), world, 1.0/spherical.distance);
-
+       
         var nl = osg.vec2.length(n);
         if (nl < 1.0E-5) {
             spherical.elevation = Math.PI / 2.0;
@@ -867,20 +863,20 @@ ScanViewer.prototype = {
             spherical.azimuth += 2.0*Math.PI;
         }
         return spherical;
-    },
-
+    },  
+     
     run: function() {
         var that = this;
         return this._initializationPromise.then(function() {
             that.viewer.run();
         });
     },
-
-    getCurrentViewPose: function(){
+    
+    getCurrentViewPose: function(){        
         return this.viewer.getManipulator().getCurrentPose();
     },
 
-    setViewPose : function(pose){
+    setViewPose : function(pose){   
         this.viewer.getManipulator().setPose(pose);
     },
 
@@ -890,7 +886,7 @@ ScanViewer.prototype = {
 //        var zoomTarget = manipulator.getZoomInterpolator().getTarget()[0] - intDelta;
         manipulator.getZoomInterpolator().addTarget(-intDelta);
     },
-
+    
     zoomOut : function(){
         var intDelta = 1 / this._zoomFactor;
         var manipulator = this.viewer.getManipulator();
@@ -898,8 +894,8 @@ ScanViewer.prototype = {
         manipulator.getZoomInterpolator().addTarget(intDelta);
     },
 
-    resetView : function(){
-        this.setViewPose(this._homePose);
+    resetView : function(){   
+        this.setViewPose(this._homePose); 
     },
 
     destroy: function() {
