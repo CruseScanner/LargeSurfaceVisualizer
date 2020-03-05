@@ -37,7 +37,7 @@ var CruseViewer = function(parentElement, showAdvancedControls)
 
 CruseViewer.prototype = {
 
-    prefixUrl:              "images/",
+    prefixUrl:              "3dviewer/images/",
     navImages: {
         zoomIn: {
             REST:   'zoomin_rest.png',
