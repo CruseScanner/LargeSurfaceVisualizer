@@ -28,29 +28,34 @@
         "scale": "39.37007874015748031496",
       };
 
-      var sampleData3D = {        
-        "Title" : "Coffee",
-        "NormalMap" : "/var/www/3dviewer_dev_sample/data_new/jpx/Coffee_Factory_normals_flatness4_0.48_-0.42.jpx",
-        "DiffuseColor" : "/var/www/3dviewer_dev_sample/data_new/jpx/Coffee_Factory_diffuse_color_flatness4.jpx",
-        "ElevationMap" : "/var/www/3dviewer_dev_sample/data_new/jpx/Coffee_Factory_depth_flatness4_0.48_-0.42.jpx",
+
+      var sampleData3D = {
+        "Title" : "Tiles_Mosaic 3D",
+        "NormalMap" : "/opt/data/samples_jpx/TilesandStones/Tiles_Mosaic/Tiles_Mosaic_depth_imported_normalmap.jpx",
+        "ElevationMap" : "/opt/data/samples_jpx/TilesandStones/Tiles_Mosaic/Tiles_Mosaic_depth_imported.jpx",
+        "DiffuseColor" : "/opt/data/samples_jpx/TilesandStones/Tiles_Mosaic/Tiles_Mosaic_diffuse_color.jpx",
+        "GlossMap": "/opt/data/samples_jpx/TilesandStones/Tiles_Mosaic/Tiles_Mosaic_gloss_imported.jpx",
         "Shading" : {
-            "Ambient": 0.2,
-            "PhongExponent" : 10,
-            "LightSources": 
-            [{
-                "Diffuse" :  0.8,
-                "Specular" : 0.1,
-                "LightPosition" : {
-                    "Elevation": 1.570796326794897,
-                    "Azimuth": 0.0
-                }
-            }]
-        },
-        "pixelSize"  : 0.0254, 
-        "elevationMin" : 0.0,
-        "elevationMax" : 2.0,
-        "server" : "/iipsrv/iipsrv.fcgi"    
-      };
+              "Ambient": 0.3,
+                    "PhongExponent" : 256,
+                    "LightSources": 
+              [{
+                        "Diffuse" :  0.7,
+                        "Specular" : 0.4,
+                        "LightPosition" : 
+                {
+                  "Elevation": 1.26188881310352,
+                            "Azimuth": 3.47483695648291
+                        }
+                    }]
+                },
+        "pixelSize"  : 0.0423,
+        "elevationMin" : -4.13,
+        "elevationMax" : 4.39,
+        "server": "/iipsrv/iipsrv.fcgi",
+        "caption": "Scanmode: Factory Project<br>Resolution 600ppi <br> 16bit/Channel RGB<br>8895 x 6253 Pixel <br> 37.66cm x 26.47cm",
+        "enableShadows": true,
+        };
 
       var containerElement = document.getElementById("ViewContainer");
       var viewer = new cruse.CruseViewer(containerElement);
