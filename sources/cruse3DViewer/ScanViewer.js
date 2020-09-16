@@ -83,6 +83,12 @@ function initializeRootNode(scanViewer) {
         manipulator.setDistance(boundingSphere.radius() * 1.5);
         manipulator.setLimitPitchDown(15.0*Math.PI/180.0);
 
+        if(scanViewer.isYawLimitEnabled())
+        {
+            manipulator.setLimitYawLeft(scanViewer._yawLimitLeft);
+            manipulator.setLimitYawRight(scanViewer._yawLimitRight);
+        }
+
         scanViewer._homePose = manipulator.getCurrentPose();
  
         rootNode.addChild(scanViewer._debugTextureFactory.getNode());
@@ -104,7 +110,17 @@ var ScanViewer = function(canvasElement, options) {
     var glossMapTileSource = options.glossMapTileSource;
     var elevationTileSource = options.elevationTileSource;
    
-    
+    this._yawLimitLeft = 0;
+    this._yawLimitRight = 0;
+    if(defined(options.yawLimitLeft))
+    {
+        this._yawLimitLeft = options.yawLimitLeft * Math.PI / 180.0;
+    }
+    if(defined(options.yawLimitRight))
+    {
+        this._yawLimitRight = options.yawLimitRight * Math.PI / 180.0;
+    }
+
     this._renderTextureMaps = false;
     this._renderNormalMaps = false;
     this._renderDisplacementMaps = false;
@@ -528,6 +544,10 @@ ScanViewer.prototype = {
     
     getLightCount: function() {
         return this._light.length;
+    },
+
+    isYawLimitEnabled: function() {
+        return this._yawLimitLeft != this._yawLimitRight;
     },
     
     getPixelScale: function() {
