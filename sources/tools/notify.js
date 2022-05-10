@@ -86,34 +86,34 @@ notify.noticeFold = notify.logFold;
 notify.noticeMatrix = notify.logMatrix;
 notify.noticeMatrixFold = notify.logMatrixFold;
 
-notify.timeStamp = function() {};
+notify.timeStamp = function () {};
 /* develblock:start */
-if (!notify.console || !notify.console.timeStamp) notify.timeStamp = function() {};
+if (!notify.console || !notify.console.timeStamp) notify.timeStamp = function () {};
 else {
-    notify.timeStamp = function(label) {
+    notify.timeStamp = function (label) {
         notify.console.timeStamp(label);
     };
 }
 /* develblock:end */
 
-notify.assert = function(test, str) {
+notify.assert = function (test, str) {
     if (this.console !== undefined && !test) {
         this.console.assert(test, str);
     }
 };
 
-notify.setNotifyLevel = function(logLevel, trace) {
+notify.setNotifyLevel = function (logLevel, trace) {
     notify.currentNotifyLevel = logLevel;
     if (trace !== undefined) notify.traceLogCall = trace;
 };
 
-notify.getNotifyLevel = function() {
+notify.getNotifyLevel = function () {
     return notify.currentNotifyLevel;
 };
 
 notify.reportWebGLError = false;
 
-notify.setConsole = function(replacement) {
+notify.setConsole = function (replacement) {
     notify.console = replacement;
 };
 

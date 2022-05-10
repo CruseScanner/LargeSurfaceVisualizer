@@ -97,20 +97,19 @@ var gruntTasks = {};
     var webpack = require('webpack');
 
     var release = {
-        devtool: 'none',
         output: { filename: 'cruse.min.js' },
 
         module: {
-            loaders: webpackSources.module.loaders.concat({
+            rules: webpackSources.module.rules.concat({
                 test: /\.js$/,
-                loader: 'webpack-strip-block'
+                use: 'webpack-strip-block'
             })
         },
 
         // additional plugins for this specific mode
-        plugins: webpackSources.plugins.concat(
-            new webpack.optimize.UglifyJsPlugin({ sourceMap: true })
-        )
+        //plugins: webpackSources.plugins.concat(
+        //    new webpack.optimize.UglifyJsPlugin({ sourceMap: true })
+        //)
     };
 
     var watch = {
@@ -275,7 +274,7 @@ var gruntTasks = {};
             https: true,
             secure: false,
             //host: 'cim.crusescanner.de',
-            host: '3dviewer-dev.crusescanner.de', // wherever the data service is running
+            host: 'samples.crusescanner.de', // wherever the data service is running
             port: 8443 // the port that the data service is running on
           }],
         dist: {

@@ -1,57 +1,53 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>Cruse WebViewer</title>
-    <link rel="stylesheet" type="text/css" href="../templates/css/base.css">
-    <link rel="stylesheet" type="text/css" href="../../builds/dist/css/cruse-viewer.css">
+    <head>
+        <meta charset="utf-8" />
+        <title>Cruse WebViewer</title>
+        <link rel="stylesheet" type="text/css" href="../templates/css/base.css" />
+        <link rel="stylesheet" type="text/css" href="../../builds/dist/css/cruse-viewer.css" />
 
-    <!-- Javascript -->
-    <script type="text/javascript" src="../../node_modules/jquery/dist/jquery.min.js"></script>    
-    <script type="text/javascript" src="../../node_modules/dat.gui/build/dat.gui.min.js"></script>
-    <script type="text/javascript" src="../../node_modules/bluebird/js/browser/bluebird.min.js"></script> 
-    <script type="text/javascript" src="../../node_modules/hammerjs/hammer.min.js"></script>
-    <script type="text/javascript" src="../../builds/dist/cruse.js"></script>   
-  </head>
+        <!-- Javascript -->
+        <script type="text/javascript" src="../../node_modules/jquery/dist/jquery.min.js"></script>
+        <script
+            type="text/javascript"
+            src="../../node_modules/dat.gui/build/dat.gui.min.js"
+        ></script>
+        <script
+            type="text/javascript"
+            src="../../node_modules/bluebird/js/browser/bluebird.min.js"
+        ></script>
+        <script type="text/javascript" src="../../node_modules/hammerjs/hammer.min.js"></script>
+        <script type="text/javascript" src="../../builds/dist/cruse.js"></script>
+    </head>
 
-  <body class="osgjs-theme-dark">
+    <body class="osgjs-theme-dark">
+        <div id="ViewContainer" class="osgjs-fullpage"></div>
+        <script type="text/javascript">
+            var urlParam = function (name, w) {
+                w = w || window;
+                var rx = new RegExp('[\&|\?]' + name + '=([^\&\#]+)'),
+                    val = w.location.search.match(rx);
+                return !val ? '' : val[1];
+            };
 
-    <div id="ViewContainer" class="osgjs-fullpage">
+            window.addEventListener(
+                'load',
+                function () {
+                    var shadingProjectUrl = urlParam('ShadingProject');
+                    var showControls = urlParam('showControls');
 
-    
-    
-    </div>
-    <script type="text/javascript">
-      var urlParam = function(name, w){
-          w = w || window;
-          var rx = new RegExp('[\&|\?]'+name+'=([^\&\#]+)'),
-              val = w.location.search.match(rx);
-          return !val ? '':val[1];
-      }
+                    if (shadingProjectUrl == '') {
+                        shadingProjectUrl = 'Tiles.json';
+                    }
 
-     window.addEventListener(
-        'load',
-        function() {
-            var shadingProjectUrl = urlParam('ShadingProject');
-            var showControls = urlParam('showControls');
-
-            if(shadingProjectUrl == "")
-            {
-              shadingProjectUrl = "Tiles.json";
-            }
-
-            var that = this;
-            $.getJSON(shadingProjectUrl,
-                function (shadingProject) 
-                { 
-                    var scanViewerWidget = new cruse.ScanViewerWidget("ViewContainer");
-                    scanViewerWidget.run(shadingProject, showControls);
-                });
-        },
-        true
-    );
-    </script>    
-
-  </body>
-
+                    var that = this;
+                    $.getJSON(shadingProjectUrl, function (shadingProject) {
+                        var scanViewerWidget = new cruse.ScanViewerWidget('ViewContainer');
+                        scanViewerWidget.run(shadingProject, showControls);
+                    });
+                },
+                true
+            );
+        </script>
+    </body>
 </html>

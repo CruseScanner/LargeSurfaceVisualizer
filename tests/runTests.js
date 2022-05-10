@@ -10,7 +10,7 @@ var mocha = new Mocha({
 
 mocha.addFile('../builds/tests/tests.js');
 
-mocha.run().on('end', function() {
+mocha.run().on('end', function () {
     // In case the file has no tests we should make mocha fail
     if (this.stats.tests === 0) {
         console.error('No tests found');

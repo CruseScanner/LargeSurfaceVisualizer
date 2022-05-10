@@ -1,37 +1,38 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>Cruse WebViewer</title>
-    <link rel="stylesheet" type="text/css" href="../templates/css/base.css">
-    <link rel="stylesheet" type="text/css" href="../../builds/dist/css/cruse-viewer.css">
-   
-    <!-- Javascript -->
-    <script type="text/javascript" src="../../node_modules/jquery/dist/jquery.min.js"></script>    
-    <script type="text/javascript" src="../../node_modules/dat.gui/build/dat.gui.min.js"></script>
-    <script type="text/javascript" src="../../node_modules/bluebird/js/browser/bluebird.min.js"></script> 
-    <script type="text/javascript" src="../../node_modules/hammerjs/hammer.min.js"></script>
-    <script type="text/javascript" src="../../builds/dist/cruse.js"></script>   
-  </head>
+    <head>
+        <meta charset="utf-8" />
+        <title>Cruse WebViewer</title>
+        <link rel="stylesheet" type="text/css" href="../templates/css/base.css" />
+        <link rel="stylesheet" type="text/css" href="../../builds/dist/css/cruse-viewer.css" />
 
-  <body class="osgjs-theme-dark">
+        <!-- Javascript -->
+        <script type="text/javascript" src="../../node_modules/jquery/dist/jquery.min.js"></script>
+        <script
+            type="text/javascript"
+            src="../../node_modules/dat.gui/build/dat.gui.min.js"
+        ></script>
+        <script
+            type="text/javascript"
+            src="../../node_modules/bluebird/js/browser/bluebird.min.js"
+        ></script>
+        <script type="text/javascript" src="../../node_modules/hammerjs/hammer.min.js"></script>
+        <script type="text/javascript" src="../../builds/dist/cruse.js"></script>
+    </head>
 
-    <div id="ViewContainer" class="osgjs-fullpage">
-    </div>
-    <script type="text/javascript">
+    <body class="osgjs-theme-dark">
+        <div id="ViewContainer" class="osgjs-fullpage"></div>
+        <script type="text/javascript">
+            var sampleData = {
+                image: '/opt/data/samples_jpx/Fantasy-Scans/Door.jpx',
+                caption:
+                    'Scanmode: Left + Right + Front + Back<br>Resolution 300ppi <br> 8bit/Channel RGB<br>8544 x 6192 Pixel <br> 72.34cm x 52.43cm<br>152M BEACH_LRVH_20deg.tif<br><br>',
+                title: 'Coffee_Factory_diffuse_color_flatness4',
+                server: '/iipsrv/iipsrv.fcgi',
+                scale: '39.37007874015748031496'
+            };
 
-      var sampleData = {
-        "image": "/var/www/3dviewer_dev_sample/data_new/jpx/Coffee_Factory_diffuse_color_flatness4.jpx",
-        "caption": "Scanmode: Left + Right + Front + Back<br>Resolution 300ppi <br> 8bit/Channel RGB<br>8544 x 6192 Pixel <br> 72.34cm x 52.43cm<br>152M BEACH_LRVH_20deg.tif<br><br>",
-        "title": "Coffee_Factory_diffuse_color_flatness4",
-        "server": "/iipsrv/iipsrv.fcgi",        
-        "scale": "39.37007874015748031496",
-      };
-
-      var viewer = new cruse.Cruse2DViewer("ViewContainer", sampleData);
-
-    </script>    
-
-  </body>
-
+            var viewer = new cruse.Cruse2DViewer('ViewContainer', sampleData);
+        </script>
+    </body>
 </html>

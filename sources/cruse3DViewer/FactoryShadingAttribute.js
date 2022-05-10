@@ -1,15 +1,14 @@
 import OSG from 'external/osg';
 
-'use strict';
+('use strict');
 
 var osgShader = OSG.osgShader;
 var osg = OSG.osg;
 
-
 // FactoryShading Attribute: if added, the Shading / Lighting Computation uses the same lighting model
 // as Cruse Factory
 
-var FactoryShadingAttribute = function() {
+var FactoryShadingAttribute = function () {
     osg.StateAttribute.call(this);
     this._isLODColoringEnabled = false;
 };
@@ -19,21 +18,19 @@ osg.createPrototypeStateAttribute(
     osg.objectInherit(osg.StateAttribute.prototype, {
         attributeType: 'FactoryShading',
 
-        cloneType: function() {
+        cloneType: function () {
             return new FactoryShadingAttribute();
         },
 
-        isLODColoringEnabled: function()
-        { 
-            return this._isLODColoringEnabled; 
+        isLODColoringEnabled: function () {
+            return this._isLODColoringEnabled;
         },
 
-        setLODColoringEnabled: function(value)
-        {
-             this._isLODColoringEnabled = value; 
+        setLODColoringEnabled: function (value) {
+            this._isLODColoringEnabled = value;
         },
 
-        getHash: function() {
+        getHash: function () {
             return this.getType() + this._isLODColoringEnabled.toString();
         }
     }),

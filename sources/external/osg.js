@@ -1,3 +1,3 @@
-var OSG = require('../../../../ThirdPartyLibs/osgjs-cruse/builds/dist/OSG.js');
+var OSG = require('./osgjs/builds/dist/OSG.js');
 
 export default OSG;

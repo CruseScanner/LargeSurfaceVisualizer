@@ -1,4 +1,4 @@
-/* 
+/*
  * This software was developed at the National Institute of Standards and
  * Technology by employees of the Federal Government in the course of
  * their official duties. Pursuant to title 17 Section 105 of the United
@@ -16,14 +16,14 @@
  */
 import OpenSeadragon from 'openseadragon';
 
-(function($) {
-
+(function ($) {
     if (!$.version || $.version.major < 2) {
-        throw new Error('This version of OpenSeadragonScalebar requires ' +
-                'OpenSeadragon version 2.0.0+');
+        throw new Error(
+            'This version of OpenSeadragonScalebar requires ' + 'OpenSeadragon version 2.0.0+'
+        );
     }
 
-    $.Viewer.prototype.scalebar = function(options) {
+    $.Viewer.prototype.scalebar = function (options) {
         if (!this.scalebarInstance) {
             options = options || {};
             options.viewer = this;
@@ -48,7 +48,7 @@ import OpenSeadragon from 'openseadragon';
     };
 
     /**
-     * 
+     *
      * @class Scalebar
      * @param {Object} options
      * @param {OpenSeadragon.Viewer} options.viewer The viewer to attach this
@@ -69,7 +69,7 @@ import OpenSeadragon from 'openseadragon';
      * default: 5
      * @param {Integer} options.yOffset Offset location of the scale bar along y.
      * default: 5
-     * @param {Boolean} options.stayInsideImage When set to true, keep the 
+     * @param {Boolean} options.stayInsideImage When set to true, keep the
      * scale bar inside the image when zooming out. default: true
      * @param {String} options.color The color of the scale bar using a color
      * name or the hexadecimal format (ex: black or #000000) default: black
@@ -86,52 +86,51 @@ import OpenSeadragon from 'openseadragon';
      * 2 attributes: size and text containing the size of the scale bar and the text.
      * default: $.ScalebarSizeAndTextRenderer.METRIC_LENGTH
      */
-    $.Scalebar = function(options) {
+    $.Scalebar = function (options) {
         options = options || {};
         if (!options.viewer) {
-            throw new Error("A viewer must be specified.");
+            throw new Error('A viewer must be specified.');
         }
         this.viewer = options.viewer;
 
-        this.divElt = document.createElement("div");
+        this.divElt = document.createElement('div');
         this.viewer.container.appendChild(this.divElt);
-        this.divElt.style.position = "relative";
-        this.divElt.style.margin = "0";
-        this.divElt.style.pointerEvents = "none";
+        this.divElt.style.position = 'relative';
+        this.divElt.style.margin = '0';
+        this.divElt.style.pointerEvents = 'none';
 
-        this.setMinWidth(options.minWidth || "150px");
+        this.setMinWidth(options.minWidth || '150px');
 
         this.setDrawScalebarFunction(options.type || $.ScalebarType.MICROSCOPY);
-        this.color = options.color || "black";
-        this.fontColor = options.fontColor || "black";
-        this.backgroundColor = options.backgroundColor || "none";
-        this.fontSize = options.fontSize || "";
-        this.fontFamily = options.fontFamily || "";
+        this.color = options.color || 'black';
+        this.fontColor = options.fontColor || 'black';
+        this.backgroundColor = options.backgroundColor || 'none';
+        this.fontSize = options.fontSize || '';
+        this.fontFamily = options.fontFamily || '';
         this.barThickness = options.barThickness || 2;
         this.pixelsPerMeter = options.pixelsPerMeter || null;
         this.referenceItemIdx = options.referenceItemIdx || 0;
         this.location = options.location || $.ScalebarLocation.BOTTOM_LEFT;
         this.xOffset = options.xOffset || 5;
         this.yOffset = options.yOffset || 5;
-        this.stayInsideImage = isDefined(options.stayInsideImage) ?
-                options.stayInsideImage : true;
-        this.sizeAndTextRenderer = options.sizeAndTextRenderer ||
-                $.ScalebarSizeAndTextRenderer.METRIC_LENGTH;
+        this.stayInsideImage = isDefined(options.stayInsideImage) ? options.stayInsideImage : true;
+        this.sizeAndTextRenderer =
+            options.sizeAndTextRenderer || $.ScalebarSizeAndTextRenderer.METRIC_LENGTH;
 
         var self = this;
-        this.viewer.addHandler("open", function() {
+        this.viewer.addHandler('open', function () {
             self.refresh();
         });
-        this.viewer.addHandler("animation", function() {
+        this.viewer.addHandler('animation', function () {
             self.refresh();
         });
-        this.viewer.addHandler("resize", function() {
+        this.viewer.addHandler('resize', function () {
             self.refresh();
         });
     };
 
     $.Scalebar.prototype = {
-        updateOptions: function(options) {
+        updateOptions: function (options) {
             if (!options) {
                 return;
             }
@@ -181,20 +180,19 @@ import OpenSeadragon from 'openseadragon';
                 this.sizeAndTextRenderer = options.sizeAndTextRenderer;
             }
         },
-        setDrawScalebarFunction: function(type) {
+        setDrawScalebarFunction: function (type) {
             if (!type) {
                 this.drawScalebar = null;
-            }
-            else if (type === $.ScalebarType.MAP) {
+            } else if (type === $.ScalebarType.MAP) {
                 this.drawScalebar = this.drawMapScalebar;
             } else {
                 this.drawScalebar = this.drawMicroscopyScalebar;
             }
         },
-        setMinWidth: function(minWidth) {
+        setMinWidth: function (minWidth) {
             this.divElt.style.width = minWidth;
             // Make sure to display the element before getting is width
-            this.divElt.style.display = "";
+            this.divElt.style.display = '';
             this.minWidth = this.divElt.offsetWidth;
         },
         /**
@@ -216,7 +214,7 @@ import OpenSeadragon from 'openseadragon';
          * default: 5
          * @param {Integer} options.yOffset Offset location of the scale bar along y.
          * default: 5
-         * @param {Boolean} options.stayInsideImage When set to true, keep the 
+         * @param {Boolean} options.stayInsideImage When set to true, keep the
          * scale bar inside the image when zooming out. default: true
          * @param {String} options.color The color of the scale bar using a color
          * name or the hexadecimal format (ex: black or #000000) default: black
@@ -232,63 +230,63 @@ import OpenSeadragon from 'openseadragon';
          * 2 attributes: size and text containing the size of the scale bar and the text.
          * default: $.ScalebarSizeAndTextRenderer.METRIC_LENGTH
          */
-        refresh: function(options) {
+        refresh: function (options) {
             this.updateOptions(options);
 
-            if (!this.viewer.isOpen() ||
-                    !this.drawScalebar ||
-                    !this.pixelsPerMeter ||
-                    !this.location) {
-                this.divElt.style.display = "none";
+            if (
+                !this.viewer.isOpen() ||
+                !this.drawScalebar ||
+                !this.pixelsPerMeter ||
+                !this.location
+            ) {
+                this.divElt.style.display = 'none';
                 return;
             }
-            this.divElt.style.display = "";
+            this.divElt.style.display = '';
 
             var viewport = this.viewer.viewport;
             var tiledImage = this.viewer.world.getItemAt(this.referenceItemIdx);
-            var zoom = tiledImageViewportToImageZoom(tiledImage,
-                    viewport.getZoom(true));
+            var zoom = tiledImageViewportToImageZoom(tiledImage, viewport.getZoom(true));
             var currentPPM = zoom * this.pixelsPerMeter;
             var props = this.sizeAndTextRenderer(currentPPM, this.minWidth);
 
             this.drawScalebar(props.size, props.text);
             var location = this.getScalebarLocation();
-            this.divElt.style.left = location.x + "px";
-            this.divElt.style.top = location.y + "px";
+            this.divElt.style.left = location.x + 'px';
+            this.divElt.style.top = location.y + 'px';
         },
-        drawMicroscopyScalebar: function(size, text) {
+        drawMicroscopyScalebar: function (size, text) {
             this.divElt.style.fontSize = this.fontSize;
             this.divElt.style.fontFamily = this.fontFamily;
-            this.divElt.style.textAlign = "center";
+            this.divElt.style.textAlign = 'center';
             this.divElt.style.color = this.fontColor;
-            this.divElt.style.border = "none";
-            this.divElt.style.borderBottom = this.barThickness + "px solid " + this.color;
+            this.divElt.style.border = 'none';
+            this.divElt.style.borderBottom = this.barThickness + 'px solid ' + this.color;
             this.divElt.style.backgroundColor = this.backgroundColor;
             this.divElt.innerHTML = text;
-            this.divElt.style.width = size + "px";
+            this.divElt.style.width = size + 'px';
         },
-        drawMapScalebar: function(size, text) {
+        drawMapScalebar: function (size, text) {
             this.divElt.style.fontSize = this.fontSize;
             this.divElt.style.fontFamily = this.fontFamily;
-            this.divElt.style.textAlign = "center";
+            this.divElt.style.textAlign = 'center';
             this.divElt.style.color = this.fontColor;
-            this.divElt.style.border = this.barThickness + "px solid " + this.color;
-            this.divElt.style.borderTop = "none";
+            this.divElt.style.border = this.barThickness + 'px solid ' + this.color;
+            this.divElt.style.borderTop = 'none';
             this.divElt.style.backgroundColor = this.backgroundColor;
             this.divElt.innerHTML = text;
-            this.divElt.style.width = size + "px";
+            this.divElt.style.width = size + 'px';
         },
         /**
          * Compute the location of the scale bar.
          * @returns {OpenSeadragon.Point}
          */
-        getScalebarLocation: function() {
+        getScalebarLocation: function () {
             if (this.location === $.ScalebarLocation.TOP_LEFT) {
                 var x = 0;
                 var y = 0;
                 if (this.stayInsideImage) {
-                    var pixel = this.viewer.viewport.pixelFromPoint(
-                            new $.Point(0, 0), true);
+                    var pixel = this.viewer.viewport.pixelFromPoint(new $.Point(0, 0), true);
                     if (!this.viewer.wrapHorizontal) {
                         x = Math.max(pixel.x, 0);
                     }
@@ -304,8 +302,7 @@ import OpenSeadragon from 'openseadragon';
                 var x = container.offsetWidth - barWidth;
                 var y = 0;
                 if (this.stayInsideImage) {
-                    var pixel = this.viewer.viewport.pixelFromPoint(
-                            new $.Point(1, 0), true);
+                    var pixel = this.viewer.viewport.pixelFromPoint(new $.Point(1, 0), true);
                     if (!this.viewer.wrapHorizontal) {
                         x = Math.min(x, pixel.x - barWidth);
                     }
@@ -323,8 +320,9 @@ import OpenSeadragon from 'openseadragon';
                 var y = container.offsetHeight - barHeight;
                 if (this.stayInsideImage) {
                     var pixel = this.viewer.viewport.pixelFromPoint(
-                            new $.Point(1, 1 / this.viewer.source.aspectRatio),
-                            true);
+                        new $.Point(1, 1 / this.viewer.source.aspectRatio),
+                        true
+                    );
                     if (!this.viewer.wrapHorizontal) {
                         x = Math.min(x, pixel.x - barWidth);
                     }
@@ -341,8 +339,9 @@ import OpenSeadragon from 'openseadragon';
                 var y = container.offsetHeight - barHeight;
                 if (this.stayInsideImage) {
                     var pixel = this.viewer.viewport.pixelFromPoint(
-                            new $.Point(0, 1 / this.viewer.source.aspectRatio),
-                            true);
+                        new $.Point(0, 1 / this.viewer.source.aspectRatio),
+                        true
+                    );
                     if (!this.viewer.wrapHorizontal) {
                         x = Math.max(x, pixel.x);
                     }
@@ -357,24 +356,27 @@ import OpenSeadragon from 'openseadragon';
          * Get the rendered scalebar in a canvas.
          * @returns {Element} A canvas containing the scalebar representation
          */
-        getAsCanvas: function() {
-            var canvas = document.createElement("canvas");
+        getAsCanvas: function () {
+            var canvas = document.createElement('canvas');
             canvas.width = this.divElt.offsetWidth;
             canvas.height = this.divElt.offsetHeight;
-            var context = canvas.getContext("2d");
+            var context = canvas.getContext('2d');
             context.fillStyle = this.backgroundColor;
             context.fillRect(0, 0, canvas.width, canvas.height);
             context.fillStyle = this.color;
-            context.fillRect(0, canvas.height - this.barThickness,
-                    canvas.width, canvas.height);
+            context.fillRect(0, canvas.height - this.barThickness, canvas.width, canvas.height);
             if (this.drawScalebar === this.drawMapScalebar) {
                 context.fillRect(0, 0, this.barThickness, canvas.height);
-                context.fillRect(canvas.width - this.barThickness, 0,
-                        this.barThickness, canvas.height);
+                context.fillRect(
+                    canvas.width - this.barThickness,
+                    0,
+                    this.barThickness,
+                    canvas.height
+                );
             }
             context.font = window.getComputedStyle(this.divElt).font;
-            context.textAlign = "center";
-            context.textBaseline = "middle";
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
             context.fillStyle = this.fontColor;
             var hCenter = canvas.width / 2;
             var vCenter = canvas.height / 2;
@@ -385,12 +387,12 @@ import OpenSeadragon from 'openseadragon';
          * Get a copy of the current OpenSeadragon canvas with the scalebar.
          * @returns {Element} A canvas containing a copy of the current OpenSeadragon canvas with the scalebar
          */
-        getImageWithScalebarAsCanvas: function() {
+        getImageWithScalebarAsCanvas: function () {
             var imgCanvas = this.viewer.drawer.canvas;
-            var newCanvas = document.createElement("canvas");
+            var newCanvas = document.createElement('canvas');
             newCanvas.width = imgCanvas.width;
             newCanvas.height = imgCanvas.height;
-            var newCtx = newCanvas.getContext("2d");
+            var newCtx = newCanvas.getContext('2d');
             newCtx.drawImage(imgCanvas, 0, 0);
             var scalebarCanvas = this.getAsCanvas();
             var location = this.getScalebarLocation();
@@ -403,67 +405,67 @@ import OpenSeadragon from 'openseadragon';
         /**
          * Metric length. From nano meters to kilometers.
          */
-        METRIC_LENGTH: function(ppm, minSize) {
-            return getScalebarSizeAndTextForMetric(ppm, minSize, "m");
+        METRIC_LENGTH: function (ppm, minSize) {
+            return getScalebarSizeAndTextForMetric(ppm, minSize, 'm');
         },
         /**
          * Imperial length. Choosing the best unit from thou, inch, foot and mile.
          */
-        IMPERIAL_LENGTH: function(ppm, minSize) {
+        IMPERIAL_LENGTH: function (ppm, minSize) {
             var maxSize = minSize * 2;
             var ppi = ppm * 0.0254;
             if (maxSize < ppi * 12) {
                 if (maxSize < ppi) {
                     var ppt = ppi / 1000;
-                    return getScalebarSizeAndText(ppt, minSize, "th");
+                    return getScalebarSizeAndText(ppt, minSize, 'th');
                 }
-                return getScalebarSizeAndText(ppi, minSize, "in");
+                return getScalebarSizeAndText(ppi, minSize, 'in');
             }
             var ppf = ppi * 12;
             if (maxSize < ppf * 2000) {
-                return getScalebarSizeAndText(ppf, minSize, "ft");
+                return getScalebarSizeAndText(ppf, minSize, 'ft');
             }
             var ppmi = ppf * 5280;
-            return getScalebarSizeAndText(ppmi, minSize, "mi");
+            return getScalebarSizeAndText(ppmi, minSize, 'mi');
         },
         /**
          * Astronomy units. Choosing the best unit from arcsec, arcminute, and degree
          */
-        ASTRONOMY: function(ppa, minSize) {
-	    var maxSize = minSize * 2;
+        ASTRONOMY: function (ppa, minSize) {
+            var maxSize = minSize * 2;
             if (maxSize < ppa * 60) {
-                return getScalebarSizeAndText(ppa, minSize, "\"", false, '');
+                return getScalebarSizeAndText(ppa, minSize, '"', false, '');
             }
             var ppminutes = ppa * 60;
             if (maxSize < ppminutes * 60) {
-                return getScalebarSizeAndText(ppminutes, minSize, "\'", false, '');
+                return getScalebarSizeAndText(ppminutes, minSize, "'", false, '');
             }
             var ppd = ppminutes * 60;
-            return getScalebarSizeAndText(ppd, minSize, "&#176", false, '');
-	},
+            return getScalebarSizeAndText(ppd, minSize, '&#176', false, '');
+        },
         /**
          * Standard time. Choosing the best unit from second (and metric divisions),
          * minute, hour, day and year.
          */
-        STANDARD_TIME: function(pps, minSize) {
+        STANDARD_TIME: function (pps, minSize) {
             var maxSize = minSize * 2;
             if (maxSize < pps * 60) {
-                return getScalebarSizeAndTextForMetric(pps, minSize, "s", false);
+                return getScalebarSizeAndTextForMetric(pps, minSize, 's', false);
             }
             var ppminutes = pps * 60;
             if (maxSize < ppminutes * 60) {
-                return getScalebarSizeAndText(ppminutes, minSize, "minute", true);
+                return getScalebarSizeAndText(ppminutes, minSize, 'minute', true);
             }
             var pph = ppminutes * 60;
             if (maxSize < pph * 24) {
-                return getScalebarSizeAndText(pph, minSize, "hour", true);
+                return getScalebarSizeAndText(pph, minSize, 'hour', true);
             }
             var ppd = pph * 24;
             if (maxSize < ppd * 365.25) {
-                return getScalebarSizeAndText(ppd, minSize, "day", true);
+                return getScalebarSizeAndText(ppd, minSize, 'day', true);
             }
             var ppy = ppd * 365.25;
-            return getScalebarSizeAndText(ppy, minSize, "year", true);
+            return getScalebarSizeAndText(ppy, minSize, 'year', true);
         },
         /**
          * Generic metric unit. One can use this function to create a new metric
@@ -478,18 +480,18 @@ import OpenSeadragon from 'openseadragon';
 
     // Missing TiledImage.viewportToImageZoom function in OSD 2.0.0
     function tiledImageViewportToImageZoom(tiledImage, viewportZoom) {
-        var ratio = tiledImage._scaleSpring.current.value *
-                tiledImage.viewport._containerInnerSize.x /
-                tiledImage.source.dimensions.x;
+        var ratio =
+            (tiledImage._scaleSpring.current.value * tiledImage.viewport._containerInnerSize.x) /
+            tiledImage.source.dimensions.x;
         return ratio * viewportZoom;
     }
 
     function getScalebarSizeAndText(ppm, minSize, unitSuffix, handlePlural, spacer) {
-	spacer = spacer === undefined ? ' ' : spacer;
+        spacer = spacer === undefined ? ' ' : spacer;
         var value = normalize(ppm, minSize);
-        var factor = roundSignificand(value / ppm * minSize, 3);
+        var factor = roundSignificand((value / ppm) * minSize, 3);
         var size = value * minSize;
-        var plural = handlePlural && factor > 1 ? "s" : "";
+        var plural = handlePlural && factor > 1 ? 's' : '';
         return {
             size: size,
             text: factor + spacer + unitSuffix + plural
@@ -498,7 +500,7 @@ import OpenSeadragon from 'openseadragon';
 
     function getScalebarSizeAndTextForMetric(ppm, minSize, unitSuffix) {
         var value = normalize(ppm, minSize);
-        var factor = roundSignificand(value / ppm * minSize, 3);
+        var factor = roundSignificand((value / ppm) * minSize, 3);
         var size = value * minSize;
         var valueWithUnit = getWithUnit(factor, unitSuffix);
         return {
@@ -544,21 +546,21 @@ import OpenSeadragon from 'openseadragon';
 
     function getWithUnit(value, unitSuffix) {
         if (value < 0.000001) {
-            return value * 1000000000 + " n" + unitSuffix;
+            return value * 1000000000 + ' n' + unitSuffix;
         }
         if (value < 0.001) {
-            return value * 1000000 + " μ" + unitSuffix;
+            return value * 1000000 + ' μ' + unitSuffix;
         }
         if (value < 1) {
-            return value * 1000 + " m" + unitSuffix;
+            return value * 1000 + ' m' + unitSuffix;
         }
         if (value >= 1000) {
-            return value / 1000 + " k" + unitSuffix;
+            return value / 1000 + ' k' + unitSuffix;
         }
-        return value + " " + unitSuffix;
+        return value + ' ' + unitSuffix;
     }
 
     function isDefined(variable) {
-        return typeof (variable) !== "undefined";
+        return typeof variable !== 'undefined';
     }
-}(OpenSeadragon));
+})(OpenSeadragon);

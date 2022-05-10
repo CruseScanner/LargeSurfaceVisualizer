@@ -1,12 +1,11 @@
 import OSG from 'external/osg';
 
-'use strict';
+('use strict');
 
 var osgShader = OSG.osgShader;
 var osg = OSG.osg;
 
-  
-var NormalTexture = function() {
+var NormalTexture = function () {
     osg.Texture.call(this);
 };
 
@@ -15,9 +14,9 @@ osg.createPrototypeStateAttribute(
     osg.objectInherit(osg.Texture.prototype, {
         attributeType: 'NormalTexture',
 
-        cloneType: function() {
+        cloneType: function () {
             return new NormalTexture();
-        },
+        }
     }),
     'osg',
     'NormalTexture'

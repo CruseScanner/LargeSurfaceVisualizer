@@ -9,7 +9,7 @@ import CruseViewer from 'cruseViewer/cruseViewer';
 
 var cruse = cruseNameSpace;
 cruse.IIPImageTileSource = IIPImageTileSource;
-cruse.PlanarOrbitManipulator = PlanarOrbitManipulator; 
+cruse.PlanarOrbitManipulator = PlanarOrbitManipulator;
 cruse.ScanViewer = ScanViewer;
 cruse.ScanViewerWidget = ScanViewerWidget;
 cruse.Cruse2DViewer = Cruse2DViewer;
@@ -17,7 +17,7 @@ cruse.Gallery = Gallery;
 cruse.CruseViewer = CruseViewer;
 
 // for backward compatibility
-cruse.globalify = function() {
+cruse.globalify = function () {
     window.cruse = cruse;
 };
 
@@ -25,10 +25,10 @@ export {
     IIPImageTileSource,
     ScanViewer,
     PlanarOrbitManipulator,
-    ScanViewerWidget, 
+    ScanViewerWidget,
     Gallery,
     Cruse2DViewer,
-    CruseViewer   
+    CruseViewer
 };
 
 export default cruse;

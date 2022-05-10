@@ -1,12 +1,11 @@
 import OSG from 'external/osg';
 
-'use strict';
+('use strict');
 
 var osgShader = OSG.osgShader;
 var osg = OSG.osg;
 
-  
-var GlossTexture = function() {
+var GlossTexture = function () {
     osg.Texture.call(this);
 };
 
@@ -15,9 +14,9 @@ osg.createPrototypeStateAttribute(
     osg.objectInherit(osg.Texture.prototype, {
         attributeType: 'GlossTexture',
 
-        cloneType: function() {
+        cloneType: function () {
             return new GlossTexture();
-        },
+        }
     }),
     'osg',
     'GlossTexture'

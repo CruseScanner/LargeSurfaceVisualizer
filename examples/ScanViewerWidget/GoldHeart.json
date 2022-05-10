@@ -1,27 +1,28 @@
 {
-   "Name" : "Goldheart",
-   "NormalMap" : "/var/www/3dviewer_dev_sample/data/Goldheart_normalmap_RGB8_2.jpx",
-   "DiffuseColor" : "/var/www/3dviewer_dev_sample/data/Goldheart_diffuse_RGB8_2.jpx",
-   "GlossMap" : "/var/www/3dviewer_dev_sample/data_new/jpx/GoldHeart_gloss_flatness3.jpx",
-   "Shading" : {
+    "Name": "Goldheart",
+    "NormalMap": "/var/www/3dviewer_dev_sample/data/Goldheart_normalmap_RGB8_2.jpx",
+    "DiffuseColor": "/var/www/3dviewer_dev_sample/data/Goldheart_diffuse_RGB8_2.jpx",
+    "GlossMap": "/var/www/3dviewer_dev_sample/data_new/jpx/GoldHeart_gloss_flatness3.jpx",
+    "Shading": {
         "Ambient": 0.2,
-        "PhongExponent" : 10,
-        "LightSources": 
-        [{
-            "Diffuse" :  0.8,
-            "Specular" : 0.8,
-            "LightPosition" : {
-                "Elevation": 1.570796326794897,
-                "Azimuth": 0.0
+        "PhongExponent": 10,
+        "LightSources": [
+            {
+                "Diffuse": 0.8,
+                "Specular": 0.8,
+                "LightPosition": {
+                    "Elevation": 1.570796326794897,
+                    "Azimuth": 0.0
+                }
+            },
+            {
+                "Diffuse": 0.8,
+                "Specular": 0.8,
+                "LightPosition": {
+                    "Elevation": 0.0,
+                    "Azimuth": 0.7853981633974485
+                }
             }
-        },
-        {
-            "Diffuse" : 0.8,
-            "Specular" : 0.8,
-            "LightPosition" : {
-                "Elevation": 0.0,
-                "Azimuth": 0.7853981633974485
-            }
-        }]
+        ]
     }
 }

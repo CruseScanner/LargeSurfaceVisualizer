@@ -1,18 +1,16 @@
 import OSG from 'external/osg';
 
-'use strict';
+('use strict');
 
 var osgShader = OSG.osgShader;
 var osg = OSG.osg;
 
-
 var ScanRenderingCompilerVertex = {
-  
-    getOrCreateUntransformedLocalVertex: function() {
+    getOrCreateUntransformedLocalVertex: function () {
         return osgShader.Compiler.prototype.getOrCreateLocalVertex.call(this);
     },
 
-    getOrCreateLocalVertex: function() {
+    getOrCreateLocalVertex: function () {
         var untransformedVertex = this.getOrCreateUntransformedLocalVertex();
         var localVertex = untransformedVertex;
 
@@ -22,17 +20,16 @@ var ScanRenderingCompilerVertex = {
         var tileDomainTransformAttribute = this.getAttributeType('TileDomainTransform');
 
         if (tileDomainTransformAttribute && tileDomainTransformAttribute.getEnabled()) {
-            var tileDomainTransformResult = this.createVariable('vec3');        
+            var tileDomainTransformResult = this.createVariable('vec3');
             var uOffsetScale = tileDomainTransformAttribute.getOrCreateUniforms().offsetAndScale;
-           
-            
+
             this.getNode('TileDomainTransform')
                 .inputs({
                     Vertex: localVertex,
-                    offsetScale: this.getOrCreateUniform(uOffsetScale)                            
+                    offsetScale: this.getOrCreateUniform(uOffsetScale)
                 })
                 .outputs({
-                    vertexOutput: tileDomainTransformResult,
+                    vertexOutput: tileDomainTransformResult
                 });
 
             localVertex = tileDomainTransformResult;
@@ -41,27 +38,31 @@ var ScanRenderingCompilerVertex = {
         // ======================================================
         // custom Texture Type DisplacementTexture
         // ======================================================
-        
-        if (this._displacementTextureName) {
 
+        if (this._displacementTextureName) {
             var displacementTextureObj = this._texturesByName[this._displacementTextureName];
             var displacementTextureAttribute = displacementTextureObj.texture;
 
-            var displacementResult = this.createVariable('vec3');        
-            var uTextureOffsetScale = displacementTextureAttribute.getOrCreateUniforms().textureOffsetAndScale;
-            var uDisplacementRange = displacementTextureAttribute.getOrCreateUniforms().displacementRange;
+            var displacementResult = this.createVariable('vec3');
+            var uTextureOffsetScale =
+                displacementTextureAttribute.getOrCreateUniforms().textureOffsetAndScale;
+            var uDisplacementRange =
+                displacementTextureAttribute.getOrCreateUniforms().displacementRange;
             var texUnit = displacementTextureObj.textureUnit;
-            
+
             this.getNode('DisplaceVertex')
                 .inputs({
                     originalVertex: untransformedVertex,
                     tileTransformedVertex: localVertex,
                     displacementOffsetScale: this.getOrCreateUniform(uTextureOffsetScale),
                     displacementRange: this.getOrCreateUniform(uDisplacementRange),
-                    displacementMap: this.getOrCreateSampler('sampler2D', 'DisplacementTexture' + texUnit),
+                    displacementMap: this.getOrCreateSampler(
+                        'sampler2D',
+                        'DisplacementTexture' + texUnit
+                    )
                 })
                 .outputs({
-                    vertexOutput: displacementResult,
+                    vertexOutput: displacementResult
                 });
 
             localVertex = displacementResult;
@@ -70,51 +71,44 @@ var ScanRenderingCompilerVertex = {
         return localVertex;
     },
 
-   
     //
     // Overides to Use XY Coords as Texture coords
     //
-    
-    declareVertexVaryings: function(roots){
+
+    declareVertexVaryings: function (roots) {
         osgShader.Compiler.prototype.declareVertexVaryings.call(this, roots);
 
         for (var keyVarying in roots) {
             var varying = roots[keyVarying];
-           
+
             var name = varying.getVariable();
             if (name.indexOf('vTexCoord0') !== -1) {
                 this.transfromVertexTexcoord(varying);
-            }     
+            }
         }
     },
 
-    transfromVertexTexcoord: function(varyingTexCoord0){
-
+    transfromVertexTexcoord: function (varyingTexCoord0) {
         var tileDomainTransformAttribute = this.getAttributeType('TileDomainTransform');
 
         if (tileDomainTransformAttribute) {
-                        
             var localVertex = osgShader.Compiler.prototype.getOrCreateLocalVertex.call(this);
-            var texCoordTransformResult = this.createVariable('vec2');   
-            var uTextureOffsetScale = tileDomainTransformAttribute.getOrCreateUniforms().textureOffsetAndScale;
+            var texCoordTransformResult = this.createVariable('vec2');
+            var uTextureOffsetScale =
+                tileDomainTransformAttribute.getOrCreateUniforms().textureOffsetAndScale;
 
             this.getNode('TexcoordFromTileDomain')
-            .inputs({
-                Vertex: localVertex,
-                textureOffsetScale: this.getOrCreateUniform(uTextureOffsetScale)                    
-            })
-            .outputs({
-                texcoordOutput: texCoordTransformResult
-            });
+                .inputs({
+                    Vertex: localVertex,
+                    textureOffsetScale: this.getOrCreateUniform(uTextureOffsetScale)
+                })
+                .outputs({
+                    texcoordOutput: texCoordTransformResult
+                });
 
-            this.getNode('SetFromNode')
-                .inputs(texCoordTransformResult)
-                .outputs(varyingTexCoord0);
-        
+            this.getNode('SetFromNode').inputs(texCoordTransformResult).outputs(varyingTexCoord0);
         }
-    },
-
+    }
 };
 
 export default ScanRenderingCompilerVertex;
-
