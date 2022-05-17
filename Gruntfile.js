@@ -26,13 +26,13 @@ var DIST_PATH = path.join(BUILD_PATH, 'dist/');
 
 var eslintConfigFilename = './.eslintrc.json';
 // Utility functions
-var find = function(cwd, pattern) {
+var find = function (cwd, pattern) {
     if (typeof pattern === 'undefined') {
         pattern = cwd;
         cwd = undefined;
     }
 
-    var isEntity = function(pathname) {
+    var isEntity = function (pathname) {
         if (cwd) pathname = path.join(cwd, pathname);
         return !fs.lstatSync(pathname).isDirectory();
     };
@@ -45,19 +45,19 @@ var find = function(cwd, pattern) {
 };
 
 // get source file once and for all, caching results.
-var srcFiles = find(SOURCE_PATH, '**/*.js').map(function(pathname) {
+var srcFiles = find(SOURCE_PATH, '**/*.js').map(function (pathname) {
     return pathname;
 });
 
-var exampleFiles = find(EXAMPLE_PATH, '**/*.js').map(function(pathname) {
+var exampleFiles = find(EXAMPLE_PATH, '**/*.js').map(function (pathname) {
     return pathname;
 });
 
-var testFiles = find(TEST_PATH, '**/*.js').map(function(pathname) {
+var testFiles = find(TEST_PATH, '**/*.js').map(function (pathname) {
     return pathname;
 });
 
-var benchmarkFiles = find(BENCHMARK_PATH, '**/*.js').map(function(pathname) {
+var benchmarkFiles = find(BENCHMARK_PATH, '**/*.js').map(function (pathname) {
     return pathname;
 });
 
@@ -67,10 +67,10 @@ var gruntTasks = {};
 
 // ## Top-level configurations
 //
-(function() {
+(function () {
     gruntTasks.eslint = {
         options: {
-            configFile: eslintConfigFilename
+            overrideConfigFile: eslintConfigFilename
         }
     };
 
@@ -93,8 +93,8 @@ var gruntTasks = {};
 //
 // Build OSGJS with webpack
 //
-(function() {
-    var webpack = require('webpack');
+(function () {
+    //var webpack = require('webpack');
 
     var release = {
         output: { filename: 'cruse.min.js' },
@@ -104,7 +104,7 @@ var gruntTasks = {};
                 test: /\.js$/,
                 use: 'webpack-strip-block'
             })
-        },
+        }
 
         // additional plugins for this specific mode
         //plugins: webpackSources.plugins.concat(
@@ -130,58 +130,58 @@ var gruntTasks = {};
 //
 // Will check the Gruntfile and every "*.js" file in the "statics/sources/" folder.
 //
-(function() {
+(function () {
     gruntTasks.eslint.self = {
-        options: {
+        env: {
             node: true
         },
         src: ['Gruntfile.js', 'webpack.config.js']
     };
 
     gruntTasks.eslint.sources = {
-        options: {
+        env: {
             browser: true
         },
         src: srcFiles
-            .filter(function(pathName) {
+            .filter(function (pathName) {
                 return (
                     pathName.indexOf('glMatrix') === -1 &&
                     pathName.indexOf('webgl-debug.js') === -1 &&
                     pathName.indexOf('webgl-utils.js') === -1
                 );
             })
-            .map(function(pathname) {
+            .map(function (pathname) {
                 return path.join(SOURCE_PATH, pathname);
             })
     };
 
     gruntTasks.eslint.examples = {
-        options: {
+        env: {
             browser: true
         },
-        src: exampleFiles.map(function(pathname) {
+        src: exampleFiles.map(function (pathname) {
             return path.join(EXAMPLE_PATH, pathname);
         })
     };
 
     gruntTasks.eslint.tests = {
-        options: {
+        env: {
             browser: true
         },
         src: testFiles
-            .filter(function(pathName) {
+            .filter(function (pathName) {
                 return pathName.indexOf('glMatrix') === -1;
             })
-            .map(function(pathname) {
+            .map(function (pathname) {
                 return path.join(TEST_PATH, pathname);
             })
     };
 
     gruntTasks.eslint.benchmarks = {
-        options: {
+        env: {
             browser: true
         },
-        src: benchmarkFiles.map(function(pathname) {
+        src: benchmarkFiles.map(function (pathname) {
             return path.join(BENCHMARK_PATH, pathname);
         })
     };
@@ -189,13 +189,13 @@ var gruntTasks = {};
 
 // ## Clean
 //
-(function() {
+(function () {
     gruntTasks.clean.staticWeb = {
         src: [path.join(BUILD_PATH, 'web')]
     };
 })();
 
-(function() {
+(function () {
     gruntTasks.execute = {
         test: {
             src: ['tests/runTests.js']
@@ -206,9 +206,9 @@ var gruntTasks = {};
     };
 })();
 
-(function() {
+(function () {
     var filesList = ['--write'];
-    ['tests', 'examples', 'sources', 'self', 'benchmarks'].forEach(function(target) {
+    ['tests', 'examples', 'sources', 'self', 'benchmarks'].forEach(function (target) {
         filesList = filesList.concat(gruntTasks.eslint[target].src);
     });
 
@@ -222,7 +222,7 @@ var gruntTasks = {};
 
 // ## Documentation
 //
-(function() {
+(function () {
     gruntTasks.documentation = {
         default: {
             files: [
@@ -240,14 +240,14 @@ var gruntTasks = {};
 })();
 
 // ## Plato
-(function() {
+(function () {
     gruntTasks.plato = {
         options: {
             // Task-specific options go here.
         },
         main: {
             files: {
-                'docs/analysis': srcFiles.map(function(pathname) {
+                'docs/analysis': srcFiles.map(function (pathname) {
                     return path.join(SOURCE_PATH, pathname);
                 })
             }
@@ -257,7 +257,7 @@ var gruntTasks = {};
 
 // ## connect
 //
-(function() {
+(function () {
     // will start a server on port 9001 with root directory at the same level of
     // the grunt file
     var currentDirectory = path.dirname(path.resolve('./Gruntfile.js', './'));
@@ -269,25 +269,27 @@ var gruntTasks = {};
                 hostname: 'localhost'
             }
         },
-        proxies: [{
-            context: '/iipsrv', // the context of the data service
-            https: true,
-            secure: false,
-            //host: 'cim.crusescanner.de',
-            host: 'samples.crusescanner.de', // wherever the data service is running
-            port: 8443 // the port that the data service is running on
-          }],
+        proxies: [
+            {
+                context: '/iipsrv', // the context of the data service
+                https: true,
+                secure: false,
+                //host: 'cim.crusescanner.de',
+                host: 'samples.crusescanner.de', // wherever the data service is running
+                port: 8443 // the port that the data service is running on
+            }
+        ],
         dist: {
             options: {
                 port: 9000,
                 directory: currentDirectory,
                 hostname: 'localhost',
                 open: true,
-                middleware: function(connect, options, middlewares) {
+                middleware: function (connect, options, middlewares) {
                     // inject a custom middleware into the array of default middlewares
                     middlewares.push(require('grunt-connect-proxy2/lib/utils').proxyRequest);
-                    
-                    middlewares.unshift(function(req, res, next) {
+
+                    middlewares.unshift(function (req, res, next) {
                         var ext = path.extname(req.url);
                         if (ext === '.gz') {
                             res.setHeader('Content-Type', 'text/plain');
@@ -304,7 +306,7 @@ var gruntTasks = {};
     };
 })();
 
-(function() {
+(function () {
     gruntTasks.release = {
         options: {
             npm: false
@@ -313,7 +315,7 @@ var gruntTasks = {};
 })();
 
 /* eslint-disable camelcase */
-(function() {
+(function () {
     gruntTasks.update_submodules = {
         default: {
             options: {
@@ -325,7 +327,7 @@ var gruntTasks = {};
 
 /* eslint-enable camelcase */
 
-(function() {
+(function () {
     gruntTasks.copy = {
         staticWeb: {
             files: [
@@ -378,48 +380,48 @@ var gruntTasks = {};
                 {
                     expand: true,
                     src: 'builds/dist/OSG.min.js',
-                    rename: function() {
+                    rename: function () {
                         return 'builds/dist/OSG.js'; // The function must return a string with the complete destination
                     }
                 },
                 {
                     expand: true,
                     src: 'builds/dist/tests.min.js',
-                    rename: function() {
+                    rename: function () {
                         return 'builds/dist/tests.js'; // The function must return a string with the complete destination
                     }
                 },
                 {
                     expand: true,
                     src: 'builds/dist/benchmarks.min.js',
-                    rename: function() {
+                    rename: function () {
                         return 'builds/dist/benchmarks.js'; // The function must return a string with the complete destination
                     }
                 }
             ]
         },
-        css: {    
+        css: {
             files: [
                 {
                     expand: true,
                     src: ['css/**'],
                     dest: DIST_PATH
                 }
-            ]            
+            ]
         },
-        images: {    
+        images: {
             files: [
                 {
                     expand: true,
                     src: ['images/**'],
                     dest: DIST_PATH
                 }
-            ]            
-        }        
+            ]
+        }
     };
 })();
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
     grunt.file.mkdir(path.normalize(DIST_PATH));
 
     grunt.initConfig(
@@ -466,9 +468,20 @@ module.exports = function(grunt) {
     grunt.registerTask('benchmarks', ['execute:bench']);
 
     grunt.registerTask('build', ['webpack:sources', 'webpack:tests', 'copy:css:images']);
-    grunt.registerTask('build-release', ['webpack:release', 'copy:bundles', 'copy:css', 'copy:images']);
+    grunt.registerTask('build-release', [
+        'webpack:release',
+        'copy:bundles',
+        'copy:css',
+        'copy:images'
+    ]);
 
     grunt.registerTask('docs', ['plato', 'documentation:default']);
     grunt.registerTask('default', ['check', 'build']);
-    grunt.registerTask('serve', ['sync', 'build', 'configureProxies:server', 'connect:dist:keepalive', 'watch']);
+    grunt.registerTask('serve', [
+        'sync',
+        'build',
+        'configureProxies:server',
+        'connect:dist:keepalive',
+        'watch'
+    ]);
 };

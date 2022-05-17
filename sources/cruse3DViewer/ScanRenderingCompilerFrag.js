@@ -25,7 +25,7 @@ var ScanRenderingCompilerFrag = {
         if (out) return out;
         out = this.createVariable('vec3', 'nFrontViewNormalFromNormalMap');
 
-        this.getNode('Normalize')
+        this.getNode('NormalizeNd')
             .inputs({ vec: this.getOrCreateFrontViewNormalFromNormalMap() })
             .outputs({ result: out });
 

@@ -90,7 +90,7 @@ var testconfig = {
     },
     resolve: {
         fallback: {
-          fs: false
+            fs: false
         }
     },
     target: 'node',
