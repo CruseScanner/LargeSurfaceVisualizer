@@ -20,6 +20,7 @@ test/lighting
 *Thumbs.db
 .hooks
 .tern-port
+.vscode
 builds
 builds/active
 builds/active/OSG.js
