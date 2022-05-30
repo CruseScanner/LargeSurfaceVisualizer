@@ -26,6 +26,7 @@ Go to the root directory of your project and install the required packages
 
 Once all dependencies are install you can use grunt to build and test the LargeSurfaceVisualizer
 > grunt build-release
+
 Builds the project to
 > ./builds/dist/cruse.js
 > ./builds/dist/cruse.min.js
@@ -34,7 +35,9 @@ Builds the project to
 In order to test the LargeSurfaceVisualizer, different examples are provided. 
 To run the examples and tests call
 > grunt serve
+
 This will open a local server on
 > http://localhost:9000/
+
 The source code of the examples can be found in the examples folder. 
 For these examples all iipserver requests are forwared to one of Cruse's iip-servers.
