@@ -1,13 +1,14 @@
+# Cruse's LargeSurfaceVisualizer
 The LargeSurfaceVisualizer is a software module to visualize arbitrary large raster or image data in 2D and 3D.
 Using an iipimage server and javascript, the LargeSurfaceVisualizer can render very high-resolution images such as scanned surfaces, Terrains/DEMs, or other 2.5D datasets in your browser.
 
 An example can be found under https://samples.crusescanner.com/3dviewer.php?3d_fineart
 
 
-# Building
+## Building
 Please check out the repository including its submodules. The project requires a custom osgjs version, that is checked out automatically. 
 
-## Building osgjs
+### Building osgjs
 Go to ./sources/external and install the required packages
 > cd ./sources/external
 > npm install
@@ -20,7 +21,7 @@ Upon succesfull build two files are create
 > ./sources/external/OSG.min.js
 
 
-## Building the LargeSurfaceVisualizer
+### Building the LargeSurfaceVisualizer
 Go to the root directory of your project and install the required packages
 > npm install
 
@@ -31,7 +32,7 @@ Builds the project to
 > ./builds/dist/cruse.js
 > ./builds/dist/cruse.min.js
 
-# Examples
+## Examples
 In order to test the LargeSurfaceVisualizer, different examples are provided. 
 To run the examples and tests call
 > grunt serve
