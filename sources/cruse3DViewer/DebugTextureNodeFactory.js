@@ -1,27 +1,18 @@
 import OSG from 'external/osg';
 
-<<<<<<< HEAD
 'use strict';
-=======
-('use strict');
->>>>>>> UpdateToNewerDependencies
 
 var osg = OSG.osg;
 
 // helps debugging textures by providing an overlay with given texture thumbs
 // extracted from osg example.js
-<<<<<<< HEAD
 var DebugTextureNodeFactory = function(canvas) {
-=======
-var DebugTextureNodeFactory = function (canvas) {
->>>>>>> UpdateToNewerDependencies
     this._debugNodeRTT = new osg.Node();
     this._debugNodeRTT.setName('debugNodeRTT');
     this._debugNodeRTT.getOrCreateStateSet().setRenderBinDetails(1000, 'RenderBin');
     this._canvas = canvas;
     this._debugProgram = undefined;
     this._debugDepthProgram = undefined;
-<<<<<<< HEAD
 
 };
 
@@ -32,16 +23,6 @@ DebugTextureNodeFactory.prototype = {
     },
 
     addTextures: function(textureList, optionalArgs) {
-=======
-};
-
-DebugTextureNodeFactory.prototype = {
-    getNode: function () {
-        return this._debugNodeRTT;
-    },
-
-    addTextures: function (textureList, optionalArgs) {
->>>>>>> UpdateToNewerDependencies
         // 20% of the resolution size
         var defaultRatio = 0.3;
         var screenRatio = this._canvas.width / this._canvas.height;
@@ -75,7 +56,6 @@ DebugTextureNodeFactory.prototype = {
 
         // create camera to setup RTT in overlay
         var cameraProjection = debugComposerCamera.getProjectionMatrix();
-<<<<<<< HEAD
         osg.mat4.ortho(
             cameraProjection,
             0,
@@ -85,9 +65,6 @@ DebugTextureNodeFactory.prototype = {
             -5,
             5
         );
-=======
-        osg.mat4.ortho(cameraProjection, 0, optionsDebug.screenW, 0, optionsDebug.screenH, -5, 5);
->>>>>>> UpdateToNewerDependencies
 
         var cameraView = debugComposerCamera.getViewMatrix();
         osg.mat4.fromTranslation(cameraView, [0, 0, 0]);
@@ -138,7 +115,6 @@ DebugTextureNodeFactory.prototype = {
         }
     },
 
-<<<<<<< HEAD
     hide: function() {
         this._debugNodeRTT.setNodeMask(0x0);
     },
@@ -148,27 +124,12 @@ DebugTextureNodeFactory.prototype = {
     },
 
     toggle: function() {
-=======
-    hide: function () {
-        this._debugNodeRTT.setNodeMask(0x0);
-    },
-
-    show: function () {
-        this._debugNodeRTT.setNodeMask(~0x0);
-    },
-
-    toggle: function () {
->>>>>>> UpdateToNewerDependencies
         if (this._debugNodeRTT.getNodeMask() === 0) {
             this.showDebugTextureList();
         } else this.hideDebugTextureList();
     },
 
-<<<<<<< HEAD
     getDebugProgram: function() {
-=======
-    getDebugProgram: function () {
->>>>>>> UpdateToNewerDependencies
         if (this._debugProgram === undefined) {
             var vertexShader = [
                 '#define SHADER_NAME DEBUG_RTT',
@@ -211,11 +172,7 @@ DebugTextureNodeFactory.prototype = {
         return this._debugProgram;
     },
 
-<<<<<<< HEAD
     getDebugDepthProgram: function() {
-=======
-    getDebugDepthProgram: function () {
->>>>>>> UpdateToNewerDependencies
         if (this._debugDepthProgram === undefined) {
             var vertexShader = [
                 '#define SHADER_NAME DEBUG_RTT',
@@ -257,14 +214,7 @@ DebugTextureNodeFactory.prototype = {
             );
         }
         return this._debugDepthProgram;
-<<<<<<< HEAD
     },
 };
 
 export default DebugTextureNodeFactory;
-=======
-    }
-};
-
-export default DebugTextureNodeFactory;
->>>>>>> UpdateToNewerDependencies

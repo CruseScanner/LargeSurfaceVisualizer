@@ -1,4 +1,4 @@
-(function () {
+(function() {
     'use strict';
 
     var P = window.P;
@@ -11,7 +11,7 @@
 
     var $ = window.$;
 
-    var Example = function () {
+    var Example = function() {
         // documented here for classes that will inherits
         // so that we have a shared common set of variables
 
@@ -47,7 +47,7 @@
     };
 
     Example.prototype = {
-        run: function (options) {
+        run: function(options) {
             // get url parameter to override default _config values
             this.setConfigFromOptionsURL();
             //
@@ -71,21 +71,21 @@
             this._viewer.run();
         },
 
-        initDatGUI: function () {
+        initDatGUI: function() {
             this._gui = new window.dat.GUI();
         },
 
-        getRootNode: function () {
+        getRootNode: function() {
             return this._root;
         },
 
-        setConfigFromOptionsURL: function () {
+        setConfigFromOptionsURL: function() {
             // default & change config with URL params
             var queryDict = {};
             window.location.search
                 .substr(1)
                 .split('&')
-                .forEach(function (item) {
+                .forEach(function(item) {
                     queryDict[item.split('=')[0]] = item.split('=')[1];
                 });
             var keys = Object.keys(queryDict);
@@ -107,17 +107,17 @@
             }
         },
 
-        readTextures: function (textures) {
+        readTextures: function(textures) {
             var textureNames = textures || this._textureNames;
             var path = this._mediaPath + 'textures/';
 
             // generate array of paths
-            var paths = textureNames.map(function (name) {
+            var paths = textureNames.map(function(name) {
                 return path + name;
             });
 
             // generate array of promise
-            var images = paths.map(function (pathname) {
+            var images = paths.map(function(pathname) {
                 return osgDB.readImageURL(pathname);
             });
 
@@ -127,31 +127,31 @@
             //P.all( images ).then( function ( args ) {}
         },
 
-        setShaderPath: function (path) {
+        setShaderPath: function(path) {
             this._shaderPath = path;
         },
 
-        readShaders: function (shadersFilenames) {
+        readShaders: function(shadersFilenames) {
             this._shaderProcessor = new osgShader.ShaderProcessor();
 
             var shaderNames = shadersFilenames || this._shaderNames;
             var shaders = shaderNames.map(
-                function (arg) {
+                function(arg) {
                     return this._shaderPath + arg;
                 }.bind(this)
             );
 
             var promises = [];
             shaders.forEach(
-                function (shader) {
+                function(shader) {
                     promises.push(P.resolve($.get(shader)));
                 }.bind(this)
             );
 
             return P.all(promises).then(
-                function (args) {
+                function(args) {
                     var shaderNameContent = {};
-                    shaderNames.forEach(function (name, idx) {
+                    shaderNames.forEach(function(name, idx) {
                         shaderNameContent[name] = args[idx];
                     });
 
@@ -164,7 +164,7 @@
         },
 
         // create a shader program from both VS and FS fetched inside shaderprocessor
-        createShader: function (vName, vDefines, fName, fDefines) {
+        createShader: function(vName, vDefines, fName, fDefines) {
             var vertexshader = this._shaderProcessor.getShader(vName, vDefines);
             var fragmentshader = this._shaderProcessor.getShader(fName, fDefines);
 
@@ -175,15 +175,15 @@
             return program;
         },
 
-        hideDebugTextureList: function () {
+        hideDebugTextureList: function() {
             this._debugNodeRTT.setNodeMask(0x0);
         },
 
-        showDebugTextureList: function () {
+        showDebugTextureList: function() {
             this._debugNodeRTT.setNodeMask(~0x0);
         },
 
-        toggleShowHideDebugTextureList: function () {
+        toggleShowHideDebugTextureList: function() {
             if (this._debugNodeRTT.getNodeMask() === 0) {
                 this.showDebugTextureList();
             } else this.hideDebugTextureList();
@@ -191,7 +191,7 @@
 
         // show the renderTexture as ui quad on left bottom screen
         // in fact show all texture inside this._rtt
-        createDebugTextureList: function (textureList, optionalArgs) {
+        createDebugTextureList: function(textureList, optionalArgs) {
             // 20% of the resolution size
             var defaultRatio = 0.3;
             var screenRatio = this._canvas.width / this._canvas.height;
@@ -284,7 +284,7 @@
             }
         },
 
-        getDebugProgram: function () {
+        getDebugProgram: function() {
             if (this._debugProgram === undefined) {
                 var vertexShader = [
                     '#define SHADER_NAME DEBUG_RTT',
@@ -327,7 +327,7 @@
             return this._debugProgram;
         },
 
-        getDebugDepthProgram: function () {
+        getDebugDepthProgram: function() {
             if (this._debugDepthProgram === undefined) {
                 var vertexShader = [
                     '#define SHADER_NAME DEBUG_RTT',
@@ -372,7 +372,7 @@
         },
 
         // get the model
-        createModel: function (modelName) {
+        createModel: function(modelName) {
             var model = new osg.MatrixTransform();
 
             if (modelName) {
@@ -380,7 +380,7 @@
 
                 // ../media/models/animation/' + modelName ?
                 var request = osgDB.readNodeURL(modelName);
-                request.then(function (node) {
+                request.then(function(node) {
                     model.addChild(node);
                 });
             } else {
@@ -393,7 +393,7 @@
         },
 
         // get the model
-        getOrCreateModel: function (modelName) {
+        getOrCreateModel: function(modelName) {
             if (!this._model) {
                 this._model = new osg.MatrixTransform();
             } else {
@@ -404,7 +404,7 @@
             return this._model;
         },
 
-        createScene: function () {
+        createScene: function() {
             // create the model
             this._root.addChild(this.getOrCreateModel());
         }

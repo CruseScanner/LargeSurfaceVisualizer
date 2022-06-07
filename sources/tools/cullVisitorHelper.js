@@ -1,10 +1,10 @@
 var applyFunctionArray = [];
 
-var registerApplyFunction = function (type, apply) {
+var registerApplyFunction = function(type, apply) {
     applyFunctionArray[type] = apply;
 };
 
-var getApplyFunction = function (type) {
+var getApplyFunction = function(type) {
     return applyFunctionArray[type];
 };
 

@@ -5,19 +5,10 @@ var vec3 = OSG.osg.vec3;
 var mat4 = OSG.osg.mat4;
 
 var OrbitManipulator = OSG.osgGA.OrbitManipulator;
-<<<<<<< HEAD
 var OrbitManipulatorDeviceOrientationController = OSG.osgGA.OrbitManipulatorDeviceOrientationController;
 var OrbitManipulatorGamePadController = OSG.osgGA.OrbitManipulatorGamePadController;
 var OrbitManipulatorHammerController = OSG.osgGA.OrbitManipulatorHammerController;
 var OrbitManipulatorStandardMouseKeyboardController = OSG.osgGA.OrbitManipulatorStandardMouseKeyboardController;
-=======
-var OrbitManipulatorDeviceOrientationController =
-    OSG.osgGA.OrbitManipulatorDeviceOrientationController;
-var OrbitManipulatorGamePadController = OSG.osgGA.OrbitManipulatorGamePadController;
-var OrbitManipulatorHammerController = OSG.osgGA.OrbitManipulatorHammerController;
-var OrbitManipulatorStandardMouseKeyboardController =
-    OSG.osgGA.OrbitManipulatorStandardMouseKeyboardController;
->>>>>>> UpdateToNewerDependencies
 var OrbitManipulatorWebVRController = OSG.osgGA.OrbitManipulatorWebVRController;
 var BoundingBox = OSG.osg.BoundingBox;
 
@@ -25,11 +16,7 @@ var BoundingBox = OSG.osg.BoundingBox;
  *  PlanarOrbitManipulator
  *  @class
  */
-<<<<<<< HEAD
 var PlanarOrbitManipulator = function(options) {
-=======
-var PlanarOrbitManipulator = function (options) {
->>>>>>> UpdateToNewerDependencies
     OrbitManipulator.call(this, options);
     this._cage = new BoundingBox();
 };
@@ -54,7 +41,6 @@ PlanarOrbitManipulator.ControllerList = [
 utils.createPrototypeObject(
     PlanarOrbitManipulator,
     utils.objectInherit(OrbitManipulator.prototype, {
-<<<<<<< HEAD
         setCage: function(cage) {
             this._cage = cage;
         },
@@ -63,16 +49,6 @@ utils.createPrototypeObject(
             var x = vec3.create();
             var y = vec3.create();
             return function(dx, dy) {
-=======
-        setCage: function (cage) {
-            this._cage = cage;
-        },
-        computePan: (function () {
-            var inv = mat4.create();
-            var x = vec3.create();
-            var y = vec3.create();
-            return function (dx, dy) {
->>>>>>> UpdateToNewerDependencies
                 var proj = this._camera.getProjectionMatrix();
                 // modulate panning speed with verticalFov value
                 // if it's an orthographic we don't change the panning speed
@@ -98,7 +74,6 @@ utils.createPrototypeObject(
                 vec3.scale(y, y, dy);
                 vec3.add(this._target, this._target, x);
                 vec3.add(this._target, this._target, y);
-<<<<<<< HEAD
                 
                 if (this._cage.valid()) {
                     vec3.min(this._target, this._target, this._cage.getMax()); 
@@ -116,43 +91,17 @@ utils.createPrototypeObject(
                 'zoom' : Float64Array.from(this._zoom._current),
                 'target' :  Float64Array.from(this._target),
                 'distance' : this._distance
-=======
-
-                if (this._cage.valid()) {
-                    vec3.min(this._target, this._target, this._cage.getMax());
-                    vec3.max(this._target, this._target, this._cage.getMin());
-                }
-            };
-        })(),
-
-        getCurrentPose: function () {
-            var pose = {
-                rotation: Float64Array.from(this._rotation),
-                rotate: Float64Array.from(this._rotate._current),
-                pan: Float64Array.from(this._pan._current),
-                zoom: Float64Array.from(this._zoom._current),
-                target: Float64Array.from(this._target),
-                distance: this._distance
->>>>>>> UpdateToNewerDependencies
             };
             return pose;
         },
 
-<<<<<<< HEAD
         setPose : function(pose){
-=======
-        setPose: function (pose) {
->>>>>>> UpdateToNewerDependencies
             this._rotation = Float64Array.from(pose.rotation);
             this._rotate.set(pose.rotate[0], pose.rotate[1]);
             this._pan.set(pose.pan[0], pose.pan[1]);
             this._zoom.set(pose.zoom[0]);
             this._target = Float64Array.from(pose.target);
-<<<<<<< HEAD
             this._distance = pose.distance;                        
-=======
-            this._distance = pose.distance;
->>>>>>> UpdateToNewerDependencies
         }
     }),
     'cruse',

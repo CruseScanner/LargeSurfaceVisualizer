@@ -2,27 +2,17 @@ import OSG from 'external/osg';
 import ScanRenderingCompilerVertex from 'cruse3DViewer/ScanRenderingCompilerVertex';
 import utils from 'tools/utils';
 
-<<<<<<< HEAD
 'use strict';
-=======
-('use strict');
->>>>>>> UpdateToNewerDependencies
 
 var osgShader = OSG.osgShader;
 var osgShadow = OSG.osgShadow;
 var osg = OSG.osg;
 
-<<<<<<< HEAD
 
 // this compiler use basic lighting and add a node to demonstrate how to
 // customize the shader compiler
 var ShadowCastScanRenderingCompiler = function() {
 
-=======
-// this compiler use basic lighting and add a node to demonstrate how to
-// customize the shader compiler
-var ShadowCastScanRenderingCompiler = function () {
->>>>>>> UpdateToNewerDependencies
     this._displacementTextureName = undefined;
     this._normalTextureName = undefined;
     this._glossTextureName = undefined;
@@ -37,7 +27,6 @@ config.textureAttribute.push('DisplacementTexture');
 
 osgShader.Compiler.setStateAttributeConfig(ShadowCastScanRenderingCompiler, config);
 
-<<<<<<< HEAD
 ShadowCastScanRenderingCompiler.prototype = osg.objectInherit(osgShadow.ShadowCastCompiler.prototype, 
                                      utils.extend({}, ScanRenderingCompilerVertex, {
   
@@ -73,39 +62,3 @@ ShadowCastScanRenderingCompiler.prototype = osg.objectInherit(osgShadow.ShadowCa
 
 export default ShadowCastScanRenderingCompiler;
 
-=======
-ShadowCastScanRenderingCompiler.prototype = osg.objectInherit(
-    osgShadow.ShadowCastCompiler.prototype,
-    utils.extend({}, ScanRenderingCompilerVertex, {
-        getCompilerName: function () {
-            return 'ShadowCastScanRenderingCompiler';
-        },
-
-        registerTextureAttributes: function (tuTarget, tunit) {
-            osgShader.Compiler.prototype.registerTextureAttributes.call(this, tuTarget, tunit);
-
-            var tType = tuTarget.className();
-            if (tType.indexOf('DisplacementTexture') !== -1)
-                return this.registerDisplacementTexture(tuTarget, tunit);
-        },
-
-        registerDisplacementTexture: function (tuTarget, texUnit) {
-            var tName = tuTarget.getName();
-            if (!tName) {
-                tName = 'Texture' + texUnit;
-                tuTarget.setName(tName);
-            }
-            this._displacementTextureName = tName;
-
-            this._texturesByName[tName] = {
-                texture: tuTarget,
-                variable: undefined,
-                textureUnit: texUnit,
-                shadow: true // setting shadow to true to avoid using it in diffuse color
-            };
-        }
-    })
-);
-
-export default ShadowCastScanRenderingCompiler;
->>>>>>> UpdateToNewerDependencies

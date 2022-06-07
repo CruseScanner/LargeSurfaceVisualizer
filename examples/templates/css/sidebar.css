@@ -6,19 +6,19 @@
 
 html {
     font-size: 10px;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
     height: 100%;
 }
 
 body {
     overflow: hidden;
 
-    font-family: 'Roboto', sans-serif;
+    font-family: "Roboto", sans-serif;
     font-weight: 300;
     line-height: 1.5;
 
     background: #444;
-    color: #fff;
+    color: #FFF;
     height: inherit;
 }
 
@@ -60,6 +60,7 @@ body {
     position: absolute;
 }
 
+
 #viewer {
     width: 100%;
     height: 100%;
@@ -98,7 +99,7 @@ body {
 .sidebar-nav li a:hover {
     text-decoration: none;
     color: #fff;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255,255,255,0.2);
 }
 
 .sidebar-nav li a:active,
@@ -141,7 +142,7 @@ body {
     z-index: 10000;
 }
 
-@media (min-width: 768px) {
+@media(min-width:768px) {
     #wrapper {
         padding-left: 250px;
         height: inherit;

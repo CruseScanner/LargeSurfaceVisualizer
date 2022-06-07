@@ -1,5 +1,4 @@
 'use strict';
-
 /*eslint-env node*/
 
 var webpack = require('webpack');
@@ -24,11 +23,7 @@ var externals = [
             commonjs: 'zlib',
             amd: 'zlib'
         }
-<<<<<<< HEAD
     },    
-=======
-    },
->>>>>>> UpdateToNewerDependencies
     {
         hammer: {
             root: 'Hammer',
@@ -66,58 +61,41 @@ var mainlibConfig = {
     externals: externals,
     resolve: resolve,
     module: {
-        rules: [
+        loaders: [
             {
                 test: /\.(frag|vert|glsl)$/,
-                use: 'raw-loader'
+                loader: 'raw-loader'
             }
         ]
     },
     devtool: 'eval',
     plugins: [
         new webpack.BannerPlugin(
-<<<<<<< HEAD
             ['Cruse Webscanviewer', 'Cruse Spezialmaschienen Gmbh (www.crusescanner.com)'].join('\n')
-=======
-            [
-                'Cruse LargeSurfaceVisualizer',
-                'Cruse Spezialmaschienen Gmbh (www.crusescanner.com)'
-            ].join('\n')
->>>>>>> UpdateToNewerDependencies
         )
     ],
 };
 
 var testconfig = {
     entry: {
-<<<<<<< HEAD
         tests: ['./tests/tests.js'],        
     },
     output: {
         path: BUILD_TESTS_PATH,
         filename: '[name].js',       
-=======
-        tests: ['./tests/tests.js']
     },
-    output: {
-        path: BUILD_TESTS_PATH,
-        filename: '[name].js'
->>>>>>> UpdateToNewerDependencies
-    },
-    resolve: {
-        fallback: {
-            fs: false
-        }
+    node: {
+        fs: 'empty'
     },
     target: 'node',
     externals: externals,
     resolve: resolve,
     module: {
-        rules: [
+        loaders: [
             {
                 // shaders
                 test: /\.(frag|vert|glsl)$/,
-                use: 'raw-loader'
+                loader: 'raw-loader'
             }
         ]
     },

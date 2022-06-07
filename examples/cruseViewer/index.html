@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-<<<<<<< HEAD
   <head>
     <meta charset="utf-8">
     <title>Cruse WebViewer</title>
@@ -66,77 +65,4 @@
 
   </body>
 
-=======
-    <head>
-        <meta charset="utf-8" />
-        <title>Cruse WebViewer</title>
-        <link rel="stylesheet" type="text/css" href="../templates/css/base.css" />
-        <link rel="stylesheet" type="text/css" href="../../builds/dist/css/cruse-viewer.css" />
-
-        <!-- Javascript -->
-        <script type="text/javascript" src="../../node_modules/jquery/dist/jquery.min.js"></script>
-        <script
-            type="text/javascript"
-            src="../../node_modules/dat.gui/build/dat.gui.min.js"
-        ></script>
-        <script
-            type="text/javascript"
-            src="../../node_modules/bluebird/js/browser/bluebird.min.js"
-        ></script>
-        <script type="text/javascript" src="../../node_modules/hammerjs/hammer.min.js"></script>
-        <script type="text/javascript" src="../../builds/dist/cruse.js"></script>
-    </head>
-
-    <body class="osgjs-theme-dark">
-        <div id="ViewContainer" class="osgjs-fullpage"></div>
-        <script type="text/javascript">
-            var sampleData2D = {
-                image: '/var/www/3dviewer_dev_sample/data_new/jpx/Coffee_Factory_diffuse_color_flatness4.jpx',
-                caption:
-                    'Scanmode: Left + Right + Front + Back<br>Resolution 300ppi <br> 8bit/Channel RGB<br>8544 x 6192 Pixel <br> 72.34cm x 52.43cm<br>152M BEACH_LRVH_20deg.tif<br><br>',
-                title: 'Coffee_Factory_diffuse_color_flatness4',
-                server: '/iipsrv/iipsrv.fcgi',
-                scale: '39.37007874015748031496'
-            };
-
-            var sampleData3D = {
-                Title: 'Tiles_Mosaic 3D',
-                NormalMap:
-                    '/opt/data/samples_jpx/TilesandStones/Tiles_Mosaic/Tiles_Mosaic_depth_imported_normalmap.jpx',
-                ElevationMap:
-                    '/opt/data/samples_jpx/TilesandStones/Tiles_Mosaic/Tiles_Mosaic_depth_imported.jpx',
-                DiffuseColor:
-                    '/opt/data/samples_jpx/TilesandStones/Tiles_Mosaic/Tiles_Mosaic_diffuse_color.jpx',
-                GlossMap:
-                    '/opt/data/samples_jpx/TilesandStones/Tiles_Mosaic/Tiles_Mosaic_gloss_imported.jpx',
-                Shading: {
-                    Ambient: 0.3,
-                    PhongExponent: 256,
-                    LightSources: [
-                        {
-                            Diffuse: 0.7,
-                            Specular: 0.4,
-                            LightPosition: {
-                                Elevation: 1.26188881310352,
-                                Azimuth: 3.47483695648291
-                            }
-                        }
-                    ]
-                },
-                pixelSize: 0.0423,
-                elevationMin: -4.13,
-                elevationMax: 4.39,
-                server: '/iipsrv/iipsrv.fcgi',
-                caption:
-                    'Scanmode: Factory Project<br>Resolution 600ppi <br> 16bit/Channel RGB<br>8895 x 6253 Pixel <br> 37.66cm x 26.47cm',
-                enableShadows: true
-            };
-
-            var containerElement = document.getElementById('ViewContainer');
-            var viewer = new cruse.CruseViewer(containerElement);
-            viewer.open(sampleData3D);
-            // or alternatively for a 2d scan: viewer.open(sampleData2D);
-        </script>
-    </body>
->>>>>>> UpdateToNewerDependencies
 </html>

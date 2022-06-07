@@ -5,12 +5,12 @@
  */
 var Object = window.Object;
 
-(function () {
+(function() {
     'use strict';
 
     var isCommonjs = typeof module !== 'undefined' && module.exports;
 
-    var fn = (function () {
+    var fn = (function() {
         var val;
         var valLength;
 
@@ -77,15 +77,15 @@ var Object = window.Object;
     })();
 
     var screenfull = {
-        request: function (elem, options) {
+        request: function(elem, options) {
             var request = fn.requestFullscreen;
             var element = elem || document.documentElement;
             element[request](options);
         },
-        exit: function () {
+        exit: function() {
             document[fn.exitFullscreen]();
         },
-        toggle: function (elem, options) {
+        toggle: function(elem, options) {
             if (this.isFullscreen) {
                 this.exit();
             } else {
@@ -107,19 +107,19 @@ var Object = window.Object;
 
     Object.defineProperties(screenfull, {
         isFullscreen: {
-            get: function () {
+            get: function() {
                 return !!document[fn.fullscreenElement];
             }
         },
         element: {
             enumerable: true,
-            get: function () {
+            get: function() {
                 return document[fn.fullscreenElement];
             }
         },
         enabled: {
             enumerable: true,
-            get: function () {
+            get: function() {
                 // Coerce to boolean in case of old WebKit
                 return !!document[fn.fullscreenEnabled];
             }
