@@ -1,7 +1,7 @@
 {
     "devDependencies": {
         "chai": "^4.3.6",
-        "eslint": "8.14.0",
+        "eslint": "8.16.0",
         "eslint-config-google": "^0.14.0",
         "eslint-config-standard": "^17.0.0",
         "eslint-plugin-import": "^2.26.0",
@@ -18,11 +18,11 @@
         "grunt-connect-proxy2": "^2.0.0",
         "jsdom": "19.0.0",
         "jsdom-global": "3.0.2",
-        "mocha": "^9.2.2",
+        "mocha": "^10.0.0",
         "prettier": "2.6.2"
     },
     "peerDependencies": {
-        "grunt": ">=0.4.0"
+        "grunt": ">=1.5.3"
     },
     "dependencies": {
         "@trigrou/zip-js": "1.0.0",
@@ -33,7 +33,7 @@
         "extend": "*",
         "gl-matrix": "2.3.2",
         "glob": "*",
-        "grunt": ">=0.4.0",
+        "grunt": ">=1.5.3",
         "grunt-cli": "^1.4.3",
         "grunt-contrib-clean": "*",
         "grunt-contrib-copy": "*",
@@ -44,12 +44,12 @@
         "grunt-webpack": "^5.0.0",
         "hammerjs": "^2.0.8",
         "jquery": "3.6.0",
-        "json-loader": "^0.5.4",
+        "json-loader": "^0.5.7",
         "openseadragon": "^3.0.0",
         "path": "^0.12.7",
         "raw-loader": "^4.0.2",
-        "webpack": "^5.72.0",
-        "webpack-dev-server": "^4.8.1",
+        "webpack": "^5.72.1",
+        "webpack-dev-server": "^4.9.0",
         "webpack-strip-block": "^0.3.0",
         "zlibjs": "^0.3.1"
     },
