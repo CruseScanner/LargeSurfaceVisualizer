@@ -1,21 +1,18 @@
 import OSG from 'external/osg';
 
-'use strict';
+('use strict');
 
 var osgShader = OSG.osgShader;
 var osg = OSG.osg;
 
-
 // this compiler use basic lighting and add a node to demonstrate how to
 // customize the shader compiler
 var ScanRenderingCompilerFrag = {
-    
     //
     // Overides to Handle NormalTexture
     //
 
-    getOrCreateMaterialNormal: function() 
-    {
+    getOrCreateMaterialNormal: function () {
         if (this._normalTextureName && this._fragmentShaderMode) {
             return this.getOrCreateNormalizedFrontViewNormalFromNormalMap();
         }
@@ -23,19 +20,19 @@ var ScanRenderingCompilerFrag = {
         return osgShader.Compiler.prototype.getOrCreateMaterialNormal.call(this);
     },
 
-    getOrCreateNormalizedFrontViewNormalFromNormalMap: function() {
+    getOrCreateNormalizedFrontViewNormalFromNormalMap: function () {
         var out = this._variables.nFrontViewNormalFromNormalMap;
         if (out) return out;
         out = this.createVariable('vec3', 'nFrontViewNormalFromNormalMap');
 
-        this.getNode('Normalize')
+        this.getNode('NormalizeNd')
             .inputs({ vec: this.getOrCreateFrontViewNormalFromNormalMap() })
             .outputs({ result: out });
 
         return out;
     },
 
-    getOrCreateFrontViewNormalFromNormalMap: function() {
+    getOrCreateFrontViewNormalFromNormalMap: function () {
         var out = this._variables.frontViewNormalFromNormalMap;
         if (out) return out;
         out = this.createVariable('vec3', 'frontViewNormalFromNormalMap');
@@ -47,8 +44,7 @@ var ScanRenderingCompilerFrag = {
         return out;
     },
 
-    getOrCreateViewNormalFromNormalMap: function() {
-       
+    getOrCreateViewNormalFromNormalMap: function () {
         var out = this._variables.viewNormalFromNormalMap;
         if (out) return out;
         out = this.createVariable('vec3', 'viewNormalFromNormalMap');
@@ -63,59 +59,55 @@ var ScanRenderingCompilerFrag = {
         return out;
     },
 
-    getOrCreateLocalNormalFromNormalMap: function() {
+    getOrCreateLocalNormalFromNormalMap: function () {
+        var normalTextureObj = this._texturesByName[this._normalTextureName];
+        var texUnit = normalTextureObj.textureUnit;
+        var texCoordUnit = 0; // reuse texcoords for diffuse texture (HACK)
+        var normalMapResult = this.createVariable('vec3');
 
-            var normalTextureObj = this._texturesByName[this._normalTextureName];
-            var texUnit = normalTextureObj.textureUnit;
-            var texCoordUnit = 0; // reuse texcoords for diffuse texture (HACK)
-            var normalMapResult = this.createVariable('vec3');     
+        var texCoord = this.getOrCreateVarying('vec2', 'vTexCoord' + texCoordUnit);
 
-            var texCoord = this.getOrCreateVarying('vec2', 'vTexCoord' + texCoordUnit);
-            
-            this.getNode('NormalFromTexture')
+        this.getNode('NormalFromTexture')
             .inputs({
                 normalTexture: this.getOrCreateSampler('sampler2D', 'NormalTexture' + texUnit),
                 texcoord: texCoord
             })
             .outputs({
-                normalOutput: normalMapResult,
+                normalOutput: normalMapResult
             });
 
-            return normalMapResult;
+        return normalMapResult;
     },
 
     //
     // Overides to provide correct model normal with displacement mapping to fragment shader
     //
-    getOrCreateModelNormal: function() {
+    getOrCreateModelNormal: function () {
         if (this._fragmentShaderMode && this._displacementTextureName) {
-
-            var result = this.createVariable('vec3', 'perFaceModelNormal');     
+            var result = this.createVariable('vec3', 'perFaceModelNormal');
             var position = this.getOrCreateModelVertex();
-            
+
             this.getNode('NormalFromPosition')
-            .inputs({
-                pos: position,
-            })
-            .outputs({
-                normalOutput: result,
-            });
+                .inputs({
+                    pos: position
+                })
+                .outputs({
+                    normalOutput: result
+                });
 
             return result;
         }
 
-        return osgShader.Compiler.prototype.getOrCreateModelNormal.call(this);;
+        return osgShader.Compiler.prototype.getOrCreateModelNormal.call(this);
     },
-
 
     //
     // Overides to Handle GlossTexture
     //
-    
-    getLighting: function() {
 
+    getLighting: function () {
         if (!this._glossTextureName || !this._fragmentShaderMode) {
-            return osgShader.Compiler.prototype.getLighting.call(this);            
+            return osgShader.Compiler.prototype.getLighting.call(this);
         }
 
         if (this._lights.length === 0) return undefined;
@@ -126,39 +118,34 @@ var ScanRenderingCompilerFrag = {
         var texUnit = glossTextureObj.textureUnit;
         var texCoordUnit = 0; // reuse texcoords for diffuse texture (HACK)
         var samplerName = 'GlossTexture' + texUnit;
-        
+
         var glossOutput = this.createVariable('float');
 
         this.getNode('GlossFromTexture')
-        .inputs({
-            glossTexture: this.getOrCreateSampler('sampler2D', samplerName),
-            texcoord: this.getOrCreateVarying('vec2', 'vTexCoord' + texCoordUnit),
-        })
-        .outputs({
-            glossOutput: glossOutput,
-        });
+            .inputs({
+                glossTexture: this.getOrCreateSampler('sampler2D', samplerName),
+                texcoord: this.getOrCreateVarying('vec2', 'vTexCoord' + texCoordUnit)
+            })
+            .outputs({
+                glossOutput: glossOutput
+            });
 
         var specular = this.createVariable('vec3');
-        this.getNode('Mult')
-            .inputs(res.specular, glossOutput)
-            .outputs(specular);
+        this.getNode('Mult').inputs(res.specular, glossOutput).outputs(specular);
 
         var output = this.createVariable('vec3');
-        this.getNode('Add')
-            .inputs(res.diffuse, specular)
-            .outputs(output);
+        this.getNode('Add').inputs(res.diffuse, specular).outputs(output);
 
         return output;
     },
 
-
     //
-    // overrides shadow casting to avoid shadow akne and undersampling artifacts 
-    // that appear with light directions close to the z axis: since we dont expect 
+    // overrides shadow casting to avoid shadow akne and undersampling artifacts
+    // that appear with light directions close to the z axis: since we dont expect
     // a lot of shadows in this situations anyway, we blend out shadows for light directions
     // close to the z axis: clamp(shadow + shadowViewLook.z,0.0, 1.0);
     //
-    createShadowingLight: function(light, lighted) {
+    createShadowingLight: function (light, lighted) {
         var lightNum = light.getLightNumber();
         var shadowTexture = this._getShadowTextureFromLightNum(this._shadowsTextures, lightNum);
         var shadowReceive = this._getShadowReceiveAttributeFromLightNum(this._shadows, lightNum);
@@ -166,7 +153,11 @@ var ScanRenderingCompilerFrag = {
 
         var inputs = this.getInputsFromShadow(shadowReceive, shadowTexture, lighted, lightNum);
 
-        var shadowedOutput = osgShader.Compiler.prototype.createShadowingLight.call(this, light, lighted);
+        var shadowedOutput = osgShader.Compiler.prototype.createShadowingLight.call(
+            this,
+            light,
+            lighted
+        );
 
         var shadowViewLook = inputs.shadowViewLook;
 
@@ -176,7 +167,7 @@ var ScanRenderingCompilerFrag = {
             .code('%blendedShadow = clamp(%shadow + %lightdir.z,0.0, 1.0);')
             .inputs({
                 shadow: shadowedOutput,
-                lightdir: shadowViewLook,
+                lightdir: shadowViewLook
             })
             .outputs({
                 blendedShadow: blendedShadow
@@ -189,12 +180,15 @@ var ScanRenderingCompilerFrag = {
     // Overides to Handle FactoryShadingAttribute
     //
 
-    getLightWithPrecompute: function(light, precompute) {
-
+    getLightWithPrecompute: function (light, precompute) {
         var factoryShadingAttribute = this.getAttributeType('FactoryShading');
 
         if (!factoryShadingAttribute || !this._fragmentShaderMode) {
-            return osgShader.Compiler.prototype.getLightWithPrecompute.call(this, light, precompute);            
+            return osgShader.Compiler.prototype.getLightWithPrecompute.call(
+                this,
+                light,
+                precompute
+            );
         }
 
         var lightUniforms = light.getOrCreateUniforms();
@@ -215,43 +209,39 @@ var ScanRenderingCompilerFrag = {
         };
 
         var outputs = this.getOutputsFromLight();
-        this.getNode('FactoryShading')
-            .inputs(inputs)
-            .outputs(outputs);
+        this.getNode('FactoryShading').inputs(inputs).outputs(outputs);
 
         return outputs;
     },
 
-    getPremultAlpha: function(finalColor, alpha) {
-
+    getPremultAlpha: function (finalColor, alpha) {
         var outColor = finalColor;
 
         var factoryShadingAttribute = this.getAttributeType('FactoryShading');
         var tileDomainTransformAttribute = this.getAttributeType('TileDomainTransform');
 
-        if (this._fragmentShaderMode &&
+        if (
+            this._fragmentShaderMode &&
             tileDomainTransformAttribute &&
-            factoryShadingAttribute && 
+            factoryShadingAttribute &&
             factoryShadingAttribute.isLODColoringEnabled()
-            ) 
-        {
+        ) {
             var outputLODColored = this.createVariable('vec4');
             var uLodLevel = tileDomainTransformAttribute.getOrCreateUniforms().lodLevel;
-           
+
             this.getNode('ColorByLODLevel')
                 .inputs({
                     inputColor: finalColor,
-                    lodLevel: this.getOrCreateUniform(uLodLevel),                           
+                    lodLevel: this.getOrCreateUniform(uLodLevel)
                 })
                 .outputs({
-                    colorOutput: outputLODColored,
+                    colorOutput: outputLODColored
                 });
             outColor = outputLODColored;
         }
-       
-        return osgShader.Compiler.prototype.getPremultAlpha.call(this, outColor, alpha);  
-    },
+
+        return osgShader.Compiler.prototype.getPremultAlpha.call(this, outColor, alpha);
+    }
 };
 
 export default ScanRenderingCompilerFrag;
-
