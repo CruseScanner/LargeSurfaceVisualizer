@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "Title" : "Tiles_Mosaic 3D",
     "NormalMap" : "/opt/data/samples_jpx/TilesandStones/Tiles_Mosaic/Tiles_Mosaic_depth_imported_normalmap.jpx",
     "ElevationMap" : "/opt/data/samples_jpx/TilesandStones/Tiles_Mosaic/Tiles_Mosaic_depth_imported.jpx",
@@ -26,3 +27,32 @@
     "server": "/iipsrv/iipsrv.fcgi",
     "caption": "Scanmode: Factory Project<br>Resolution 600ppi <br> 16bit/Channel RGB<br>8895 x 6253 Pixel <br> 37.66cm x 26.47cm"
 }
+=======
+    "Title": "Tiles_Mosaic 3D",
+    "NormalMap": "/opt/data/samples_jpx/TilesandStones/Tiles_Mosaic/Tiles_Mosaic_depth_imported_normalmap.jpx",
+    "ElevationMap": "/opt/data/samples_jpx/TilesandStones/Tiles_Mosaic/Tiles_Mosaic_depth_imported.jpx",
+    "DiffuseColor": "/opt/data/samples_jpx/TilesandStones/Tiles_Mosaic/Tiles_Mosaic_diffuse_color.jpx",
+    "GlossMap": "/opt/data/samples_jpx/TilesandStones/Tiles_Mosaic/Tiles_Mosaic_gloss_imported.jpx",
+    "Shading": {
+        "Ambient": 0.3,
+        "PhongExponent": 256,
+        "LightSources": [
+            {
+                "Diffuse": 0.7,
+                "Specular": 0.4,
+                "LightPosition": {
+                    "Elevation": 1.26188881310352,
+                    "Azimuth": 3.47483695648291
+                }
+            }
+        ]
+    },
+    "pixelSize": 0.0423,
+    "elevationMin": -2.13,
+    "elevationMax": 1.39,
+    "yawLimitLeft": "180",
+    "yawLimitRight": "-90",
+    "server": "/iipsrv/iipsrv.fcgi",
+    "caption": "Scanmode: Factory Project<br>Resolution 600ppi <br> 16bit/Channel RGB<br>8895 x 6253 Pixel <br> 37.66cm x 26.47cm"
+}
+>>>>>>> UpdateToNewerDependencies

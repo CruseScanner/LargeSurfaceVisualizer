@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<<<<<<< HEAD
 
  <head>
   <meta charset="utf-8" />
@@ -72,3 +73,90 @@
 
  </body>
  </html>
+=======
+    <head>
+        <meta charset="utf-8" />
+        <meta name="DC.creator" content="Cruse Spezialmaschinen GmbH" />
+        <meta name="DC.title" content="CRUSE High Resolution Image Web Viewer" />
+        <meta
+            name="DC.subject"
+            content="Cruse ImageViewer; CRUSE IMAGE MANAGER; CIM; Visualization; High Resolution"
+        />
+        <meta
+            name="DC.description"
+            content="CRUSE High Resolution Image Web Viewer is an advanced javascript HTML5 image viewer for streaming high resolution images"
+        />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+        />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+
+        <link
+            rel="stylesheet"
+            type="text/css"
+            media="all"
+            href="../../builds/dist/css/cruse-viewer.css"
+        />
+        <link
+            rel="stylesheet"
+            type="text/css"
+            media="all"
+            href="../../builds/dist/css/cruse-gallery.css"
+        />
+
+        <!--[if lt IE 10]>
+            <meta http-equiv="X-UA-Compatible" content="IE=9" />
+            <link rel="stylesheet" type="text/css" media="all" href="css/ie_cruse-gallery.css" />
+        <![endif]-->
+
+        <link rel="shortcut icon" href="img/favicon.png" />
+        <link rel="apple-touch-icon" href="img/logo.png" />
+
+        <title>Cruse Image Manage Viewer Gallery</title>
+
+        <script type="text/javascript" src="../../node_modules/jquery/dist/jquery.min.js"></script>
+        <script
+            type="text/javascript"
+            src="../../node_modules/dat.gui/build/dat.gui.min.js"
+        ></script>
+        <script
+            type="text/javascript"
+            src="../../node_modules/bluebird/js/browser/bluebird.min.js"
+        ></script>
+        <script type="text/javascript" src="../../node_modules/hammerjs/hammer.min.js"></script>
+        <script type="text/javascript" src="../../builds/dist/cruse.js"></script>
+
+        <!--[if lt IE 7]>
+            <script src="http://ie7-js.googlecode.com/svn/version/2.1(beta4)/IE7.js">
+                IE7_PNG_SUFFIX = ".png";
+            </script>
+        <![endif]-->
+
+        <script type="text/javascript">
+            var gallery = new cruse.Gallery('gallery', {
+                images: './files.json',
+                showAdvancedControls: true
+            });
+        </script>
+
+        <style type="text/css">
+            body {
+                height: 100%;
+                padding: 0;
+                margin: 0;
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- Site Overlay -->
+        <div class="site-overlay"></div>
+
+        <!-- Your Content -->
+        <div style="width: 100%; height: 100%; position: absolute" id="gallery"></div>
+    </body>
+</html>
+>>>>>>> UpdateToNewerDependencies

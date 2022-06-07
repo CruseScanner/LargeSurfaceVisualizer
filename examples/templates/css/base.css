@@ -1,4 +1,4 @@
-@import "https://fonts.googleapis.com/css?family=Exo+2:700|Roboto:100,300,400,500,700,900";
+@import 'https://fonts.googleapis.com/css?family=Exo+2:700|Roboto:100,300,400,500,700,900';
 
 html,
 body {
@@ -11,12 +11,12 @@ body {
 body {
     overflow: hidden;
 
-    font-family: "Roboto", sans-serif;
+    font-family: 'Roboto', sans-serif;
     font-weight: 300;
     line-height: 1.5;
 
     background: #444;
-    color: #FFF;
+    color: #fff;
 }
 
 a {
@@ -24,7 +24,7 @@ a {
     text-decoration: none;
 }
 a:hover {
-    color: #FFF;
+    color: #fff;
     text-decoration: underline;
 }
 
@@ -62,8 +62,8 @@ canvas {
 
     line-height: 32px;
 
-    background: rgba(0,0,0,.3);
-    color: #FFF !important;
+    background: rgba(0, 0, 0, 0.3);
+    color: #fff !important;
 
     opacity: 0.5;
 }
@@ -71,59 +71,121 @@ canvas {
     text-decoration: none;
     opacity: 1;
 }
-    .osgjs-powered img {
-        vertical-align: bottom;
-    }
-    .osgjs-powered strong {
-        font-size: 18px;
-        font-family: 'Exo 2', sans-serif;
-        font-weight: 700;
-    }
+.osgjs-powered img {
+    vertical-align: bottom;
+}
+.osgjs-powered strong {
+    font-size: 18px;
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 700;
+}
 
 /**
  * Light theme
  ******************************************************************************/
 
 .osgjs-theme-light {
-
     color: #111;
 
-    background: rgb(238,238,238);
-    background: -moz-radial-gradient(center, ellipse cover,  rgba(238,238,238,1) 0%, rgba(204,204,204,1) 100%);
-    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(238,238,238,1)), color-stop(100%,rgba(204,204,204,1)));
-    background: -webkit-radial-gradient(center, ellipse cover,  rgba(238,238,238,1) 0%,rgba(204,204,204,1) 100%);
-    background: -o-radial-gradient(center, ellipse cover,  rgba(238,238,238,1) 0%,rgba(204,204,204,1) 100%);
-    background: -ms-radial-gradient(center, ellipse cover,  rgba(238,238,238,1) 0%,rgba(204,204,204,1) 100%);
-    background: radial-gradient(ellipse at center,  rgba(238,238,238,1) 0%,rgba(204,204,204,1) 100%);
+    background: rgb(238, 238, 238);
+    background: -moz-radial-gradient(
+        center,
+        ellipse cover,
+        rgba(238, 238, 238, 1) 0%,
+        rgba(204, 204, 204, 1) 100%
+    );
+    background: -webkit-gradient(
+        radial,
+        center center,
+        0px,
+        center center,
+        100%,
+        color-stop(0%, rgba(238, 238, 238, 1)),
+        color-stop(100%, rgba(204, 204, 204, 1))
+    );
+    background: -webkit-radial-gradient(
+        center,
+        ellipse cover,
+        rgba(238, 238, 238, 1) 0%,
+        rgba(204, 204, 204, 1) 100%
+    );
+    background: -o-radial-gradient(
+        center,
+        ellipse cover,
+        rgba(238, 238, 238, 1) 0%,
+        rgba(204, 204, 204, 1) 100%
+    );
+    background: -ms-radial-gradient(
+        center,
+        ellipse cover,
+        rgba(238, 238, 238, 1) 0%,
+        rgba(204, 204, 204, 1) 100%
+    );
+    background: radial-gradient(
+        ellipse at center,
+        rgba(238, 238, 238, 1) 0%,
+        rgba(204, 204, 204, 1) 100%
+    );
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#cccccc',GradientType=1 );
 }
-    .osgjs-theme-light .osgjs-description {
-        color: #111;
-    }
-    .osgjs-theme-light .osgjs-description a {
-        color: #009EBB;
-    }
+.osgjs-theme-light .osgjs-description {
+    color: #111;
+}
+.osgjs-theme-light .osgjs-description a {
+    color: #009ebb;
+}
 
 /**
  * Dark theme
  ******************************************************************************/
 
 .osgjs-theme-dark {
+    color: #fff;
 
-    color: #FFF;
-
-    background: rgb(79,79,79);
-    background: -moz-radial-gradient(center, ellipse cover,  rgba(79,79,79,1) 0%, rgba(22,22,22,1) 100%);
-    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(79,79,79,1)), color-stop(100%,rgba(22,22,22,1)));
-    background: -webkit-radial-gradient(center, ellipse cover,  rgba(79,79,79,1) 0%,rgba(22,22,22,1) 100%);
-    background: -o-radial-gradient(center, ellipse cover,  rgba(79,79,79,1) 0%,rgba(22,22,22,1) 100%);
-    background: -ms-radial-gradient(center, ellipse cover,  rgba(79,79,79,1) 0%,rgba(22,22,22,1) 100%);
-    background: radial-gradient(ellipse at center,  rgba(79,79,79,1) 0%,rgba(22,22,22,1) 100%);
+    background: rgb(79, 79, 79);
+    background: -moz-radial-gradient(
+        center,
+        ellipse cover,
+        rgba(79, 79, 79, 1) 0%,
+        rgba(22, 22, 22, 1) 100%
+    );
+    background: -webkit-gradient(
+        radial,
+        center center,
+        0px,
+        center center,
+        100%,
+        color-stop(0%, rgba(79, 79, 79, 1)),
+        color-stop(100%, rgba(22, 22, 22, 1))
+    );
+    background: -webkit-radial-gradient(
+        center,
+        ellipse cover,
+        rgba(79, 79, 79, 1) 0%,
+        rgba(22, 22, 22, 1) 100%
+    );
+    background: -o-radial-gradient(
+        center,
+        ellipse cover,
+        rgba(79, 79, 79, 1) 0%,
+        rgba(22, 22, 22, 1) 100%
+    );
+    background: -ms-radial-gradient(
+        center,
+        ellipse cover,
+        rgba(79, 79, 79, 1) 0%,
+        rgba(22, 22, 22, 1) 100%
+    );
+    background: radial-gradient(
+        ellipse at center,
+        rgba(79, 79, 79, 1) 0%,
+        rgba(22, 22, 22, 1) 100%
+    );
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4f4f4f', endColorstr='#161616',GradientType=1 );
 }
-    .osgjs-theme-dark .osgjs-description {
-        color: #FFF;
-    }
-    .osgjs-theme-dark .osgjs-description a {
-        color: #80ebff;
-    }
+.osgjs-theme-dark .osgjs-description {
+    color: #fff;
+}
+.osgjs-theme-dark .osgjs-description a {
+    color: #80ebff;
+}

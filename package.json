@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "devDependencies": {
     "chai": "^3.5.0",
     "eslint": "4.1.1",
@@ -58,4 +59,65 @@
   "license": "UNLICENSED",
   "description": "Cruse Web Scanviewer",
   "name": "CruseWebViewer"
+=======
+    "devDependencies": {
+        "chai": "^4.3.6",
+        "eslint": "8.16.0",
+        "eslint-config-google": "^0.14.0",
+        "eslint-config-standard": "^17.0.0",
+        "eslint-plugin-import": "^2.26.0",
+        "eslint-plugin-node": "^11.1.0",
+        "eslint-plugin-prettier": "^4.0.0",
+        "eslint-plugin-private-variables": "*",
+        "eslint-plugin-promise": "^6.0.0",
+        "eslint-plugin-standard": "^4.1.0",
+        "grunt-contrib-connect": "~3.0",
+        "grunt-documentation": "*",
+        "grunt-plato": "~1.4.0",
+        "grunt-release": "^0.14.0",
+        "grunt-update-submodules": "^0.4.1",
+        "grunt-connect-proxy2": "^2.0.0",
+        "jsdom": "19.0.0",
+        "jsdom-global": "3.0.2",
+        "mocha": "^10.0.0",
+        "prettier": "2.6.2"
+    },
+    "peerDependencies": {
+        "grunt": ">=1.5.3"
+    },
+    "dependencies": {
+        "@trigrou/zip-js": "1.0.0",
+        "bluebird": "^3.7.2",
+        "d3": "^7.4.4",
+        "dagre": "^0.8.5",
+        "dat.gui": "dataarts/dat.gui#v0.7.9",
+        "extend": "*",
+        "gl-matrix": "2.3.2",
+        "glob": "*",
+        "grunt": ">=1.5.3",
+        "grunt-cli": "^1.4.3",
+        "grunt-contrib-clean": "*",
+        "grunt-contrib-copy": "*",
+        "grunt-contrib-uglify": "^5.2.1",
+        "grunt-eslint": "^24.0.0",
+        "grunt-git": "*",
+        "grunt-shell": "*",
+        "grunt-webpack": "^5.0.0",
+        "hammerjs": "^2.0.8",
+        "jquery": "3.6.0",
+        "json-loader": "^0.5.7",
+        "openseadragon": "^3.0.0",
+        "path": "^0.12.7",
+        "raw-loader": "^4.0.2",
+        "webpack": "^5.72.1",
+        "webpack-dev-server": "^4.9.0",
+        "webpack-strip-block": "^0.3.0",
+        "zlibjs": "^0.3.1"
+    },
+    "version": "0.1.4",
+    "author": "Cruse Spezialmaschienen GmbH",
+    "license": "MIT",
+    "description": "Cruse LargeSurfaceVisualizer",
+    "name": "LargeSurfaceVisualizer"
+>>>>>>> UpdateToNewerDependencies
 }

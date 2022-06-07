@@ -86,34 +86,46 @@ notify.noticeFold = notify.logFold;
 notify.noticeMatrix = notify.logMatrix;
 notify.noticeMatrixFold = notify.logMatrixFold;
 
+<<<<<<< HEAD
 notify.timeStamp = function() {};
 /* develblock:start */
 if (!notify.console || !notify.console.timeStamp) notify.timeStamp = function() {};
 else {
     notify.timeStamp = function(label) {
+=======
+notify.timeStamp = function () {};
+/* develblock:start */
+if (!notify.console || !notify.console.timeStamp) notify.timeStamp = function () {};
+else {
+    notify.timeStamp = function (label) {
+>>>>>>> UpdateToNewerDependencies
         notify.console.timeStamp(label);
     };
 }
 /* develblock:end */
 
+<<<<<<< HEAD
 notify.assert = function(test, str) {
+=======
+notify.assert = function (test, str) {
+>>>>>>> UpdateToNewerDependencies
     if (this.console !== undefined && !test) {
         this.console.assert(test, str);
     }
 };
 
-notify.setNotifyLevel = function(logLevel, trace) {
+notify.setNotifyLevel = function (logLevel, trace) {
     notify.currentNotifyLevel = logLevel;
     if (trace !== undefined) notify.traceLogCall = trace;
 };
 
-notify.getNotifyLevel = function() {
+notify.getNotifyLevel = function () {
     return notify.currentNotifyLevel;
 };
 
 notify.reportWebGLError = false;
 
-notify.setConsole = function(replacement) {
+notify.setConsole = function (replacement) {
     notify.console = replacement;
 };
 

@@ -4,16 +4,16 @@ import notify from 'tools/notify';
 
 var utils = {};
 
-utils.extend = function() {
+utils.extend = function () {
     // Save a reference to some core methods
     var toString = window.Object.prototype.toString;
     var hasOwnPropertyFunc = window.Object.prototype.hasOwnProperty;
 
-    var isFunction = function(obj) {
+    var isFunction = function (obj) {
         return toString.call(obj) === '[object Function]';
     };
     var isArray = utils.isArray;
-    var isPlainObject = function(obj) {
+    var isPlainObject = function (obj) {
         // Must be an Object.
         // Because of IE, we also have to check the presence of the constructor property.
         // Make sure that DOM nodes and window objects don't pass through, as well
@@ -102,7 +102,7 @@ utils.extend = function() {
     return target;
 };
 
-utils.objectInherit = function(base /*, extras*/) {
+utils.objectInherit = function (base /*, extras*/) {
     function F() {}
     F.prototype = base;
     var obj = new F();
@@ -114,7 +114,7 @@ utils.objectInherit = function(base /*, extras*/) {
     return obj;
 };
 
-utils.objectMix = function(obj, properties, test) {
+utils.objectMix = function (obj, properties, test) {
     for (var key in properties) {
         if (!(test && obj[key])) {
             obj[key] = properties[key];
@@ -126,7 +126,7 @@ utils.objectMix = function(obj, properties, test) {
 utils.objectType = {};
 utils.objectType.type = 0;
 
-utils.arrayDense = function(index, array, createDefaultType) {
+utils.arrayDense = function (index, array, createDefaultType) {
     var length = array.length;
     if (index >= length) {
         for (var i = length; i <= index; i++) {
@@ -135,32 +135,32 @@ utils.arrayDense = function(index, array, createDefaultType) {
     }
 };
 
-utils.objectLibraryClass = function(object, libName, className) {
-    object.className = function() {
+utils.objectLibraryClass = function (object, libName, className) {
+    object.className = function () {
         return className;
     };
-    object.libraryName = function() {
+    object.libraryName = function () {
         return libName;
     };
     var libraryClassName = libName + '::' + className;
-    object.libraryClassName = function() {
+    object.libraryClassName = function () {
         return libraryClassName;
     };
 
     return object;
 };
 
-utils.setTypeID = function(classObject) {
+utils.setTypeID = function (classObject) {
     var className = classObject.prototype.libraryClassName();
     var typeID = utils.generateId(utils.objectType, className);
-    var getTypeID = function() {
+    var getTypeID = function () {
         return typeID;
     };
     classObject.typeID = classObject.prototype.typeID = typeID;
     classObject.getTypeID = classObject.prototype.getTypeID = getTypeID;
 };
 
-utils.createPrototypeObject = function(Constructor, prototype, libraryName, className) {
+utils.createPrototypeObject = function (Constructor, prototype, libraryName, className) {
     // we need to create an instance of {} if prototype is already used in an object
     // else we will override typeID ClassName...
     if (prototype.hasOwnProperty('getTypeID')) {
@@ -181,7 +181,7 @@ utils.createPrototypeObject = function(Constructor, prototype, libraryName, clas
 };
 
 // ============== Node ID =================================
-utils.generateId = function(typeMap, className) {
+utils.generateId = function (typeMap, className) {
     if (typeMap[className] !== undefined) {
         notify.error(className + ' is already defined, change class name or library name');
         return -1;
@@ -197,17 +197,21 @@ utils.generateId = function(typeMap, className) {
 utils.objectNodeType = {};
 utils.objectNodeType.type = 0;
 
-utils.setNodeTypeID = function(classObject) {
+utils.setNodeTypeID = function (classObject) {
     var className = classObject.prototype.libraryClassName();
     var typeID = utils.generateId(utils.objectNodeType, className);
-    var getTypeID = function() {
+    var getTypeID = function () {
         return typeID;
     };
     classObject.nodeTypeID = classObject.prototype.nodeTypeID = typeID;
     classObject.getNodeTypeID = classObject.prototype.getNodeTypeID = getTypeID;
 };
 
+<<<<<<< HEAD
 utils.createPrototypeNode = function(Constructor, prototype, libraryName, className) {
+=======
+utils.createPrototypeNode = function (Constructor, prototype, libraryName, className) {
+>>>>>>> UpdateToNewerDependencies
     var cullVisitorHelper = require('tools/cullVisitorHelper').default;
     var parentNodeTypeID = prototype.nodeTypeID;
     utils.createPrototypeObject(Constructor, prototype, libraryName, className);
@@ -233,21 +237,21 @@ var textureStateAttributeTypeMember = {};
 var attributeTypeIndex = 0;
 var stateAttributeType = {};
 
-utils.getStateAttributeTypeNameToTypeId = function() {
+utils.getStateAttributeTypeNameToTypeId = function () {
     return stateAttributeType;
 };
 
-utils.createPrototypeStateAttribute = function(Constructor, prototype, libraryName, className) {
+utils.createPrototypeStateAttribute = function (Constructor, prototype, libraryName, className) {
     utils.createPrototypeObject(Constructor, prototype, libraryName, className);
     var attributeId = utils.getOrCreateStateAttributeTypeId(Constructor);
     Constructor.prototype.attributeTypeId = attributeId;
 };
 
-utils.getMaxStateAttributeTypeID = function() {
+utils.getMaxStateAttributeTypeID = function () {
     return attributeTypeIndex;
 };
 
-utils.getOrCreateStateAttributeTypeId = function(Constructor) {
+utils.getOrCreateStateAttributeTypeId = function (Constructor) {
     var attributeTypeName = Constructor.prototype.getType();
 
     if (stateAttributeType[attributeTypeName]) return stateAttributeType[attributeTypeName];
@@ -257,16 +261,15 @@ utils.getOrCreateStateAttributeTypeId = function(Constructor) {
     return typeId;
 };
 
-utils.getOrCreateStateAttributeTypeMemberIndex = function(attribute) {
+utils.getOrCreateStateAttributeTypeMemberIndex = function (attribute) {
     if (attribute._attributeTypeIndex !== undefined) return attribute._attributeTypeIndex;
     var typeMember = attribute.getTypeMember();
-    attribute._attributeTypeIndex = utils.getOrCreateStateAttributeTypeMemberIndexFromName(
-        typeMember
-    );
+    attribute._attributeTypeIndex =
+        utils.getOrCreateStateAttributeTypeMemberIndexFromName(typeMember);
     return attribute._attributeTypeIndex;
 };
 
-utils.getOrCreateStateAttributeTypeMemberIndexFromName = function(typeMemberName) {
+utils.getOrCreateStateAttributeTypeMemberIndexFromName = function (typeMemberName) {
     var type = stateAttributeTypeMember[typeMemberName];
     if (type !== undefined) return type;
 
@@ -275,16 +278,15 @@ utils.getOrCreateStateAttributeTypeMemberIndexFromName = function(typeMemberName
     return type;
 };
 
-utils.getOrCreateTextureStateAttributeTypeMemberIndex = function(attribute) {
+utils.getOrCreateTextureStateAttributeTypeMemberIndex = function (attribute) {
     if (attribute._attributeTypeIndex !== undefined) return attribute._attributeTypeIndex;
     var typeMember = attribute.getTypeMember();
-    attribute._attributeTypeIndex = utils.getOrCreateTextureStateAttributeTypeMemberIndexFromName(
-        typeMember
-    );
+    attribute._attributeTypeIndex =
+        utils.getOrCreateTextureStateAttributeTypeMemberIndexFromName(typeMember);
     return attribute._attributeTypeIndex;
 };
 
-utils.getOrCreateTextureStateAttributeTypeMemberIndexFromName = function(typeMemberName) {
+utils.getOrCreateTextureStateAttributeTypeMemberIndexFromName = function (typeMemberName) {
     var type = textureStateAttributeTypeMember[typeMemberName];
     if (type !== undefined) return type;
 
@@ -293,11 +295,11 @@ utils.getOrCreateTextureStateAttributeTypeMemberIndexFromName = function(typeMem
     return type;
 };
 
-utils.getIdFromTypeMember = function(typeMember) {
+utils.getIdFromTypeMember = function (typeMember) {
     return stateAttributeTypeMember[typeMember];
 };
 
-utils.getTextureIdFromTypeMember = function(typeMember) {
+utils.getTextureIdFromTypeMember = function (typeMember) {
     return textureStateAttributeTypeMember[typeMember];
 };
 
@@ -311,6 +313,7 @@ utils.Uint32Array = window.Uint32Array;
 utils.Float32Array = window.Float32Array;
 utils.Float64Array = window.Float64Array;
 
+<<<<<<< HEAD
 
 
 
@@ -319,6 +322,12 @@ utils.profile = (notify.console.profile || function() {}).bind(notify.console);
 utils.profileEnd = (notify.console.profileEnd || function() {}).bind(notify.console);
 
 utils.arrayUniq = function(a) {
+=======
+utils.profile = (notify.console.profile || function () {}).bind(notify.console);
+utils.profileEnd = (notify.console.profileEnd || function () {}).bind(notify.console);
+
+utils.arrayUniq = function (a) {
+>>>>>>> UpdateToNewerDependencies
     var len = a.length;
     var seen = {};
     var out = [];
@@ -334,7 +343,7 @@ utils.arrayUniq = function(a) {
 };
 
 // mostly used as an osgDB helper to issue a warning and reject a promise
-utils.rejectObject = function(msg, jsonObj) {
+utils.rejectObject = function (msg, jsonObj) {
     if (jsonObj) msg = 'Invalid json ' + msg + ' ' + Object.keys(jsonObj);
     notify.warn(msg); // useful for line debugging
     return P.reject(msg); // reject with a message to avoid "undefined" rejection
