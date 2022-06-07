@@ -1,0 +1,3 @@
+[submodule "sources/external/osgjs"]
+	path = sources/external/osgjs
+	url = https://github.com/CruseScanner/osgjs.git
